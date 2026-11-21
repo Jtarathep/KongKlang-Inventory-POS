@@ -4,7 +4,7 @@ Status: application packaging is prepared; live TiDB compatibility and hosted sm
 
 ## Database
 
-Create a TiDB Starter MySQL-compatible instance with a $0 spending limit. Use a dedicated empty demo database, separate from business data. Import the reviewed schema before starting the application: Hibernate uses `validate`, not automatic schema creation. The existing schema includes legacy `tis620` declarations, so it must be adapted and tested against TiDB before import. Do not import local production data into this public demo.
+Create a TiDB Starter MySQL-compatible instance with a $0 spending limit. Use a dedicated empty demo database, separate from business data. Import the reviewed schema before starting the application: Hibernate uses `validate`, not automatic schema creation. Run `database/tidb-demo-schema.sql` once, stopping at the first error. It creates the new `kongklang_demo` database and preserves foreign keys and CHECK constraints, with parent tables first and Unicode collations. It enables TiDB CHECK enforcement before creating tables. Generated-file structural checks have passed; live TiDB execution is still pending. Do not use the original `database/schema.sql` as a cloud import: it contains DROP statements. Do not import local production data into this public demo.
 
 Product images are stored in the database in `product_photos`, not on the ephemeral web-service filesystem.
 
