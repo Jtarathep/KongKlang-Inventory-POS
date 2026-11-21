@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>สินค้าออก - KONGKLANG</title>
+
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <style>
+
+        body {
+            background: #f5f7f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .stock-value {
+            color: #198754;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .preview-card {
+            background: #eef8f2;
+            border: 1px solid #cfe8d8;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .preview-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: #198754;
+        }
+
+        .btn-submit {
+            min-width: 160px;
+            padding: 11px 25px;
+            font-weight: 600;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+    </style>
+
+    <!-- Shared KongKlang sidebar and layout styles -->
+    <link rel="stylesheet" th:href="@{/css/kongklang.css}">
+
+<meta name="csrf-token" th:content="${session.csrfToken}">
+<link rel="stylesheet" th:href="@{/css/inventory-operations.css}">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+<body class="kk-layout" th:attr="data-inventory-user=${session.userId},data-inventory-store=${session.storeId}">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+<!-- ========================================== -->
+<!-- NAVBAR -->
+<!-- ========================================== -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+
+    <div class="container">
+
+        <a class="navbar-brand"
+           href="/stock">
+            KONGKLANG
+        </a>
+
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div
+                class="collapse navbar-collapse"
+                id="navbarNav">
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/">
+                        Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/products">
+                        Products
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/sales">
+                        Sales
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active"
+                       href="/stock">
+                        Stock
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/sales/history">
+                        Sales History
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="/reports">
+                        Reports
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ========================================== -->
+<!-- CONTENT -->
+<!-- ========================================== -->
+
+<div class="container py-5">
+    <section id="inventory-recovery" class="inventory-recovery" aria-label="ตรวจสอบรายการสต็อก">
+        <p class="inventory-accounting-note">ใช้สำหรับเบิกออกหรือตัดจำหน่ายนอกการขาย รวมล็อตหมดอายุ ระบบลงมูลค่าตามล็อตเป็นค่าใช้จ่ายผลต่างสินค้า</p>
+        <p id="inventory-message" role="alert" tabindex="-1" hidden></p>
+        <div id="inventory-pending" hidden>
+            <h3>รายการสต็อกที่ยังไม่ได้รับผลยืนยัน</h3>
+            <p id="inventory-description"></p>
+            <details><summary>ดูข้อมูลรายการเดิม</summary><p id="inventory-details"></p></details>
+            <p>ระบบจะตรวจสอบและส่งข้อมูลเดิม เพื่อป้องกันการเปลี่ยนสต็อกและลงบัญชีซ้ำ</p>
+            <button type="button" id="inventory-retry">ตรวจสอบและส่งรายการเดิมอีกครั้ง</button>
+        </div>
+    </section>
+
+
+    <div class="page-header">
+
+        <h2 class="page-title">
+            📤 สินค้าออก
+        </h2>
+
+        <div class="page-subtitle">
+            นำสินค้าออกจากคลังโดยไม่ผ่านการขาย
+        </div>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <form
+                action="/stock/out"
+                method="post"
+                id="stockOutForm">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+<input type="hidden" name="requestKey" th:value="${inventoryRequestKey}">
+
+
+
+            <!-- ========================================== -->
+            <!-- เลือกสินค้า -->
+            <!-- ========================================== -->
+
+            <div class="mb-4">
+
+                <label
+                        for="productCode"
+                        class="form-label fw-semibold">
+
+                    สินค้า
+                    <span class="required">*</span>
+
+                </label>
+
+                <select
+                        class="form-select"
+                        id="productCode"
+                        name="code"
+                        required>
+
+                    <option value="">
+                        -- เลือกสินค้า --
+                    </option>
+
+                    <option
+                            th:each="product : ${products}"
+                            th:value="${product.code}"
+                            th:text="${product.code + ' - ' + product.name}">
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- ข้อมูลสินค้า -->
+            <!-- ========================================== -->
+
+            <div
+                    class="info-card"
+                    id="productInfo"
+                    style="display:none;">
+
+                <div class="row g-4">
+
+                    <div class="col-md-4">
+
+                        <div class="info-label">
+                            รหัสสินค้า
+                        </div>
+
+                        <div
+                                class="info-value"
+                                id="infoCode">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="info-label">
+                            ชื่อสินค้า
+                        </div>
+
+                        <div
+                                class="info-value"
+                                id="infoName">
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="info-label">
+                            จำนวนคงเหลือ
+                        </div>
+
+                        <div
+                                class="stock-value"
+                                id="infoQuantity">
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- จำนวน -->
+            <!-- ========================================== -->
+
+            <div class="mt-4">
+
+                <label
+                        for="stockOutQuantity"
+                        class="form-label fw-semibold">
+
+                    จำนวนที่นำออก
+                    <span class="required">*</span>
+
+                </label>
+
+                <input
+                        type="number"
+                        class="form-control"
+                        id="stockOutQuantity"
+                        name="quantity"
+                        min="1"
+                        value="1"
+                        required
+                        disabled>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- เหตุผล -->
+            <!-- ========================================== -->
+
+            <div class="mt-4">
+
+                <label
+                        for="note"
+                        class="form-label fw-semibold">
+
+                    เหตุผล / หมายเหตุ
+
+                </label>
+
+                <select
+                        class="form-select"
+                        id="reasonSelect">
+
+                    <option value="">
+                        -- เลือกเหตุผล --
+                    </option>
+
+                    <option value="สินค้าเสียหาย">
+                        สินค้าเสียหาย
+                    </option>
+
+                    <option value="สินค้าหมดอายุ">
+                        สินค้าหมดอายุ
+                    </option>
+
+                    <option value="ใช้ภายในร้าน">
+                        ใช้ภายในร้าน
+                    </option>
+
+                    <option value="อื่น ๆ">
+                        อื่น ๆ
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="mt-3">
+
+                <label
+                        for="note"
+                        class="form-label">
+
+                    รายละเอียดเพิ่มเติม
+
+                </label>
+
+                <textarea
+                        class="form-control"
+                        id="note"
+                        name="note"
+                        rows="3"
+                        placeholder="ระบุเหตุผลหรือเอกสารอ้างอิง" required maxlength="1000">
+                </textarea>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- Preview -->
+            <!-- ========================================== -->
+
+            <div
+                    class="preview-card"
+                    id="previewCard"
+                    style="display:none;">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-6">
+
+                        <div class="text-muted">
+                            จำนวนคงเหลือก่อนนำออก
+                        </div>
+
+                        <div
+                                class="fw-bold fs-4"
+                                id="previewBefore">
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <div class="text-muted">
+                            จำนวนคงเหลือหลังนำออก
+                        </div>
+
+                        <div
+                                class="preview-number"
+                                id="previewAfter">
+                            0
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================================== -->
+            <!-- ปุ่ม -->
+            <!-- ========================================== -->
+
+            <div class="d-flex justify-content-between mt-4">
+
+                <a
+                        href="/stock"
+                        class="btn btn-outline-secondary">
+
+                    ← ย้อนกลับ
+
+                </a>
+
+
+                <button
+                        type="submit"
+                        class="btn btn-success btn-submit"
+                        id="submitButton"
+                        disabled>
+
+                    📤 นำสินค้าออก
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- JAVASCRIPT -->
+<!-- ========================================== -->
+
+<script>
+
+    const productSelect =
+        document.getElementById("productCode");
+
+    const quantityInput =
+        document.getElementById("stockOutQuantity");
+
+    const productInfo =
+        document.getElementById("productInfo");
+
+    const infoCode =
+        document.getElementById("infoCode");
+
+    const infoName =
+        document.getElementById("infoName");
+
+    const infoQuantity =
+        document.getElementById("infoQuantity");
+
+    const previewCard =
+        document.getElementById("previewCard");
+
+    const previewBefore =
+        document.getElementById("previewBefore");
+
+    const previewAfter =
+        document.getElementById("previewAfter");
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+
+    // ==========================================
+    // เมื่อเลือกสินค้า
+    // ==========================================
+
+    productSelect.addEventListener(
+        "change",
+        function () {
+
+            const code = this.value;
+
+            if (!code) {
+
+                productInfo.style.display = "none";
+                previewCard.style.display = "none";
+
+                quantityInput.disabled = true;
+                submitButton.disabled = true;
+
+                return;
+            }
+
+
+            fetch(
+                "/products/by-code?code="
+                + encodeURIComponent(code)
+            )
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(
+                            "ไม่สามารถโหลดข้อมูลสินค้าได้"
+                        );
+                    }
+
+                    return response.json();
+
+                })
+                .then(product => {
+
+                    const quantity =
+                        product.quantity != null
+                            ? product.quantity
+                            : 0;
+
+
+                    infoCode.textContent =
+                        product.code || "-";
+
+                    infoName.textContent =
+                        product.name || "-";
+
+                    infoQuantity.textContent =
+                        quantity;
+
+
+                    productInfo.style.display =
+                        "block";
+
+                    quantityInput.disabled =
+                        quantity <= 0;
+
+                    quantityInput.max =
+                        quantity;
+
+                    if (quantity <= 0) {
+
+                        quantityInput.value = 0;
+
+                        submitButton.disabled = true;
+
+                        previewCard.style.display =
+                            "none";
+
+                    } else {
+
+                        quantityInput.value = 1;
+
+                        submitButton.disabled = false;
+
+                        updatePreview();
+                    }
+
+                })
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "ไม่สามารถโหลดข้อมูลสินค้าได้"
+                    );
+
+                    productInfo.style.display =
+                        "none";
+
+                    quantityInput.disabled =
+                        true;
+
+                    submitButton.disabled =
+                        true;
+
+                });
+
+        }
+    );
+
+
+    // ==========================================
+    // คำนวณจำนวนหลังนำออก
+    // ==========================================
+
+    quantityInput.addEventListener(
+        "input",
+        updatePreview
+    );
+
+
+    function updatePreview() {
+
+        const before =
+            parseInt(
+                infoQuantity.textContent
+            ) || 0;
+
+        const quantity =
+            parseInt(
+                quantityInput.value
+            ) || 0;
+
+        if (quantity <= 0 ||
+            before <= 0) {
+
+            previewCard.style.display =
+                "none";
+
+            submitButton.disabled =
+                true;
+
+            return;
+        }
+
+
+        const after =
+            before - quantity;
+
+
+        if (quantity > before) {
+
+            previewCard.style.display =
+                "block";
+
+            previewBefore.textContent =
+                before;
+
+            previewAfter.textContent =
+                "จำนวนไม่เพียงพอ";
+
+            previewAfter.style.color =
+                "#dc3545";
+
+            submitButton.disabled =
+                true;
+
+            return;
+        }
+
+
+        previewBefore.textContent =
+            before;
+
+        previewAfter.textContent =
+            after;
+
+        previewAfter.style.color =
+            "#198754";
+
+        previewCard.style.display =
+            "block";
+
+        submitButton.disabled =
+            false;
+    }
+
+
+    // ==========================================
+    // รวมเหตุผลกับรายละเอียด
+    // ==========================================
+
+    const reasonSelect =
+        document.getElementById("reasonSelect");
+
+    const noteInput =
+        document.getElementById("note");
+
+
+    reasonSelect.addEventListener(
+        "change",
+        function () {
+
+            const reason = this.value;
+
+            if (!reason) {
+                return;
+            }
+
+            if (!noteInput.value.trim()) {
+
+                noteInput.value =
+                    reason;
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // ป้องกันส่งข้อมูลผิด
+    // ==========================================
+
+    document.getElementById(
+        "stockOutForm"
+    ).addEventListener(
+        "submit",
+        function (event) {
+
+            const before =
+                parseInt(
+                    infoQuantity.textContent
+                ) || 0;
+
+            const quantity =
+                parseInt(
+                    quantityInput.value
+                ) || 0;
+
+
+            if (!productSelect.value) {
+
+                event.preventDefault();
+
+                alert(
+                    "กรุณาเลือกสินค้า"
+                );
+
+                return;
+            }
+
+
+            if (quantity <= 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "กรุณาระบุจำนวนสินค้า"
+                );
+
+                return;
+            }
+
+
+            if (quantity > before) {
+
+                event.preventDefault();
+
+                alert(
+                    "จำนวนสินค้าไม่เพียงพอ"
+                );
+
+                return;
+            }
+
+
+            const confirmed =
+                confirm(
+                    "ต้องการนำสินค้าออกจำนวน "
+                    + quantity
+                    + " ชิ้นใช่หรือไม่?"
+                );
+
+
+            if (!confirmed) {
+                event.preventDefault();
+            }
+
+        }
+    );
+
+</script>
+
+
+<script
+        src="/js/vendor/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+
+<script th:src="@{/js/inventory-operations.js}"></script>
+
+</body>
+
+</html>

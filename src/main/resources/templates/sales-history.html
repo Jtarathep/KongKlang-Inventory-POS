@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - ประวัติการขาย</title>
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=3)}">
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main-container {
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            letter-spacing: -0.3px;
+        }
+
+        .dashboard-section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .summary-card {
+            transition: transform 0.15s ease,
+            box-shadow 0.15s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .summary-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            font-size: 23px;
+        }
+
+        .sales-table-wrapper {
+            border-top: 1px solid #edf0f2;
+        }
+
+        .sales-table {
+            margin-bottom: 0;
+            min-width: 780px;
+        }
+
+        .sales-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 14px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .sales-table tbody td {
+            padding: 15px 12px;
+            vertical-align: middle;
+        }
+
+        .sales-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .sales-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .sale-number {
+            display: inline-block;
+            padding: 6px 9px;
+            border-radius: 7px;
+            background: #f1f3f5;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .sale-date {
+            white-space: nowrap;
+        }
+
+        .sale-time {
+            font-size: 12px;
+        }
+
+        .sale-total {
+            white-space: nowrap;
+            font-size: 16px;
+            font-weight: 800;
+            color: #198754;
+        }
+
+        .view-sale-btn {
+            min-width: 105px;
+        }
+
+        .empty-sales {
+            min-height: 300px;
+        }
+
+        .empty-sales-icon {
+            font-size: 54px;
+        }
+
+        .navbar .btn {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1199.98px) {
+
+            .navbar .container-xl {
+                overflow-x: auto;
+            }
+
+        }
+
+        @media (max-width: 767.98px) {
+
+            .main-container {
+                padding-top: 22px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .summary-card .card-body {
+                padding: 20px !important;
+            }
+
+            .dashboard-section-card .card-header {
+                padding: 18px !important;
+            }
+
+        }
+
+        @media (max-width: 575.98px) {
+
+            .main-container {
+                padding-top: 18px;
+                padding-bottom: 30px;
+            }
+
+            .summary-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ====================================================== -->
+<!-- Navbar -->
+<!-- ====================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-light btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-primary btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ====================================================== -->
+<!-- Main -->
+<!-- ====================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ================================================== -->
+    <!-- Page Header -->
+    <!-- ================================================== -->
+
+    <div class="page-header">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-start
+                    gap-3">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+
+                    🧾 ประวัติการขาย
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    ตรวจสอบรายการขายและรายละเอียดของแต่ละบิล
+
+                </p>
+
+            </div>
+
+
+            <a
+                    href="/sales"
+                    class="btn btn-primary">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- Summary -->
+    <!-- ================================================== -->
+
+    <div class="row g-3 mb-4">
+
+
+        <!-- จำนวนบิล -->
+
+        <div class="col-md-4">
+
+            <div class="card
+                        dashboard-section-card
+                        summary-card
+                        h-100">
+
+
+                <div class="card-body p-4">
+
+
+                    <div class="text-muted small mb-2">
+
+                        จำนวนบิลทั้งหมด
+
+                    </div>
+
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+
+                        <h3
+                                class="fw-bold mb-0"
+                                th:text="${#lists.size(sales)}">
+
+                            0
+
+                        </h3>
+
+
+                        <div
+                                class="summary-icon
+                                       bg-primary-subtle
+                                       text-primary">
+
+                            🧾
+
+                        </div>
+
+
+                    </div>
+
+
+                    <small class="text-muted">
+
+                        รายการขายทั้งหมด
+
+                    </small>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- สถานะ -->
+
+        <div class="col-md-4">
+
+            <div class="card
+                        dashboard-section-card
+                        summary-card
+                        h-100">
+
+
+                <div class="card-body p-4">
+
+
+                    <div class="text-muted small mb-2">
+
+                        ประวัติการขาย
+
+                    </div>
+
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+
+                        <h3 class="fw-bold mb-0">
+
+                            Sales
+
+                        </h3>
+
+
+                        <div
+                                class="summary-icon
+                                       bg-success-subtle
+                                       text-success">
+
+                            📈
+
+                        </div>
+
+
+                    </div>
+
+
+                    <small class="text-muted">
+
+                        ตรวจสอบรายการย้อนหลัง
+
+                    </small>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Action -->
+
+        <div class="col-md-4">
+
+            <div class="card
+                        dashboard-section-card
+                        summary-card
+                        h-100">
+
+
+                <div class="card-body p-4">
+
+
+                    <div class="text-muted small mb-2">
+
+                        การทำรายการ
+
+                    </div>
+
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+
+                        <h3 class="fw-bold mb-0">
+
+                            POS
+
+                        </h3>
+
+
+                        <div
+                                class="summary-icon
+                                       bg-warning-subtle
+                                       text-warning">
+
+                            🛒
+
+                        </div>
+
+
+                    </div>
+
+
+                    <a
+                            href="/sales"
+                            class="btn btn-primary btn-sm mt-3">
+
+                        + ขายสินค้า
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- Sales Table -->
+    <!-- ================================================== -->
+
+    <div class="card dashboard-section-card">
+
+
+        <!-- ================================================== -->
+        <!-- Header -->
+        <!-- ================================================== -->
+
+        <div class="card-header bg-white p-4">
+
+
+            <div class="d-flex
+                        justify-content-between
+                        align-items-center
+                        gap-3">
+
+
+                <div>
+
+                    <h4 class="fw-bold mb-1">
+
+                        🧾 รายการขาย
+
+                    </h4>
+
+                    <small class="text-muted">
+
+                        รายการขายทั้งหมดของร้าน
+
+                    </small>
+
+                </div>
+
+
+                <span
+                        class="badge
+                               text-bg-primary
+                               px-3
+                               py-2"
+                        th:text="${#lists.size(sales)} + ' บิล'">
+
+                    0 บิล
+
+                </span>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- Body -->
+        <!-- ================================================== -->
+
+        <div class="card-body p-0">
+
+
+            <div class="d-flex flex-wrap align-items-center gap-2 p-3 border-bottom bg-white" id="salesHistoryFilterBar">
+                <input type="search" class="form-control form-control-sm" style="max-width:300px" id="salesHistorySearch" placeholder="ค้นหาเลขที่บิล">
+                <input type="date" class="form-control form-control-sm" style="max-width:165px" id="salesHistoryFrom" aria-label="วันที่เริ่มต้น">
+                <input type="date" class="form-control form-control-sm" style="max-width:165px" id="salesHistoryTo" aria-label="วันที่สิ้นสุด">
+                <span class="small text-muted" id="salesHistoryCount" aria-live="polite"></span>
+            </div>
+
+            <div class="sales-table-wrapper table-responsive">
+
+
+                <table
+                        class="table
+                               table-hover
+                               align-middle
+                               sales-table">
+
+
+                    <!-- ================================================== -->
+                    <!-- Header -->
+                    <!-- ================================================== -->
+
+                    <thead>
+
+                    <tr>
+
+
+                        <th
+                                class="text-center"
+                                style="width:70px;">
+
+                            #
+
+                        </th>
+
+
+                        <th>
+
+                            เลขที่บิล
+
+                        </th>
+
+
+                        <th>
+
+                            วันที่ / เวลา
+
+                        </th>
+
+
+                        <th class="text-end">
+
+                            ยอดขาย
+
+                        </th>
+
+
+                        <th
+                                class="text-center"
+                                style="width:150px;">
+
+                            จัดการ
+
+                        </th>
+
+
+                    </tr>
+
+                    </thead>
+
+
+                    <!-- ================================================== -->
+                    <!-- Body -->
+                    <!-- ================================================== -->
+
+                    <tbody>
+
+
+                    <!-- ================================================== -->
+                    <!-- ไม่มีข้อมูล -->
+                    <!-- ================================================== -->
+
+                    <tr
+                            th:if="${#lists.isEmpty(sales)}">
+
+
+                        <td
+                                colspan="5"
+                                class="text-center text-muted">
+
+
+                            <div
+                                    class="empty-sales
+                                           d-flex
+                                           flex-column
+                                           justify-content-center
+                                           align-items-center">
+
+
+                                <div class="empty-sales-icon mb-2">
+
+                                    🧾
+
+                                </div>
+
+
+                                <div class="fw-semibold">
+
+                                    ยังไม่มีประวัติการขาย
+
+                                </div>
+
+
+                                <small>
+
+                                    เมื่อมีการขายสินค้า
+                                    รายการจะแสดงที่นี่
+
+                                </small>
+
+
+                                <div class="mt-3">
+
+                                    <a
+                                            href="/sales"
+                                            class="btn btn-primary btn-sm">
+
+                                        🛒 เริ่มขายสินค้า
+
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ================================================== -->
+                    <!-- รายการขาย -->
+                    <!-- ================================================== -->
+
+                    <tr
+                            th:each="sale, stat : ${sales}">
+
+
+                        <!-- ลำดับ -->
+
+                        <td
+                                class="text-center
+                                       fw-bold
+                                       text-muted"
+                                th:text="${stat.count}">
+
+                            1
+
+                        </td>
+
+
+                        <!-- เลขที่บิล -->
+
+                        <td>
+
+                            <div>
+
+                                <span
+                                        class="sale-number"
+                                        th:text="${sale.saleNumber}">
+
+                                    SALE-0001
+
+                                </span>
+
+                            </div>
+
+
+                            <small class="text-muted">
+
+                                ใบเสร็จการขาย
+
+                            </small>
+
+                        </td>
+
+
+                        <!-- วันที่ -->
+
+                        <td class="sale-date">
+
+
+                            <div class="fw-semibold">
+
+                                <span
+                                        th:text="${#temporals.format(
+                                            sale.createdAt,
+                                            'dd/MM/yyyy'
+                                        )}">
+
+                                    01/01/2026
+
+                                </span>
+
+                            </div>
+
+
+                            <small class="text-muted sale-time">
+
+                                <span
+                                        th:text="${#temporals.format(
+                                            sale.createdAt,
+                                            'HH:mm'
+                                        )}">
+
+                                    12:00
+
+                                </span>
+
+                                น.
+
+                            </small>
+
+
+                        </td>
+
+
+                        <!-- ยอดขาย -->
+
+                        <td class="text-end">
+
+                            <span class="sale-total">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(
+                                        sale.totalAmount,
+                                        1,
+                                        2
+                                    )}">
+
+                                    0.00
+
+                                </span>
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- จัดการ -->
+
+                        <td class="text-center">
+
+                            <a
+                                    th:href="@{/sales/{id}(id=${sale.id})}"
+                                    class="btn btn-primary btn-sm px-3 view-sale-btn">
+
+                                👁️ ดูบิล
+
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const table = document.querySelector('.sales-table');
+  if (!table) return;
+  const rows = [...table.querySelectorAll('tbody tr')].filter(row => row.querySelector('.sale-number'));
+  const search = document.getElementById('salesHistorySearch');
+  const from = document.getElementById('salesHistoryFrom');
+  const to = document.getElementById('salesHistoryTo');
+  const count = document.getElementById('salesHistoryCount');
+  const parseThaiDate = value => {
+    const m = value.match(/(\d{2})\/(\d{2})\/(\d{4})/); if (!m) return null;
+    let y = Number(m[3]); if (y > 2400) y -= 543; return `${y}-${m[2]}-${m[1]}`;
+  };
+  const update = () => {
+    const q = search.value.trim().toLocaleLowerCase('th'); let visible = 0;
+    rows.forEach(row => {
+      const dateCell = [...row.cells].find(cell => /\d{2}\/\d{2}\/\d{4}/.test(cell.innerText));
+      const date = parseThaiDate(dateCell?.innerText || '');
+      const ok = (!q || row.innerText.toLocaleLowerCase('th').includes(q)) && (!from.value || !date || date >= from.value) && (!to.value || !date || date <= to.value);
+      row.hidden = !ok; if (ok) visible++;
+    });
+    count.textContent = `แสดง ${visible} จาก ${rows.length} บิล`;
+  };
+  [search,from,to].forEach(el => el.addEventListener('input', update)); update();
+});
+</script>
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

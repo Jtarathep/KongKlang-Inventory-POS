@@ -1,0 +1,2718 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - รับสินค้าเข้า</title>
+
+    <!-- Bootstrap 5.3.7 -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+
+    <style>
+
+        /* ==================================================
+           Global
+        ================================================== */
+
+        body {
+            background: #f4f6f9;
+            color: #212529;
+            min-height: 100vh;
+        }
+
+
+        /* ==================================================
+           Navbar
+        ================================================== */
+
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            letter-spacing: .2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu .btn {
+            border-radius: 9px;
+            font-weight: 500;
+        }
+
+
+        /* ==================================================
+           Main
+        ================================================== */
+
+        .main-container {
+            padding-top: 34px;
+            padding-bottom: 60px;
+        }
+
+
+        /* ==================================================
+           Page Header
+        ================================================== */
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+
+        .page-header p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+
+        /* ==================================================
+           Main Form Card
+        ================================================== */
+
+        .form-card {
+            border: 0;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .055);
+            overflow: hidden;
+        }
+
+        .form-card-header {
+            background: #ffffff;
+            border-bottom: 1px solid #edf0f2;
+            padding: 22px 26px;
+        }
+
+        .form-card-header h4 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .form-card-header small {
+            color: #6c757d;
+        }
+
+        .form-card-body {
+            padding: 28px;
+        }
+
+
+        /* ==================================================
+           Mode Selector
+        ================================================== */
+
+        .mode-selector {
+            background: #f8f9fa;
+            border: 1px solid #edf0f2;
+            border-radius: 15px;
+            padding: 6px;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 26px;
+        }
+
+        .mode-button {
+            flex: 1;
+            border: 0;
+            background: transparent;
+            border-radius: 11px;
+            padding: 13px 16px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: .2s;
+        }
+
+        .mode-button:hover {
+            background: #ffffff;
+            color: #212529;
+        }
+
+        .mode-button.active {
+            background: #ffffff;
+            color: #198754;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .07);
+        }
+
+
+        /* ==================================================
+           Mode Content
+        ================================================== */
+
+        .mode-content {
+            display: none;
+        }
+
+        .mode-content.active {
+            display: block;
+        }
+
+
+        /* ==================================================
+           Form
+        ================================================== */
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 46px;
+            border-radius: 10px;
+            border-color: #dee2e6;
+            padding: 10px 13px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .10);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 6px;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           Barcode
+        ================================================== */
+
+        .barcode-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .barcode-input-group .form-control {
+            flex: 1;
+        }
+
+        .barcode-search-btn {
+            min-width: 120px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .barcode-status {
+            display: none;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .barcode-status.show {
+            display: block;
+        }
+
+        .barcode-status.success {
+            color: #198754;
+        }
+
+        .barcode-status.error {
+            color: #dc3545;
+        }
+
+
+        /* ==================================================
+           Auto Scan Box
+        ================================================== */
+
+        .auto-scan-box {
+            background: #f8f9fa;
+            border: 1px solid #edf0f2;
+            border-radius: 15px;
+            padding: 22px;
+        }
+
+        .auto-scan-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .auto-scan-description {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .scan-ready-box {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 18px;
+        }
+
+        .scan-ready-title {
+            color: #198754;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .scan-ready-text {
+            color: #5f6f60;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+
+        /* ==================================================
+           Scan Result
+        ================================================== */
+
+        .scan-result {
+            display: none;
+            margin-top: 18px;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .scan-result.show {
+            display: block;
+        }
+
+        .scan-result.success {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+        }
+
+        .scan-result.error {
+            background: #fff0f0;
+            border: 1px solid #f5c2c7;
+        }
+
+        .scan-result-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .scan-result.success .scan-result-title {
+            color: #198754;
+        }
+
+        .scan-result.error .scan-result-title {
+            color: #dc3545;
+        }
+
+        .scan-result-text {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+
+        /* ==================================================
+           Scan Counter
+        ================================================== */
+
+        .scan-counter {
+            background: #ffffff;
+            border: 1px solid #edf0f2;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 18px;
+        }
+
+        .scan-counter-label {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .scan-counter-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #198754;
+        }
+
+
+        /* ==================================================
+           Product Information
+        ================================================== */
+
+        .product-info {
+            background: #f8f9fa;
+            border: 1px solid #edf0f2;
+            border-radius: 15px;
+            padding: 22px;
+            display: none;
+        }
+
+        .product-info.show {
+            display: block;
+        }
+
+        .product-info-title {
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .info-item {
+            background: #ffffff;
+            border-radius: 11px;
+            padding: 13px 15px;
+            height: 100%;
+            border: 1px solid #edf0f2;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #212529;
+            word-break: break-word;
+        }
+
+
+        /* ==================================================
+           Preview
+        ================================================== */
+
+        .preview-box {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+        }
+
+        .preview-box.show {
+            display: block;
+        }
+
+        .preview-label {
+            color: #5f6f60;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .preview-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #198754;
+        }
+
+
+        /* ==================================================
+           New Batch Information
+        ================================================== */
+
+        .batch-info-box {
+            background: #f0f7ff;
+            border: 1px solid #cfe2ff;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .batch-info-title {
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .batch-info-text {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+
+        /* ==================================================
+           Buttons
+        ================================================== */
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 20px;
+        }
+
+
+        /* ==================================================
+           Help Box
+        ================================================== */
+
+        .help-box {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-top: 20px;
+        }
+
+        .help-box-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .help-box p {
+            margin-bottom: 0;
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+
+        /* ==================================================
+           Responsive
+        ================================================== */
+
+        @media (max-width: 991.98px) {
+
+            .nav-menu {
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
+
+            .main-container {
+                padding-top: 28px;
+            }
+
+        }
+
+
+        @media (max-width: 575.98px) {
+
+            .navbar {
+                padding: 10px 0;
+            }
+
+            .navbar-brand {
+                font-size: 18px;
+            }
+
+            .nav-menu {
+                gap: 5px;
+            }
+
+            .nav-menu .btn {
+                font-size: 12px;
+                padding: 6px 9px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .form-card-header {
+                padding: 20px;
+            }
+
+            .form-card-body {
+                padding: 20px;
+            }
+
+            .product-info {
+                padding: 16px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+            }
+
+            .barcode-input-group {
+                flex-direction: column;
+            }
+
+            .barcode-search-btn {
+                width: 100%;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+            }
+
+            .mode-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+    <!-- Shared KongKlang sidebar and layout styles -->
+    <link rel="stylesheet" th:href="@{/css/kongklang.css}">
+
+<meta name="csrf-token" th:content="${session.csrfToken}">
+<link rel="stylesheet" th:href="@{/css/inventory-operations.css}">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout" th:attr="data-inventory-user=${session.userId},data-inventory-store=${session.storeId}">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ==================================================
+     Navbar
+================================================== -->
+
+<nav class="navbar">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold text-decoration-none"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="nav-menu">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-primary btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ==================================================
+     Main
+================================================== -->
+
+<div class="container-xl main-container">
+    <section id="inventory-recovery" class="inventory-recovery" aria-label="ตรวจสอบรายการสต็อก">
+        <p class="inventory-accounting-note">รับเข้านอก PO จะลงบัญชีพักรับสินค้า ยังไม่ถือว่าชำระเงินแล้ว หากมีใบสั่งซื้อ ให้รับสินค้าผ่านหน้าจัดซื้อเพื่อไม่รับซ้ำ การสแกนใช้ต้นทุนล่าสุดของสินค้า</p>
+        <p id="inventory-message" role="alert" tabindex="-1" hidden></p>
+        <div id="inventory-pending" hidden>
+            <h3>รายการสต็อกที่ยังไม่ได้รับผลยืนยัน</h3>
+            <p id="inventory-description"></p>
+            <details><summary>ดูข้อมูลรายการเดิม</summary><p id="inventory-details"></p></details>
+            <p>ระบบจะตรวจสอบและส่งข้อมูลเดิม เพื่อป้องกันการเปลี่ยนสต็อกและลงบัญชีซ้ำ</p>
+            <button type="button" id="inventory-retry">ตรวจสอบและส่งรายการเดิมอีกครั้ง</button>
+        </div>
+    </section>
+
+
+
+    <div class="page-header">
+
+        <h2 class="mb-2">
+
+            📥 รับสินค้าเข้า
+
+        </h2>
+
+        <p>
+
+            เพิ่มจำนวนสินค้าเข้าสู่คลังสินค้า พร้อมบันทึกต้นทุนและวันหมดอายุ
+
+        </p>
+
+    </div>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-xl-8 col-lg-9">
+
+
+            <div class="card form-card">
+
+
+                <!-- ==================================================
+                     Card Header
+                ================================================== -->
+
+                <div class="form-card-header">
+
+                    <h4>
+
+                        📦 รายการรับสินค้า
+
+                    </h4>
+
+                    <small>
+
+                        เลือกโหมดรับสินค้าได้ตามลักษณะการทำงาน
+
+                    </small>
+
+                </div>
+
+
+                <!-- ==================================================
+                     Card Body
+                ================================================== -->
+
+                <div class="form-card-body">
+
+
+                    <!-- ==================================================
+                         Mode Selector
+                    ================================================== -->
+
+                    <div class="mode-selector">
+
+                        <button
+                                type="button"
+                                id="autoModeButton"
+                                class="mode-button active">
+
+                            📷 อัตโนมัติ
+
+                        </button>
+
+
+                        <button
+                                type="button"
+                                id="manualModeButton"
+                                class="mode-button">
+
+                            ✏️ แมนนวล
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         AUTO MODE
+                    ================================================== -->
+
+                    <div
+                            id="autoMode"
+                            class="mode-content active">
+
+
+                        <div class="auto-scan-box">
+
+
+                            <div class="auto-scan-title">
+
+                                📷 สแกนรับสินค้า
+
+                            </div>
+
+
+                            <div class="auto-scan-description">
+
+                                ตั้งค่าล็อตก่อน จากนั้นสามารถใช้เครื่องสแกน Barcode
+                                ยิงต่อเนื่องได้ทันที
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Expiry
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="autoExpiryDate"
+                                        class="form-label">
+
+                                    วันหมดอายุของล็อต
+
+                                </label>
+
+
+                                <input
+                                        id="autoExpiryDate"
+                                        type="date"
+                                        class="form-control">
+
+
+                                <div class="form-check mt-3">
+
+                                    <input
+                                            id="autoNoExpiry"
+                                            class="form-check-input"
+                                            type="checkbox">
+
+
+                                    <label
+                                            for="autoNoExpiry"
+                                            class="form-check-label">
+
+                                        สินค้านี้ไม่มีวันหมดอายุ
+
+                                    </label>
+
+                                </div>
+
+
+                                <small class="form-help">
+
+                                    วันหมดอายุนี้จะใช้กับสินค้าที่สแกนในล็อตนี้
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Barcode
+                            =========================================== -->
+
+                            <div class="mb-3">
+
+                                <label
+                                        for="autoBarcode"
+                                        class="form-label">
+
+                                    🔎 Barcode
+
+                                </label>
+
+
+                                <div class="barcode-input-group">
+
+                                    <input
+                                            id="autoBarcode"
+                                            type="text"
+                                            class="form-control"
+                                            autocomplete="off"
+                                            placeholder="ยิง Barcode ที่นี่">
+
+                                    <button
+                                            id="autoScanButton"
+                                            type="button"
+                                            class="btn btn-success barcode-search-btn">
+
+                                        📷 สแกน
+
+                                    </button>
+
+                                </div>
+
+
+                                <small class="form-help">
+
+                                    เครื่องสแกน USB สามารถยิง Barcode
+                                    แล้วกด Enter โดยอัตโนมัติได้
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Ready
+                            =========================================== -->
+
+                            <div class="scan-ready-box">
+
+                                <div class="scan-ready-title">
+
+                                    🟢 พร้อมรับสินค้า
+
+                                </div>
+
+                                <p
+                                        id="scanReadyText"
+                                        class="scan-ready-text">
+
+                                    กรุณาระบุวันหมดอายุ หรือเลือกไม่มีวันหมดอายุ
+                                    ก่อนเริ่มสแกน
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Scan Result
+                            =========================================== -->
+
+                            <div
+                                    id="autoScanResult"
+                                    class="scan-result">
+
+                                <div
+                                        id="autoScanResultTitle"
+                                        class="scan-result-title">
+
+                                </div>
+
+                                <p
+                                        id="autoScanResultText"
+                                        class="scan-result-text">
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Scan Counter
+                            =========================================== -->
+
+                            <div class="scan-counter">
+
+                                <div class="scan-counter-label">
+
+                                    จำนวนที่รับเข้าในการสแกนรอบนี้
+
+                                </div>
+
+                                <div
+                                        id="scanCounter"
+                                        class="scan-counter-value">
+
+                                    0
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         MANUAL MODE
+                    ================================================== -->
+
+                    <div
+                            id="manualMode"
+                            class="mode-content">
+
+
+                        <form
+                                id="manualStockForm"
+                                th:action="@{/stock/in}"
+                                method="post">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+<input type="hidden" name="requestKey" th:value="${inventoryRequestKey}">
+
+
+
+                            <!-- ==========================================
+                                 Barcode
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="barcode"
+                                        class="form-label">
+
+                                    🔎 Barcode
+
+                                </label>
+
+
+                                <div class="barcode-input-group">
+
+                                    <input
+                                            id="barcode"
+                                            type="text"
+                                            class="form-control"
+                                            autocomplete="off"
+                                            placeholder="สแกน Barcode หรือกรอก Barcode">
+
+                                    <button
+                                            id="barcodeSearchButton"
+                                            type="button"
+                                            class="btn btn-primary barcode-search-btn">
+
+                                        🔍 ค้นหา
+
+                                    </button>
+
+                                </div>
+
+
+                                <small class="form-help">
+
+                                    สามารถใช้เครื่องสแกน Barcode แบบ USB
+                                    หรือกรอก Barcode แล้วกด Enter
+
+                                </small>
+
+
+                                <div
+                                        id="barcodeStatus"
+                                        class="barcode-status">
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 รหัสสินค้า
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="productCode"
+                                        class="form-label">
+
+                                    รหัสสินค้า
+
+                                </label>
+
+
+                                <select
+                                        id="productCode"
+                                        name="code"
+                                        class="form-select"
+                                        required>
+
+                                    <option value="">
+
+                                        -- เลือกสินค้า --
+
+                                    </option>
+
+                                    <option
+                                            th:each="product : ${products}"
+                                            th:value="${product.code}"
+                                            th:text="${product.code + ' - ' + product.name}">
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Product Info
+                            =========================================== -->
+
+                            <div
+                                    id="productInfo"
+                                    class="product-info mb-4">
+
+
+                                <div class="product-info-title">
+
+                                    📦 ข้อมูลสินค้าปัจจุบัน
+
+                                </div>
+
+
+                                <div class="row g-3">
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                ชื่อสินค้า
+
+                                            </div>
+
+                                            <div
+                                                    id="productName"
+                                                    class="info-value">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                หมวดหมู่
+
+                                            </div>
+
+                                            <div
+                                                    id="productCategory"
+                                                    class="info-value">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                จำนวนคงเหลือ
+
+                                            </div>
+
+                                            <div
+                                                    id="currentQuantity"
+                                                    class="info-value text-primary">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                หน่วยนับ
+
+                                            </div>
+
+                                            <div
+                                                    id="productUnit"
+                                                    class="info-value">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                ต้นทุนล่าสุด
+
+                                            </div>
+
+                                            <div
+                                                    id="productCost"
+                                                    class="info-value text-danger">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-6">
+
+                                        <div class="info-item">
+
+                                            <div class="info-label">
+
+                                                ราคาขายปัจจุบัน
+
+                                            </div>
+
+                                            <div
+                                                    id="productPrice"
+                                                    class="info-value text-success">
+
+                                                -
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Quantity
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="stockInQuantity"
+                                        class="form-label">
+
+                                    จำนวนที่รับเข้า
+
+                                </label>
+
+
+                                <input
+                                        id="stockInQuantity"
+                                        type="number"
+                                        name="quantity"
+                                        class="form-control"
+                                        min="1"
+                                        required
+                                        placeholder="เช่น 10">
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Cost + Selling Price
+                            =========================================== -->
+
+                            <div class="row g-3 mb-4">
+
+
+                                <div class="col-md-6">
+
+                                    <label
+                                            for="purchaseCost"
+                                            class="form-label">
+
+                                        ต้นทุนต่อหน่วย
+
+                                    </label>
+
+
+                                    <input
+                                            id="purchaseCost"
+                                            type="number"
+                                            name="purchaseCost"
+                                            class="form-control"
+                                            min="0"
+                                            step="0.0001"
+                                            required
+                                            placeholder="เช่น 18">
+
+
+                                    <small class="form-help">
+
+                                        ราคาที่ร้านซื้อสินค้ามาต่อหน่วย
+
+                                    </small>
+
+                                </div>
+
+
+                                <div class="col-md-6">
+
+                                    <label
+                                            for="sellingPrice"
+                                            class="form-label">
+
+                                        ราคาขายต่อหน่วย
+
+                                    </label>
+
+
+                                    <input
+                                            id="sellingPrice"
+                                            type="number"
+                                            name="sellingPrice"
+                                            class="form-control"
+                                            min="0"
+                                            step="0.01"
+                                            required
+                                            placeholder="เช่น 23">
+
+
+                                    <small class="form-help">
+
+                                        ราคาขายปัจจุบันที่ต้องการตั้ง
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Expiry
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="expiryDate"
+                                        class="form-label">
+
+                                    วันหมดอายุ
+
+                                </label>
+
+
+                                <input
+                                        id="expiryDate"
+                                        type="date"
+                                        name="expiryDate"
+                                        class="form-control">
+
+
+                                <small class="form-help">
+
+                                    หากสินค้าไม่มีวันหมดอายุ สามารถเว้นว่างได้
+
+                                </small>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Batch
+                            =========================================== -->
+
+                            <div class="batch-info-box mb-4">
+
+                                <div class="batch-info-title">
+
+                                    📦 การจัดเก็บล็อตสินค้า
+
+                                </div>
+
+
+                                <p class="batch-info-text">
+
+                                    การรับสินค้าแต่ละครั้งจะถูกบันทึกเป็นล็อตแยกกัน
+                                    พร้อมต้นทุนและวันหมดอายุ
+                                    เพื่อรองรับการจัดการสินค้าแบบ FEFO
+                                    ในขั้นตอนการขาย
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Preview
+                            =========================================== -->
+
+                            <div
+                                    id="previewBox"
+                                    class="preview-box mb-4">
+
+                                <div class="preview-label">
+
+                                    จำนวนสินค้าหลังรับเข้า
+
+                                </div>
+
+
+                                <div
+                                        id="newQuantity"
+                                        class="preview-value">
+
+                                    0
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Note
+                            =========================================== -->
+
+                            <div class="mb-4">
+
+                                <label
+                                        for="note"
+                                        class="form-label">
+
+                                    หมายเหตุ
+
+                                </label>
+
+
+                                <textarea
+                                        id="note"
+                                        name="note"
+                                        class="form-control"
+                                        rows="3"
+                                        placeholder="เช่น รับสินค้าจากร้านค้า ABC" required maxlength="1000"></textarea>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Help
+                            =========================================== -->
+
+                            <div class="help-box mb-4">
+
+                                <div class="help-box-title">
+
+                                    💡 หมายเหตุ
+
+                                </div>
+
+
+                                <p>
+
+                                    เมื่อกดยืนยัน ระบบจะเพิ่มจำนวนสินค้า
+                                    บันทึกต้นทุน ราคาขาย วันหมดอายุ
+                                    และสร้างล็อตสินค้าไว้ในระบบอัตโนมัติ
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- ==========================================
+                                 Buttons
+                            =========================================== -->
+
+                            <div class="action-buttons">
+
+                                <button
+                                        type="submit"
+                                        class="btn btn-success">
+
+                                    📥 รับสินค้า
+
+                                </button>
+
+
+                                <a
+                                        href="/stock"
+                                        class="btn btn-secondary">
+
+                                    ยกเลิก
+
+                                </a>
+
+                            </div>
+
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     JavaScript
+================================================== -->
+
+<script>
+
+    // ==================================================
+    // MODE
+    // ==================================================
+
+    const autoModeButton =
+        document.getElementById("autoModeButton");
+
+    const manualModeButton =
+        document.getElementById("manualModeButton");
+
+    const autoMode =
+        document.getElementById("autoMode");
+
+    const manualMode =
+        document.getElementById("manualMode");
+
+
+    // ==================================================
+    // AUTO MODE BUTTON
+    // ==================================================
+
+    autoModeButton.addEventListener(
+        "click",
+        function () {
+
+            autoModeButton.classList.add("active");
+
+            manualModeButton.classList.remove("active");
+
+            autoMode.classList.add("active");
+
+            manualMode.classList.remove("active");
+
+            autoBarcode.focus();
+
+        }
+    );
+
+
+    // ==================================================
+    // MANUAL MODE BUTTON
+    // ==================================================
+    // แก้ไขจากโค้ดเดิม:
+    // เดิมไป add/remove class ให้ autoMode ผิดตัว
+    // ต้องแสดง manualMode และซ่อน autoMode
+    // ==================================================
+
+    manualModeButton.addEventListener(
+        "click",
+        function () {
+
+            manualModeButton.classList.add("active");
+
+            autoModeButton.classList.remove("active");
+
+            autoMode.classList.remove("active");
+
+            manualMode.classList.add("active");
+
+            barcode.focus();
+
+        }
+    );
+
+
+    // ==================================================
+    // AUTO SCAN
+    // ==================================================
+
+    const autoExpiryDate =
+        document.getElementById("autoExpiryDate");
+
+    const autoNoExpiry =
+        document.getElementById("autoNoExpiry");
+
+    const autoBarcode =
+        document.getElementById("autoBarcode");
+
+    const autoScanButton =
+        document.getElementById("autoScanButton");
+
+    const scanReadyText =
+        document.getElementById("scanReadyText");
+
+    const autoScanResult =
+        document.getElementById("autoScanResult");
+
+    const autoScanResultTitle =
+        document.getElementById("autoScanResultTitle");
+
+    const autoScanResultText =
+        document.getElementById("autoScanResultText");
+
+    const scanCounter =
+        document.getElementById("scanCounter");
+
+
+    let scanCount = 0;
+
+    // Queue สำหรับรองรับการยิง Barcode ต่อเนื่อง
+    let scanQueue = [];
+
+    // ป้องกันการประมวลผล Queue ซ้อนกัน
+    let scanProcessing = false;
+
+
+    // ==================================================
+    // ตรวจสอบวันหมดอายุ Auto Scan
+    // ==================================================
+
+    function validateAutoExpiry() {
+
+        if (autoNoExpiry.checked) {
+
+            return true;
+        }
+
+
+        if (!autoExpiryDate.value) {
+
+            return false;
+        }
+
+
+        const selectedDate =
+            new Date(
+                autoExpiryDate.value
+                + "T00:00:00"
+            );
+
+
+        const today =
+            new Date();
+
+        today.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+
+        if (selectedDate < today) {
+
+            alert(
+                "วันหมดอายุต้องไม่เป็นวันที่ผ่านมาแล้ว"
+            );
+
+            autoExpiryDate.value = "";
+
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    // ==================================================
+    // เปลี่ยนสถานะ Ready
+    // ==================================================
+
+    function updateScanReadyText() {
+
+        if (autoNoExpiry.checked) {
+
+            scanReadyText.textContent =
+                "🟢 พร้อมสแกน — สินค้าล็อตนี้ไม่มีวันหมดอายุ";
+
+            return;
+        }
+
+
+        if (autoExpiryDate.value) {
+
+            const date =
+                new Date(
+                    autoExpiryDate.value
+                    + "T00:00:00"
+                );
+
+
+            scanReadyText.textContent =
+                "🟢 พร้อมสแกน — วันหมดอายุ "
+                + date.toLocaleDateString(
+                    "th-TH"
+                );
+
+            return;
+        }
+
+
+        scanReadyText.textContent =
+            "กรุณาระบุวันหมดอายุ หรือเลือกไม่มีวันหมดอายุ";
+    }
+
+
+    // ==================================================
+    // เปลี่ยนวันหมดอายุ
+    // ==================================================
+
+    autoExpiryDate.addEventListener(
+        "change",
+        function () {
+
+            if (this.value) {
+
+                autoNoExpiry.checked = false;
+
+            }
+
+            validateAutoExpiry();
+
+            updateScanReadyText();
+
+            autoBarcode.focus();
+
+        }
+    );
+
+
+    // ==================================================
+    // ไม่มีวันหมดอายุ
+    // ==================================================
+
+    autoNoExpiry.addEventListener(
+        "change",
+        function () {
+
+            if (this.checked) {
+
+                autoExpiryDate.value = "";
+
+            }
+
+            updateScanReadyText();
+
+            autoBarcode.focus();
+
+        }
+    );
+
+
+    // ==================================================
+    // แสดงผล Scan
+    // ==================================================
+
+    function showAutoScanResult(
+        title,
+        message,
+        type
+    ) {
+
+        autoScanResult.className =
+            "scan-result show " + type;
+
+        autoScanResultTitle.textContent =
+            title;
+
+        autoScanResultText.textContent =
+            message;
+    }
+
+
+    // ==================================================
+    // ประมวลผล Barcode 1 รายการ
+    // ==================================================
+
+    async function processSingleScan(scan) {
+        const barcodeValue=scan.barcode;
+        const scanExpiry=scan.expiry;
+
+        let url =
+            "/api/stock/scan-in?barcode="
+            + encodeURIComponent(
+                barcodeValue
+            );
+
+
+        if (scanExpiry) {
+
+            url +=
+                "&expiryDate="
+                + encodeURIComponent(
+                    scanExpiry
+                );
+
+        }
+
+
+        // ------------------------------------------
+        // แสดงสถานะ
+        // ------------------------------------------
+
+        showAutoScanResult(
+            "⏳ กำลังรับสินค้า...",
+            "Barcode: " + barcodeValue,
+            "success"
+        );
+
+
+        try {
+
+            // --------------------------------------
+            // เรียก API
+            // --------------------------------------
+
+            const result = await window.KongklangStock.sendScan(url,barcodeValue);
+            const data={unit:"ชิ้น",name:result.productName,code:result.productCode,quantity:result.quantityAfter};
+
+            scanCount++;
+
+            scanCounter.textContent =
+                scanCount;
+
+
+            const unit =
+                data.unit ?? "ชิ้น";
+
+
+            showAutoScanResult(
+                "✅ รับสินค้าเข้า Stock +1",
+                data.name
+                + " | รหัส "
+                + data.code
+                + " | ยอดหลังรายการนี้ "
+                + data.quantity
+                + " "
+                + unit,
+                "success"
+            );
+            return true;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            showAutoScanResult(
+                "❌ ไม่สามารถรับสินค้าได้",
+                "Barcode "
+                + barcodeValue
+                + " : "
+                + error.message,
+                "error"
+            );
+            return false;
+
+        }
+
+    }
+
+
+    // ==================================================
+    // ประมวลผล Queue
+    // ==================================================
+
+    async function processScanQueue() {
+
+        if (scanProcessing) {
+
+            return;
+        }
+
+
+        scanProcessing = true;
+
+
+        while (scanQueue.length > 0) {
+
+            const barcodeValue =
+                scanQueue.shift();
+
+
+            const succeeded=await processSingleScan(barcodeValue);
+            if (!succeeded) {
+                const unprocessed=scanQueue.length;
+                scanQueue.length=0;
+                showAutoScanResult("หยุดคิวรับสินค้า", (window.KongklangStock.hasPending()?"ตรวจสอบรายการค้างด้านบนก่อน ":"แก้ไขข้อมูลที่ถูกปฏิเสธก่อน ")+"รายการที่เหลือ " + unprocessed + " ครั้งยังไม่ได้ส่ง กรุณาสแกนใหม่หลังตรวจสอบ", "error");
+                break;
+            }
+
+        }
+
+
+        scanProcessing = false;
+
+        autoScanBarcodeReady();
+
+    }
+
+
+    // ==================================================
+    // เตรียมช่อง Barcode
+    // ==================================================
+
+    function autoScanBarcodeReady() {
+
+        autoBarcode.value = "";
+
+        autoBarcode.focus();
+
+    }
+
+
+    // ==================================================
+    // เพิ่ม Barcode เข้า Queue
+    // ==================================================
+
+    function addBarcodeToQueue() {
+        if (!window.KongklangStock.canQueueScan()) {
+            showAutoScanResult("มีรายการรอตรวจสอบ", "ใช้ปุ่มตรวจสอบรายการเดิมด้านบนก่อนสแกนต่อ", "error");return;
+        }
+
+        const value =
+            autoBarcode.value.trim();
+
+
+        if (!value) {
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // ตรวจว่าตั้งค่าล็อตแล้วหรือยัง
+        // ------------------------------------------
+
+        if (
+            !autoNoExpiry.checked
+            && !autoExpiryDate.value
+        ) {
+
+            showAutoScanResult(
+                "⚠️ กรุณาตั้งค่าล็อตก่อน",
+                "กรุณาระบุวันหมดอายุ หรือเลือกไม่มีวันหมดอายุ",
+                "error"
+            );
+
+            autoBarcode.value = "";
+
+            autoBarcode.focus();
+
+            return;
+        }
+
+
+        // ------------------------------------------
+        // เพิ่มเข้า Queue
+        // ------------------------------------------
+
+        scanQueue.push({barcode:value,expiry:autoNoExpiry.checked?null:autoExpiryDate.value});
+
+
+        // ------------------------------------------
+        // ล้างช่องทันที
+        // เพื่อพร้อมรับ Barcode ตัวต่อไป
+        // ------------------------------------------
+
+        autoBarcode.value = "";
+
+
+        // ------------------------------------------
+        // เริ่มประมวลผล
+        // ------------------------------------------
+
+        processScanQueue();
+
+    }
+
+
+    // ==================================================
+    // ปุ่ม Scan
+    // ==================================================
+
+    autoScanButton.addEventListener(
+        "click",
+        function () {
+
+            addBarcodeToQueue();
+
+        }
+    );
+
+
+    // ==================================================
+    // Scanner ส่ง Enter
+    // ==================================================
+
+    autoBarcode.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                addBarcodeToQueue();
+
+            }
+
+        }
+    );
+
+
+    // ==================================================
+    // MANUAL MODE
+    // ==================================================
+
+    const productCode =
+        document.getElementById("productCode");
+
+    const barcode =
+        document.getElementById("barcode");
+
+    const barcodeSearchButton =
+        document.getElementById("barcodeSearchButton");
+
+    const barcodeStatus =
+        document.getElementById("barcodeStatus");
+
+    const productInfo =
+        document.getElementById("productInfo");
+
+    const productName =
+        document.getElementById("productName");
+
+    const productCategory =
+        document.getElementById("productCategory");
+
+    const currentQuantity =
+        document.getElementById("currentQuantity");
+
+    const productUnit =
+        document.getElementById("productUnit");
+
+    const productCost =
+        document.getElementById("productCost");
+
+    const productPrice =
+        document.getElementById("productPrice");
+
+    const stockInQuantity =
+        document.getElementById("stockInQuantity");
+
+    const purchaseCost =
+        document.getElementById("purchaseCost");
+
+    const sellingPrice =
+        document.getElementById("sellingPrice");
+
+    const expiryDate =
+        document.getElementById("expiryDate");
+
+    const previewBox =
+        document.getElementById("previewBox");
+
+    const newQuantity =
+        document.getElementById("newQuantity");
+
+
+    let currentStock = 0;
+
+    let currentUnit = "";
+
+
+    // ==================================================
+    // Barcode Status
+    // ==================================================
+
+    function showBarcodeStatus(
+        message,
+        type
+    ) {
+
+        barcodeStatus.textContent =
+            message;
+
+        barcodeStatus.className =
+            "barcode-status show " + type;
+    }
+
+
+    function clearBarcodeStatus() {
+
+        barcodeStatus.textContent =
+            "";
+
+        barcodeStatus.className =
+            "barcode-status";
+    }
+
+
+    // ==================================================
+    // แสดงข้อมูลสินค้า
+    // ==================================================
+
+    function displayProduct(product) {
+
+        if (!product) {
+
+            alert(
+                "ไม่พบข้อมูลสินค้า"
+            );
+
+            productInfo.classList.remove(
+                "show"
+            );
+
+            previewBox.classList.remove(
+                "show"
+            );
+
+            currentStock = 0;
+
+            currentUnit = "";
+
+            return;
+        }
+
+
+        currentStock =
+            product.quantity ?? 0;
+
+        currentUnit =
+            product.unit ?? "ชิ้น";
+
+
+        productName.textContent =
+            product.name ?? "-";
+
+        productCategory.textContent =
+            product.category ?? "-";
+
+        currentQuantity.textContent =
+            currentStock
+            + " "
+            + currentUnit;
+
+        productUnit.textContent =
+            product.unit ?? "-";
+
+
+        if (product.costPrice != null) {
+
+            productCost.textContent =
+                Number(
+                    product.costPrice
+                ).toLocaleString(
+                    "th-TH",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                )
+                + " บาท";
+
+            purchaseCost.value =
+                product.costPrice;
+
+        } else {
+
+            productCost.textContent =
+                "-";
+
+            purchaseCost.value =
+                "";
+
+        }
+
+
+        if (product.price != null) {
+
+            productPrice.textContent =
+                Number(
+                    product.price
+                ).toLocaleString(
+                    "th-TH",
+                    {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }
+                )
+                + " บาท";
+
+            sellingPrice.value =
+                product.price;
+
+        } else {
+
+            productPrice.textContent =
+                "-";
+
+            sellingPrice.value =
+                "";
+
+        }
+
+
+        if (product.barcode != null) {
+
+            barcode.value =
+                product.barcode;
+
+        }
+
+
+        if (product.code != null) {
+
+            productCode.value =
+                product.code;
+
+        }
+
+
+        productInfo.classList.add(
+            "show"
+        );
+
+
+        calculateNewQuantity();
+    }
+
+
+    // ==================================================
+    // ค้นหาด้วย Barcode
+    // ==================================================
+
+    function searchProductByBarcode() {
+
+        const value =
+            barcode.value.trim();
+
+
+        if (!value) {
+
+            showBarcodeStatus(
+                "กรุณากรอกหรือสแกน Barcode",
+                "error"
+            );
+
+            barcode.focus();
+
+            return;
+        }
+
+
+        clearBarcodeStatus();
+
+        barcodeSearchButton.disabled =
+            true;
+
+        barcodeSearchButton.textContent =
+            "กำลังค้นหา...";
+
+
+        fetch(
+            "/products/by-barcode?barcode="
+            + encodeURIComponent(value)
+        )
+
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "ไม่สามารถค้นหาสินค้าได้"
+                    );
+                }
+
+                return response.json();
+
+            })
+
+            .then(product => {
+
+                if (!product) {
+
+                    showBarcodeStatus(
+                        "ไม่พบสินค้าที่มี Barcode นี้",
+                        "error"
+                    );
+
+                    productInfo.classList.remove(
+                        "show"
+                    );
+
+                    previewBox.classList.remove(
+                        "show"
+                    );
+
+                    productCode.value =
+                        "";
+
+                    currentStock = 0;
+
+                    currentUnit = "";
+
+                    barcode.focus();
+
+                    return;
+                }
+
+
+                displayProduct(
+                    product
+                );
+
+
+                showBarcodeStatus(
+                    "พบสินค้า: "
+                    + (product.name ?? "-")
+                    + " ("
+                    + (product.code ?? "-")
+                    + ")",
+                    "success"
+                );
+
+
+                stockInQuantity.focus();
+
+            })
+
+            .catch(error => {
+
+                console.error(error);
+
+                showBarcodeStatus(
+                    "เกิดข้อผิดพลาดในการค้นหาสินค้า",
+                    "error"
+                );
+
+            })
+
+            .finally(() => {
+
+                barcodeSearchButton.disabled =
+                    false;
+
+                barcodeSearchButton.textContent =
+                    "🔍 ค้นหา";
+
+            });
+
+    }
+
+
+    barcodeSearchButton.addEventListener(
+        "click",
+        searchProductByBarcode
+    );
+
+
+    barcode.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                searchProductByBarcode();
+
+            }
+
+        }
+    );
+
+
+    // ==================================================
+    // เลือกสินค้า
+    // ==================================================
+
+    productCode.addEventListener(
+        "change",
+        function () {
+
+            const code =
+                this.value;
+
+
+            if (!code) {
+
+                productInfo.classList.remove(
+                    "show"
+                );
+
+                previewBox.classList.remove(
+                    "show"
+                );
+
+                currentStock = 0;
+
+                currentUnit = "";
+
+                clearBarcodeStatus();
+
+                return;
+            }
+
+
+            fetch(
+                "/products/by-code?code="
+                + encodeURIComponent(code)
+            )
+
+                .then(response => {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "ไม่สามารถโหลดข้อมูลสินค้าได้"
+                        );
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(product => {
+
+                    if (!product) {
+
+                        alert(
+                            "ไม่พบข้อมูลสินค้า"
+                        );
+
+                        return;
+                    }
+
+
+                    displayProduct(
+                        product
+                    );
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    alert(
+                        "เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า"
+                    );
+
+                });
+
+        }
+    );
+
+
+    // ==================================================
+    // Preview จำนวน
+    // ==================================================
+
+    stockInQuantity.addEventListener(
+        "input",
+        calculateNewQuantity
+    );
+
+
+    function calculateNewQuantity() {
+
+        const quantity =
+            parseInt(
+                stockInQuantity.value
+            ) || 0;
+
+
+        if (
+            currentStock > 0
+            || productCode.value
+        ) {
+
+            const result =
+                currentStock
+                + quantity;
+
+
+            newQuantity.textContent =
+                result
+                + " "
+                + currentUnit;
+
+
+            previewBox.classList.add(
+                "show"
+            );
+
+        } else {
+
+            previewBox.classList.remove(
+                "show"
+            );
+
+        }
+    }
+
+
+    // ==================================================
+    // ตรวจวันหมดอายุ Manual
+    // ==================================================
+
+    expiryDate.addEventListener(
+        "change",
+        function () {
+
+            if (!this.value) {
+
+                return;
+            }
+
+
+            const selectedDate =
+                new Date(
+                    this.value
+                    + "T00:00:00"
+                );
+
+
+            const today =
+                new Date();
+
+            today.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            if (selectedDate < today) {
+
+                alert(
+                    "วันหมดอายุต้องไม่เป็นวันที่ผ่านมาแล้ว"
+                );
+
+                this.value = "";
+
+            }
+
+        }
+    );
+
+
+    // ==================================================
+    // Submit Manual
+    // ==================================================
+
+    const manualStockForm =
+        document.getElementById(
+            "manualStockForm"
+        );
+
+
+    manualStockForm.addEventListener(
+        "submit",
+        function (event) {
+
+            const quantity =
+                parseInt(
+                    stockInQuantity.value
+                ) || 0;
+
+
+            const cost =
+                parseFloat(
+                    purchaseCost.value
+                );
+
+
+            const price =
+                parseFloat(
+                    sellingPrice.value
+                );
+
+
+            if (!productCode.value) {
+
+                event.preventDefault();
+
+                alert(
+                    "กรุณาเลือกสินค้าก่อน"
+                );
+
+                return;
+            }
+
+
+            if (quantity <= 0) {
+
+                event.preventDefault();
+
+                alert(
+                    "จำนวนที่รับเข้าต้องมากกว่า 0"
+                );
+
+                stockInQuantity.focus();
+
+                return;
+            }
+
+
+            if (
+                isNaN(cost)
+                || cost < 0
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "กรุณากรอกต้นทุนให้ถูกต้อง"
+                );
+
+                purchaseCost.focus();
+
+                return;
+            }
+
+
+            if (
+                isNaN(price)
+                || price < 0
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "กรุณากรอกราคาขายให้ถูกต้อง"
+                );
+
+                sellingPrice.focus();
+
+                return;
+            }
+
+
+            if (expiryDate.value) {
+
+                const selectedDate =
+                    new Date(
+                        expiryDate.value
+                        + "T00:00:00"
+                    );
+
+
+                const today =
+                    new Date();
+
+                today.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                if (
+                    selectedDate < today
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "วันหมดอายุต้องไม่เป็นวันที่ผ่านมาแล้ว"
+                    );
+
+                    expiryDate.focus();
+
+                    return;
+                }
+
+            }
+
+        }
+    );
+
+
+    // ==================================================
+    // เมื่อเปิดหน้า
+    // ==================================================
+
+    window.addEventListener(
+        "load",
+        function () {
+
+            autoBarcode.focus();
+
+            updateScanReadyText();
+
+        }
+    );
+
+</script>
+
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+
+<script th:src="@{/js/inventory-operations.js}"></script>
+
+</body>
+
+</html>

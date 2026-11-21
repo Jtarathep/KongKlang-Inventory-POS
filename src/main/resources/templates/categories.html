@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KONGKLANG - จัดการหมวดหมู่สินค้า</title>
+    <link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=5)}">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout">
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+<main class="container-fluid mt-4 px-4 pb-5">
+    <div class="mb-4">
+        <h2 class="fw-bold">🏷️ จัดการหมวดหมู่สินค้า</h2>
+        <p class="text-muted mb-0">หมวดหมู่จะแยกตามร้านค้า แต่ละร้านสร้างชื่อหมวดหมู่ซ้ำกับร้านอื่นได้ และจะเห็นเฉพาะหมวดหมู่ของร้านตัวเอง</p>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white fw-bold py-3">➕ เพิ่มหมวดหมู่</div>
+        <div class="card-body">
+            <form method="post" action="/categories/save" class="row g-3">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+                <div class="col-md-8">
+                    <label for="categoryName" class="form-label">ชื่อหมวดหมู่ *</label>
+                    <input id="categoryName" name="name" class="form-control"
+                           placeholder="เช่น เครื่องดื่ม, ขนม, ของใช้ในบ้าน"
+                           maxlength="100" required>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary px-4">เพิ่มหมวดหมู่</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white fw-bold py-3">หมวดหมู่ของร้านค้าคุณ</div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr><th style="width: 80px">ลำดับ</th><th>ชื่อหมวดหมู่</th><th style="width: 260px">จัดการ</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="item, stat : ${categories}">
+                    <td th:text="${stat.count}"></td>
+                    <td>
+                        <form th:id="|editForm${item.id}|" method="post" action="/categories/save"
+                              class="d-flex gap-2 category-edit-form">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+                            <input type="hidden" name="id" th:value="${item.id}">
+                            <input class="form-control" name="name" th:value="${item.name}"
+                                   maxlength="100" required>
+                            <button class="btn btn-outline-primary btn-sm" type="submit">บันทึก</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{/categories/delete/{id}(id=${item.id})}" method="post"
+                              onsubmit="return confirm('ยืนยันการลบหมวดหมู่นี้หรือไม่?')">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">ลบ</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(categories)}">
+                    <td colspan="3" class="text-center text-muted py-4">
+                        ร้านของคุณยังไม่มีหมวดหมู่ กรุณาเพิ่มหมวดหมู่ด้านบน
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a href="/products/new" class="btn btn-outline-secondary">กลับไปหน้าเพิ่มสินค้า</a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+</body>
+</html>

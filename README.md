@@ -1,45 +1,15 @@
-# KongKlang - Inventory & POS Management System
+# KONGKLANG — Inventory & POS
 
-KongKlang is an inventory and point-of-sale management
-system developed as an academic project.
+Multi-store inventory, stock receipt, sales, purchasing, reporting and store administration.
 
-## Features
+Built with Java 21, Spring Boot 4, Thymeleaf, session authentication and MySQL-compatible storage. Includes the compiled Flutter web client under `/mobile/`.
 
-- Product management
-- Category management
-- Inventory management
-- Stock movement
-- Purchase management
-- Sales management
-- POS system
-- Reporting
+## Deployment
 
-## Technologies
+See [Render + TiDB demo setup](docs/CLOUD_DEMO.md). Deployment files contain no database credentials. Configure secrets in the hosting dashboard. Live cloud validation is still required.
 
-- Java
-- Spring Boot
-- React
-- MySQL
-- REST API
-- JWT
+## Build
 
-## System Architecture
+`./mvnw test` runs local unit tests. Database integration tests require an explicitly configured disposable MySQL database.
 
-Frontend:
-React
-
-Backend:
-Spring Boot
-
-Database:
-MySQL
-
-## Project Purpose
-
-The system was developed to help small retail stores
-manage products, inventory, purchases, and sales
-more efficiently.
-
-## Developer
-
-Tarathep Punyakong
+`./mvnw -DskipTests package` builds the executable JAR. Docker uses the same packaging process.

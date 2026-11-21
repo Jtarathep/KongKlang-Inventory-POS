@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - รายงาน</title>
+
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- Shared KongKlang sidebar/topbar layout -->
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=5)}">
+
+    <style>
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 21px;
+        }
+
+        .nav-btn {
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            background: #f8fafc;
+        }
+
+        .nav-active {
+            background: #0d6efd !important;
+            color: white !important;
+            border-color: #0d6efd !important;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* ==================================================
+           A4 Report Panel
+        ================================================== */
+
+        .a4-panel {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 30px rgba(0,0,0,.07);
+            padding: 24px;
+        }
+
+        .a4-title {
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .a4-subtitle {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .report-type-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 15px;
+            background: #fafbfc;
+        }
+
+        .report-type-title {
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .report-type-description {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .a4-button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 800;
+        }
+
+        .a4-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .date-input {
+            border-radius: 9px;
+        }
+
+        .report-note {
+            background: #f8fbff;
+            border: 1px solid #cfe2ff;
+            border-left: 5px solid #0d6efd;
+            border-radius: 12px;
+        }
+
+        /* ==================================================
+           Cards
+        ================================================== */
+
+        .section-title {
+            font-weight: 800;
+        }
+
+        .report-card,
+        .section-card {
+            border: 0;
+            border-radius: 18px;
+            box-shadow: 0 5px 22px rgba(0,0,0,.06);
+        }
+
+        .report-card {
+            transition: .2s;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .amount {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .profit-positive {
+            color: #198754;
+            font-weight: 800;
+        }
+
+        .cost-text {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .revenue-text {
+            color: #0d6efd;
+            font-weight: 800;
+        }
+
+        .report-table th {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .report-table td {
+            vertical-align: middle;
+        }
+
+        /* เพิ่มระยะห่างคอลัมน์สุดท้าย โดยเฉพาะยอดกำไร ไม่ให้ชิดขอบการ์ด */
+        .report-table th:last-child,
+        .report-table td:last-child {
+            padding-right: 24px;
+            padding-left: 14px;
+        }
+
+        /* ให้ตารางรายงานมีระยะหายใจด้านซ้ายและขวาสม่ำเสมอ */
+        .report-table th:first-child,
+        .report-table td:first-child {
+            padding-left: 16px;
+        }
+
+        /* ==================================================
+           Print
+        ================================================== */
+
+        @page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        @media print {
+
+            body {
+                background: white !important;
+            }
+
+            .no-print,
+            .navbar {
+                display: none !important;
+            }
+
+            .container-xl {
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+            }
+
+            .report-card,
+            .section-card,
+            .a4-panel {
+                box-shadow: none !important;
+                border: 1px solid #ddd;
+            }
+
+            .table-responsive {
+                overflow: visible !important;
+            }
+
+            .report-table {
+                font-size: 10px;
+            }
+
+            .report-table th,
+            .report-table td {
+                padding: 5px 7px;
+            }
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+<!-- ======================================================
+     Navbar
+====================================================== -->
+
+<nav class="navbar no-print">
+
+    <div class="container-fluid">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    w-100
+                    gap-3">
+
+            <a href="/"
+               class="navbar-brand text-decoration-none fw-bold text-dark">
+
+                📦 คงคลัง
+
+            </a>
+
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a href="/"
+                   class="btn nav-btn">
+
+                    📊 Dashboard
+
+                </a>
+
+                <a href="/products"
+                   class="btn nav-btn">
+
+                    📦 สินค้า
+
+                </a>
+
+                <a href="/sales"
+                   class="btn nav-btn">
+
+                    🛒 ขายสินค้า
+
+                </a>
+
+                <a href="/stock"
+                   class="btn nav-btn">
+
+                    📊 สต๊อก
+
+                </a>
+
+                <a href="/sales/history"
+                   class="btn nav-btn">
+
+                    🧾 ประวัติการขาย
+
+                </a>
+
+                <a href="/reports"
+                   class="btn nav-btn nav-active">
+
+                    📑 รายงาน
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ======================================================
+     Main
+====================================================== -->
+
+<div class="container-xl py-4">
+
+
+    <!-- ==================================================
+         Header
+    ================================================== -->
+
+    <div class="row align-items-center g-4 mb-4">
+
+        <div class="col-lg-5">
+
+            <div class="page-title">
+
+                📑 รายงานการขายและกำไร
+
+            </div>
+
+            <div class="page-subtitle mt-2">
+
+                สรุปยอดขาย ต้นทุน กำไร
+                และข้อมูลสินค้าคงคลังของ KONGKLANG
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             A4 Report Panel
+        ================================================== -->
+
+        <div class="col-lg-7">
+
+            <div class="a4-panel no-print">
+
+                <div class="d-flex
+                            align-items-start
+                            gap-3
+                            mb-3">
+
+                    <div
+                            class="icon-box
+                                   bg-primary-subtle
+                                   text-primary">
+
+                        🖨️
+
+                    </div>
+
+                    <div>
+
+                        <div class="a4-title">
+
+                            สร้างรายงาน A4
+
+                        </div>
+
+                        <div class="a4-subtitle">
+
+                            เลือกช่วงเวลาที่ต้องการ
+                            แล้วกดปุ่มเพื่อเปิดเอกสารรายงานสำหรับพิมพ์
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="row g-3">
+
+
+                    <!-- ==========================
+                         Daily
+                    ========================== -->
+
+                    <div class="col-md-4">
+
+                        <div class="report-type-card h-100">
+
+                            <div class="report-type-title">
+
+                                📅 รายงานรายวัน
+
+                            </div>
+
+                            <div class="report-type-description">
+
+                                เลือกวันที่เริ่มต้นถึงวันที่สิ้นสุด
+
+                            </div>
+
+
+                            <form
+                                    action="/reports/print"
+                                    method="get">
+
+                                <input
+                                        type="hidden"
+                                        name="type"
+                                        value="daily">
+
+
+                                <label class="form-label small fw-semibold">
+
+                                    วันที่เริ่มต้น
+
+                                </label>
+
+                                <input
+                                        type="date"
+                                        name="startDate"
+                                        class="form-control form-control-sm date-input mb-2"
+                                        th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}"
+                                        required>
+
+
+                                <label class="form-label small fw-semibold">
+
+                                    วันที่สิ้นสุด
+
+                                </label>
+
+                                <input
+                                        type="date"
+                                        name="endDate"
+                                        class="form-control form-control-sm date-input mb-3"
+                                        th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}"
+                                        required>
+
+
+                                <button
+                                        type="submit"
+                                        class="btn btn-primary a4-button">
+
+                                    🖨️ สร้างรายงาน A4
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==========================
+                         Monthly
+                    ========================== -->
+
+                    <div class="col-md-4">
+
+                        <div class="report-type-card h-100">
+
+                            <div class="report-type-title">
+
+                                📆 รายงานรายเดือน
+
+                            </div>
+
+                            <div class="report-type-description">
+
+                                เลือกเดือนเริ่มต้นถึงเดือนสิ้นสุด
+
+                            </div>
+
+
+                            <form
+                                    action="/reports/print"
+                                    method="get">
+
+                                <input
+                                        type="hidden"
+                                        name="type"
+                                        value="monthly">
+
+
+                                <label class="form-label small fw-semibold">
+
+                                    เดือนเริ่มต้น
+
+                                </label>
+
+                                <input
+                                        type="month"
+                                        name="startMonth"
+                                        class="form-control form-control-sm date-input mb-2"
+                                        th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM')}"
+                                        required>
+
+
+                                <label class="form-label small fw-semibold">
+
+                                    เดือนสิ้นสุด
+
+                                </label>
+
+                                <input
+                                        type="month"
+                                        name="endMonth"
+                                        class="form-control form-control-sm date-input mb-3"
+                                        th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM')}"
+                                        required>
+
+
+                                <button
+                                        type="submit"
+                                        class="btn btn-primary a4-button">
+
+                                    🖨️ สร้างรายงาน A4
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==========================
+                         Yearly
+                    ========================== -->
+
+                    <div class="col-md-4">
+
+                        <div class="report-type-card h-100">
+
+                            <div class="report-type-title">
+
+                                🗓️ รายงานรายปี
+
+                            </div>
+
+                            <div class="report-type-description">
+
+                                เลือกปีที่ต้องการสรุป
+
+                            </div>
+
+
+                            <form
+                                    action="/reports/print"
+                                    method="get">
+
+                                <input
+                                        type="hidden"
+                                        name="type"
+                                        value="yearly">
+
+
+                                <label class="form-label small fw-semibold">
+
+                                    ปีที่ต้องการ
+
+                                </label>
+
+                                <input
+                                        type="number"
+                                        name="year"
+                                        class="form-control form-control-sm date-input mb-3"
+                                        th:value="${T(java.time.LocalDate).now().getYear()}"
+                                        min="2000"
+                                        max="2100"
+                                        required>
+
+
+                                <button
+                                        type="submit"
+                                        class="btn btn-primary a4-button">
+
+                                    🖨️ สร้างรายงาน A4
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Note
+    ================================================== -->
+
+    <div class="alert report-note mb-4">
+
+        <strong>หมายเหตุ:</strong>
+
+        ต้นทุนและกำไรคำนวณจากต้นทุนจริงของ
+        Stock Batch ที่ถูกตัดขายตาม FEFO
+
+    </div>
+
+
+    <!-- ==================================================
+         Main Statistics
+    ================================================== -->
+
+    <div class="mb-3">
+
+        <h5 class="section-title mb-1">
+
+            💰 ภาพรวมผลประกอบการ
+
+        </h5>
+
+        <small class="text-muted">
+
+            สรุปข้อมูลสำคัญของช่วงเวลาปัจจุบัน
+
+        </small>
+
+    </div>
+
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- Today Revenue -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                💵 วันนี้ - ยอดขาย
+
+                            </div>
+
+                            <div class="amount text-primary">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(todayRevenue,1,2)}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-primary-subtle text-primary">
+
+                            💵
+
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        ต้นทุน ฿<span
+                            th:text="${#numbers.formatDecimal(todayCost,1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Today Profit -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                📈 วันนี้ - กำไร
+
+                            </div>
+
+                            <div class="amount profit-positive">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(todayProfit,1,2)}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-success-subtle text-success">
+
+                            📈
+
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        ยอดขาย − ต้นทุน
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Month Revenue -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                📆 เดือนนี้ - ยอดขาย
+
+                            </div>
+
+                            <div class="amount text-primary">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(monthRevenue,1,2)}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-primary-subtle text-primary">
+
+                            📆
+
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        ต้นทุน ฿<span
+                            th:text="${#numbers.formatDecimal(monthCost,1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Month Profit -->
+
+        <div class="col-md-6 col-xl-3">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-start">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                💰 เดือนนี้ - กำไร
+
+                            </div>
+
+                            <div class="amount profit-positive">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(monthProfit,1,2)}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="icon-box bg-success-subtle text-success">
+
+                            💰
+
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+
+                        ยอดขาย − ต้นทุน
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Secondary
+    ================================================== -->
+
+    <div class="row g-4 mb-4">
+
+
+        <div class="col-md-4">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="text-muted small mb-2">
+
+                        📅 สัปดาห์นี้
+
+                    </div>
+
+                    <div class="stat-number text-primary">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(weekRevenue,1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </div>
+
+                    <div class="mt-2">
+
+                        ต้นทุน
+
+                        <span class="cost-text">
+
+                            ฿<span
+                                th:text="${#numbers.formatDecimal(weekCost,1,2)}">
+
+                                0.00
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        กำไร
+
+                        <span class="profit-positive">
+
+                            ฿<span
+                                th:text="${#numbers.formatDecimal(weekProfit,1,2)}">
+
+                                0.00
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="text-muted small mb-2">
+
+                        🗓️ ปีนี้
+
+                    </div>
+
+                    <div class="stat-number text-primary">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(yearRevenue,1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </div>
+
+                    <div class="mt-2">
+
+                        ต้นทุน
+
+                        <span class="cost-text">
+
+                            ฿<span
+                                th:text="${#numbers.formatDecimal(yearCost,1,2)}">
+
+                                0.00
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        กำไร
+
+                        <span class="profit-positive">
+
+                            ฿<span
+                                th:text="${#numbers.formatDecimal(yearProfit,1,2)}">
+
+                                0.00
+
+                            </span>
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card report-card h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="text-muted small mb-2">
+
+                        📦 สินค้าคงคลัง
+
+                    </div>
+
+                    <div class="stat-number text-primary">
+
+                        <span th:text="${countProducts}">0</span>
+
+                        รายการ
+
+                    </div>
+
+                    <div class="mt-2">
+
+                        ใกล้หมด
+
+                        <strong
+                                class="text-warning"
+                                th:text="${countLowStock}">
+
+                            0
+
+                        </strong>
+
+                        รายการ
+
+                    </div>
+
+                    <div>
+
+                        มูลค่าคลัง ฿
+
+                        <strong
+                                th:text="${#numbers.formatDecimal(inventoryValue,1,2)}">
+
+                            0.00
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Last 7 Days
+    ================================================== -->
+
+    <div class="card section-card mb-4">
+
+        <div class="card-header bg-white border-0 px-4 py-4">
+
+            <h4 class="section-title mb-1">
+
+                📈 สรุปย้อนหลัง 7 วัน
+
+            </h4>
+
+            <small class="text-muted">
+
+                ยอดขาย ต้นทุน และกำไรแยกตามวัน
+
+            </small>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0 report-table">
+
+                <thead class="table-light">
+
+                <tr>
+
+                    <th class="px-4">
+                        วันที่
+                    </th>
+
+                    <th class="text-end">
+                        ยอดขาย
+                    </th>
+
+                    <th class="text-end">
+                        ต้นทุน
+                    </th>
+
+                    <th class="text-end">
+                        กำไร
+                    </th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(last7DaysSummary)}">
+
+                    <td colspan="4"
+                        class="text-center text-muted py-5">
+
+                        ยังไม่มีข้อมูลย้อนหลัง 7 วัน
+
+                    </td>
+
+                </tr>
+
+                <tr th:each="row : ${last7DaysSummary}">
+
+                    <td class="px-4 fw-semibold"
+                        th:text="${row[0]}">
+
+                        2026-09-22
+
+                    </td>
+
+                    <td class="text-end revenue-text">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(row[1],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-end cost-text">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(row[2],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-end profit-positive">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(row[3],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Best Selling
+    ================================================== -->
+
+    <div class="card section-card mb-4">
+
+        <div class="card-header bg-white border-0 px-4 py-4">
+
+            <h4 class="section-title mb-1">
+
+                🏆 สินค้าขายดี
+
+            </h4>
+
+            <small class="text-muted">
+
+                จำนวนขาย ยอดขาย ต้นทุน และกำไรสะสม
+
+            </small>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0 report-table">
+
+                <thead class="table-light">
+
+                <tr>
+
+                    <th class="px-4">#</th>
+                    <th>รหัสสินค้า</th>
+                    <th>สินค้า</th>
+                    <th class="text-center">จำนวนขาย</th>
+                    <th class="text-end">ยอดขาย</th>
+                    <th class="text-end">ต้นทุน</th>
+                    <th class="text-end">กำไร</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(bestSellingProducts)}">
+
+                    <td colspan="7"
+                        class="text-center text-muted py-5">
+
+                        ยังไม่มีข้อมูลการขาย
+
+                    </td>
+
+                </tr>
+
+                <tr th:each="item,stat : ${bestSellingProducts}">
+
+                    <td class="px-4 fw-bold text-muted"
+                        th:text="${stat.count}">
+
+                        1
+
+                    </td>
+
+                    <td class="fw-bold"
+                        th:text="${item[0]}">
+
+                        P001
+
+                    </td>
+
+                    <td class="fw-semibold"
+                        th:text="${item[1]}">
+
+                        โค้ก
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <span
+                                class="badge rounded-pill bg-primary px-3 py-2"
+                                th:text="${item[2]}">
+
+                            30
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-end revenue-text">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(item[3],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-end cost-text">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(item[4],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-end profit-positive">
+
+                        ฿<span
+                            th:text="${#numbers.formatDecimal(item[5],1,2)}">
+
+                            0.00
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Sales
+    ================================================== -->
+
+    <div class="card section-card mb-4">
+
+        <div class="card-header bg-white border-0 px-4 py-4
+                    d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h4 class="section-title mb-1">
+
+                    🧾 รายการขาย
+
+                </h4>
+
+                <small class="text-muted">
+
+                    รายการขายประจำเดือน
+                    <span id="salesReportMonthLabel" th:text="${selectedMonth}">10</span> /
+                    <span id="salesReportYearLabel" th:text="${selectedYear + 543}">2569</span>
+
+                </small>
+
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 no-print">
+
+                <form id="salesMonthFilterForm"
+                      method="get"
+                      action="/reports"
+                      class="d-flex flex-wrap align-items-center gap-2">
+
+                    <select name="month"
+                            class="form-select form-select-sm"
+                            aria-label="เลือกเดือน"
+                            style="min-width: 135px;">
+
+                        <option value="1" th:selected="${selectedMonth == 1}">มกราคม</option>
+                        <option value="2" th:selected="${selectedMonth == 2}">กุมภาพันธ์</option>
+                        <option value="3" th:selected="${selectedMonth == 3}">มีนาคม</option>
+                        <option value="4" th:selected="${selectedMonth == 4}">เมษายน</option>
+                        <option value="5" th:selected="${selectedMonth == 5}">พฤษภาคม</option>
+                        <option value="6" th:selected="${selectedMonth == 6}">มิถุนายน</option>
+                        <option value="7" th:selected="${selectedMonth == 7}">กรกฎาคม</option>
+                        <option value="8" th:selected="${selectedMonth == 8}">สิงหาคม</option>
+                        <option value="9" th:selected="${selectedMonth == 9}">กันยายน</option>
+                        <option value="10" th:selected="${selectedMonth == 10}">ตุลาคม</option>
+                        <option value="11" th:selected="${selectedMonth == 11}">พฤศจิกายน</option>
+                        <option value="12" th:selected="${selectedMonth == 12}">ธันวาคม</option>
+
+                    </select>
+
+                    <select name="year"
+                            class="form-select form-select-sm"
+                            aria-label="เลือกปี"
+                            style="min-width: 105px;">
+
+                        <option th:each="y : ${reportYears}"
+                                th:value="${y}"
+                                th:text="${y + 543}"
+                                th:selected="${selectedYear == y}">
+                            2569
+                        </option>
+
+                    </select>
+
+                    <button id="salesMonthFilterButton"
+                            type="submit"
+                            class="btn btn-primary btn-sm">
+
+                        แสดงรายการ
+
+                    </button>
+
+                </form>
+
+                <a
+                        href="/sales/history"
+                        class="btn btn-outline-primary btn-sm">
+
+                    ดูประวัติการขาย
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0 report-table">
+
+                <thead class="table-light">
+
+                <tr>
+
+                    <th class="px-4">#</th>
+                    <th>เลขที่บิล</th>
+                    <th>วันที่ขาย</th>
+                    <th class="text-end">ยอดขาย</th>
+                    <th class="text-center no-print">รายละเอียด</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody id="salesReportTableBody">
+
+                <tr th:if="${#lists.isEmpty(sales)}">
+
+                    <td colspan="5"
+                        class="text-center text-muted py-5">
+
+                        ไม่มีรายการขายในเดือนและปีที่เลือก
+
+                    </td>
+
+                </tr>
+
+                <tr th:each="sale,stat : ${sales}">
+
+                    <td class="px-4 fw-bold text-muted"
+                        th:text="${stat.count}">1</td>
+
+                    <td class="fw-bold"
+                        th:text="${sale.saleNumber}">S0001</td>
+
+                    <td th:text="${#temporals.format(sale.createdAt,'dd/MM/yyyy HH:mm')}">
+                        12/09/2026 13:00
+                    </td>
+
+                    <td class="text-end revenue-text">
+                        ฿<span th:text="${#numbers.formatDecimal(sale.totalAmount,1,2)}">0.00</span>
+                    </td>
+
+                    <td class="text-center no-print">
+                        <a th:href="@{/sales/{id}(id=${sale.id})}"
+                           class="btn btn-outline-primary btn-sm">👁️ ดูบิล</a>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         Low Stock
+    ================================================== -->
+
+    <div class="card section-card mb-4">
+
+        <div class="card-header bg-white border-0 px-4 py-4">
+
+            <h4 class="section-title mb-1">
+
+                ⚠️ สินค้าใกล้หมด
+
+            </h4>
+
+            <small class="text-muted">
+
+                จำนวนคงเหลือน้อยกว่า 10 รายการ
+
+            </small>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0 report-table">
+
+                <thead class="table-light">
+
+                <tr>
+
+                    <th class="px-4">#</th>
+                    <th>รหัสสินค้า</th>
+                    <th>สินค้า</th>
+                    <th class="text-center">คงเหลือ</th>
+                    <th class="text-center">สถานะ</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${countLowStock == 0}">
+
+                    <td colspan="5"
+                        class="text-center text-muted py-5">
+
+                        ✅ ไม่มีสินค้าใกล้หมด
+
+                    </td>
+
+                </tr>
+
+                <tr
+                        th:each="product,stat : ${products}"
+                        th:if="${product.quantity != null
+                                and product.quantity > 0
+                                and product.quantity < 10}">
+
+                    <td class="px-4 fw-bold text-muted"
+                        th:text="${stat.count}">
+
+                        1
+
+                    </td>
+
+                    <td class="fw-bold"
+                        th:text="${product.code}">
+
+                        P001
+
+                    </td>
+
+                    <td class="fw-semibold"
+                        th:text="${product.name}">
+
+                        โค้ก
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <span
+                                class="badge bg-warning text-dark px-3 py-2"
+                                th:text="${product.quantity}">
+
+                            5
+
+                        </span>
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <span
+                                class="badge bg-warning text-dark">
+
+                            ใกล้หมด
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="text-end text-muted small no-print">
+
+        KONGKLANG Grocery Management System
+        · Generated from database
+
+    </div>
+
+
+</div>
+
+
+<script>
+/* กรองรายการขายโดยไม่โหลดหน้าใหม่และไม่เลื่อนหน้ากลับด้านบน */
+(() => {
+    const form = document.getElementById('salesMonthFilterForm');
+    const tableBody = document.getElementById('salesReportTableBody');
+    const button = document.getElementById('salesMonthFilterButton');
+    const monthLabel = document.getElementById('salesReportMonthLabel');
+    const yearLabel = document.getElementById('salesReportYearLabel');
+
+    if (!form || !tableBody || !button) return;
+
+    const monthNames = [
+        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน',
+        'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม',
+        'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    ];
+
+    const money = value => Number(value || 0).toLocaleString('th-TH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    const addCell = (row, text, className) => {
+        const cell = document.createElement('td');
+        if (className) cell.className = className;
+        cell.textContent = text;
+        row.appendChild(cell);
+        return cell;
+    };
+
+    const showMessage = message => {
+        tableBody.replaceChildren();
+        const row = document.createElement('tr');
+        const cell = addCell(row, message, 'text-center text-muted py-5');
+        cell.colSpan = 5;
+        tableBody.appendChild(row);
+    };
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const month = formData.get('month');
+        const year = formData.get('year');
+        const originalButtonText = button.textContent;
+
+        const query = new URLSearchParams({ month, year });
+        const endpoint = `/reports/sales?${query.toString()}`;
+
+        button.disabled = true;
+        button.textContent = 'กำลังโหลด...';
+        tableBody.setAttribute('aria-busy', 'true');
+        showMessage('กำลังโหลดรายการขาย...');
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const sales = await response.json();
+            tableBody.replaceChildren();
+
+            if (!Array.isArray(sales) || sales.length === 0) {
+                showMessage('ไม่มีรายการขายในเดือนและปีที่เลือก');
+            } else {
+                sales.forEach((sale, index) => {
+                    const row = document.createElement('tr');
+
+                    addCell(row, String(index + 1), 'px-4 fw-bold text-muted');
+                    addCell(row, sale.saleNumber || '-', 'fw-bold');
+                    addCell(row, sale.createdAt || '-', '');
+
+                    const amountCell = addCell(row, '', 'text-end revenue-text');
+                    amountCell.textContent = `฿${money(sale.totalAmount)}`;
+
+                    const actionCell = addCell(row, '', 'text-center no-print');
+                    const link = document.createElement('a');
+                    link.href = `/sales/${encodeURIComponent(sale.id)}`;
+                    link.className = 'btn btn-outline-primary btn-sm';
+                    link.textContent = '👁️ ดูบิล';
+                    actionCell.appendChild(link);
+
+                    tableBody.appendChild(row);
+                });
+            }
+
+            if (monthLabel) monthLabel.textContent = monthNames[Number(month) - 1] || month;
+            if (yearLabel) yearLabel.textContent = String(Number(year) + 543);
+        } catch (error) {
+            console.error('ไม่สามารถโหลดรายการขายได้:', error);
+            showMessage('โหลดรายการขายไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+        } finally {
+            button.disabled = false;
+            button.textContent = originalButtonText;
+            tableBody.removeAttribute('aria-busy');
+        }
+    });
+})();
+</script>
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

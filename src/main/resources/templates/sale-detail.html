@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - รายละเอียดบิล</title>
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=3)}">
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main-container {
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            letter-spacing: -0.3px;
+        }
+
+        .dashboard-section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .invoice-header {
+            background: #ffffff;
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .invoice-icon {
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #e7f1ff;
+            color: #0d6efd;
+            font-size: 25px;
+            flex-shrink: 0;
+        }
+
+        .invoice-number {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 7px;
+            background: #f1f3f5;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .invoice-info {
+            line-height: 1.7;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .items-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .items-card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #edf0f2;
+            background: #ffffff;
+        }
+
+        .items-table-wrapper {
+            width: 100%;
+        }
+
+        .items-table {
+            min-width: 700px;
+            margin-bottom: 0;
+        }
+
+        .items-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 14px 12px;
+            border-bottom: 1px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        .items-table tbody td {
+            padding: 15px 12px;
+            vertical-align: middle;
+        }
+
+        .items-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .product-code {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 6px;
+            background: #f1f3f5;
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .product-name {
+            font-weight: 600;
+        }
+
+        .quantity-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            padding: 5px 9px;
+            border-radius: 7px;
+            background: #e9ecef;
+            font-weight: 700;
+        }
+
+        .price-text {
+            white-space: nowrap;
+        }
+
+        .subtotal-text {
+            color: #198754;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .empty-items {
+            padding: 55px 20px;
+        }
+
+        .empty-items-icon {
+            font-size: 52px;
+            margin-bottom: 10px;
+        }
+
+        .total-box {
+            border: 1px solid #cfe8d8;
+            background: #f0fff5;
+            border-radius: 16px;
+        }
+
+        .total-label {
+            color: #495057;
+        }
+
+        .total-amount {
+            color: #198754;
+            font-size: 30px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+        }
+
+        .navbar .btn {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1199.98px) {
+
+            .navbar .container-xl {
+                overflow-x: auto;
+            }
+
+        }
+
+        @media (max-width: 767.98px) {
+
+            .main-container {
+                padding-top: 22px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .invoice-header {
+                padding: 20px !important;
+            }
+
+            .invoice-header-content {
+                align-items: flex-start !important;
+            }
+
+            .total-amount {
+                font-size: 25px;
+            }
+
+        }
+
+        @media (max-width: 575.98px) {
+
+            .main-container {
+                padding-top: 18px;
+                padding-bottom: 30px;
+            }
+
+            .invoice-icon {
+                width: 46px;
+                height: 46px;
+                font-size: 21px;
+            }
+
+            .invoice-number {
+                font-size: 12px;
+            }
+
+            .total-box {
+                padding: 18px !important;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ====================================================== -->
+<!-- Navbar -->
+<!-- ====================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-light btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-primary btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ====================================================== -->
+<!-- Main -->
+<!-- ====================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ================================================== -->
+    <!-- Page Header -->
+    <!-- ================================================== -->
+
+    <div class="page-header">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    gap-3">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+
+                    🧾 รายละเอียดบิล
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    ตรวจสอบรายละเอียดรายการสินค้าและยอดขายของบิล
+
+                </p>
+
+            </div>
+
+
+            <div class="d-flex gap-2">
+
+                <a
+                        th:href="@{/sales/{id}/invoice(id=${sale.id})}"
+                        target="_blank"
+                        class="btn btn-success">
+
+                    🧾 เปิด Invoice
+
+                </a>
+
+
+                <a
+                        href="/sales"
+                        class="btn btn-primary">
+
+                    🛒 ขายสินค้า
+
+                </a>
+
+
+                <a
+                        href="/sales/history"
+                        class="btn btn-outline-secondary">
+
+                    ← ประวัติการขาย
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- Invoice Card -->
+    <!-- ================================================== -->
+
+    <div class="card dashboard-section-card mb-4">
+
+
+        <!-- ================================================== -->
+        <!-- Invoice Header -->
+        <!-- ================================================== -->
+
+        <div class="invoice-header p-4">
+
+
+            <div class="d-flex
+                        invoice-header-content
+                        justify-content-between
+                        align-items-center
+                        gap-4">
+
+
+                <div class="d-flex
+                            align-items-center
+                            gap-3">
+
+
+                    <div class="invoice-icon">
+
+                        🧾
+
+                    </div>
+
+
+                    <div class="invoice-info">
+
+                        <h4 class="fw-bold mb-2">
+
+                            ใบเสร็จรับเงิน
+
+                        </h4>
+
+
+                        <div class="text-muted">
+
+                            เลขที่บิล:
+
+                            <span
+                                    class="invoice-number ms-1"
+                                    th:text="${sale.saleNumber}">
+
+                                SALE-0001
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted mt-1">
+
+                            วันที่ขาย:
+
+                            <strong
+                                    th:text="${#temporals.format(
+                                        sale.createdAt,
+                                        'dd/MM/yyyy HH:mm'
+                                    )}">
+
+                                01/01/2026 12:00
+
+                            </strong>
+
+                            น.
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <div>
+
+                    <span class="badge text-bg-success px-3 py-2">
+
+                        ✓ ชำระรายการแล้ว
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- Invoice Body -->
+        <!-- ================================================== -->
+
+        <div class="card-body p-4">
+
+
+            <!-- ================================================== -->
+            <!-- Items Section -->
+            <!-- ================================================== -->
+
+            <div class="items-card">
+
+
+                <!-- Header -->
+
+                <div class="items-card-header">
+
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center
+                                gap-3">
+
+
+                        <div>
+
+                            <div class="section-title fs-5">
+
+                                🛒 รายการสินค้า
+
+                            </div>
+
+                            <small class="text-muted">
+
+                                สินค้าที่อยู่ในบิลนี้
+
+                            </small>
+
+                        </div>
+
+
+                        <span class="badge text-bg-primary">
+
+                            รายการขาย
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- Table -->
+
+                <div class="items-table-wrapper table-responsive">
+
+
+                    <table
+                            class="table
+                                   table-hover
+                                   align-middle
+                                   items-table">
+
+
+                        <thead>
+
+                        <tr>
+
+
+                            <th
+                                    class="text-center"
+                                    style="width:70px;">
+
+                                #
+
+                            </th>
+
+
+                            <th>
+
+                                รหัสสินค้า
+
+                            </th>
+
+
+                            <th>
+
+                                สินค้า
+
+                            </th>
+
+
+                            <th class="text-center">
+
+                                จำนวน
+
+                            </th>
+
+
+                            <th class="text-end">
+
+                                ราคา
+
+                            </th>
+
+
+                            <th class="text-end">
+
+                                รวม
+
+                            </th>
+
+
+                        </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                        <!-- ================================================== -->
+                        <!-- ไม่มีสินค้า -->
+                        <!-- ================================================== -->
+
+                        <tr
+                                th:if="${#lists.isEmpty(items)}">
+
+
+                            <td
+                                    colspan="6"
+                                    class="text-center text-muted">
+
+
+                                <div class="empty-items">
+
+
+                                    <div class="empty-items-icon">
+
+                                        🛒
+
+                                    </div>
+
+
+                                    <div class="fw-semibold">
+
+                                        ไม่มีรายการสินค้า
+
+                                    </div>
+
+
+                                    <small>
+
+                                        ไม่พบสินค้าในบิลนี้
+
+                                    </small>
+
+
+                                </div>
+
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ================================================== -->
+                        <!-- รายการสินค้า -->
+                        <!-- ================================================== -->
+
+                        <tr
+                                th:each="item, stat : ${items}">
+
+
+                            <!-- ลำดับ -->
+
+                            <td
+                                    class="text-center
+                                           fw-bold
+                                           text-muted"
+                                    th:text="${stat.count}">
+
+                                1
+
+                            </td>
+
+
+                            <!-- รหัสสินค้า -->
+
+                            <td>
+
+                                <span
+                                        class="product-code"
+                                        th:text="${item.productCode}">
+
+                                    P001
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ชื่อสินค้า -->
+
+                            <td>
+
+                                <span
+                                        class="product-name"
+                                        th:text="${item.productName}">
+
+                                    สินค้าตัวอย่าง
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- จำนวน -->
+
+                            <td class="text-center">
+
+                                <span
+                                        class="quantity-badge"
+                                        th:text="${item.quantity}">
+
+                                    1
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ราคา -->
+
+                            <td class="text-end">
+
+                                <span class="price-text">
+
+                                    ฿<span
+                                        th:text="${#numbers.formatDecimal(
+                                            item.price,
+                                            1,
+                                            2
+                                        )}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- รวม -->
+
+                            <td class="text-end">
+
+                                <span class="subtotal-text">
+
+                                    ฿<span
+                                        th:text="${#numbers.formatDecimal(
+                                            item.subtotal,
+                                            1,
+                                            2
+                                        )}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                        </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ================================================== -->
+            <!-- Total -->
+            <!-- ================================================== -->
+
+            <div class="row justify-content-end">
+
+
+                <div class="col-md-6 col-lg-5">
+
+
+                    <div class="total-box p-4">
+
+
+                        <div class="d-flex
+                                    justify-content-between
+                                    align-items-center
+                                    gap-3">
+
+
+                            <div>
+
+                                <div class="total-label fs-6">
+
+                                    ยอดรวมทั้งหมด
+
+                                </div>
+
+                                <small class="text-muted">
+
+                                    รวมราคาสินค้าทั้งหมด
+
+                                </small>
+
+                            </div>
+
+
+                            <div class="total-amount">
+
+                                ฿<span
+                                    th:text="${#numbers.formatDecimal(
+                                        sale.totalAmount,
+                                        1,
+                                        2
+                                    )}">
+
+                                    0.00
+
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ================================================== -->
+            <!-- Actions -->
+            <!-- ================================================== -->
+
+            <div
+                    class="action-buttons
+                           d-flex
+                           justify-content-end
+                           gap-2">
+
+
+                <a
+                        th:href="@{/sales/{id}/invoice(id=${sale.id})}"
+                        target="_blank"
+                        class="btn btn-success">
+
+                    🧾 เปิด Invoice
+
+                </a>
+
+
+                <a
+                        href="/sales/history"
+                        class="btn btn-outline-secondary">
+
+                    ← กลับประวัติการขาย
+
+                </a>
+
+
+                <a
+                        href="/sales"
+                        class="btn btn-primary">
+
+                    🛒 ขายสินค้าอีกครั้ง
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<p class="mt-3" th:if="${sessionRole == 'OWNER' or sessionRole == 'ADMIN' or sessionRole == 'ACCOUNTING'}"><a class="btn btn-outline-primary" th:href="@{/sales/{id}/returns(id=${sale.id})}">คืนสินค้า / ดูรายการคืนเงิน</a></p>
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

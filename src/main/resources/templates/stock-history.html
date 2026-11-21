@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - ประวัติการเคลื่อนไหว</title>
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=3)}">
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main-container {
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            letter-spacing: -0.3px;
+        }
+
+        .dashboard-section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .history-wrapper {
+            border: 1px solid #e9ecef;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .history-table {
+            margin-bottom: 0;
+            min-width: 900px;
+        }
+
+        .history-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 1px solid #dee2e6;
+            padding: 14px 12px;
+        }
+
+        .history-table tbody td {
+            padding: 14px 12px;
+            vertical-align: middle;
+        }
+
+        .history-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .history-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .product-code {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 700;
+            background: #f1f3f5;
+            padding: 5px 8px;
+            border-radius: 6px;
+        }
+
+        .movement-badge {
+            min-width: 95px;
+            display: inline-block;
+            padding: 7px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .quantity-positive {
+            color: #198754;
+            font-weight: 700;
+        }
+
+        .quantity-negative {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .quantity-adjust {
+            font-weight: 700;
+        }
+
+        .balance-badge {
+            display: inline-block;
+            min-width: 48px;
+            padding: 6px 9px;
+            border-radius: 8px;
+            background: #f1f3f5;
+            font-weight: 700;
+        }
+
+        .note-cell {
+            max-width: 280px;
+            color: #6c757d;
+        }
+
+        .empty-history {
+            min-height: 260px;
+        }
+
+        .history-info {
+            background: #f8fafc;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+        }
+
+        .navbar .btn {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1199.98px) {
+
+            .navbar .container-xl {
+                overflow-x: auto;
+            }
+
+        }
+
+        @media (max-width: 991.98px) {
+
+            .main-container {
+                padding-top: 24px;
+            }
+
+        }
+
+        @media (max-width: 575.98px) {
+
+            .main-container {
+                padding-top: 18px;
+                padding-bottom: 30px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .dashboard-section-card .card-body {
+                padding: 18px !important;
+            }
+
+            .dashboard-section-card .card-header {
+                padding: 16px 18px !important;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ====================================================== -->
+<!-- Navbar -->
+<!-- ====================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-primary btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ====================================================== -->
+<!-- Main -->
+<!-- ====================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ================================================== -->
+    <!-- Page Header -->
+    <!-- ================================================== -->
+
+    <div class="page-header">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-start
+                    gap-3">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+
+                    📋 ประวัติการเคลื่อนไหวสินค้า
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    ตรวจสอบรายการรับเข้า สินค้าออก และการปรับยอดสินค้า
+
+                </p>
+
+            </div>
+
+
+            <a
+                    href="/stock"
+                    class="btn btn-light border">
+
+                ← กลับหน้าสต๊อก
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- Main Card -->
+    <!-- ================================================== -->
+
+    <div class="card dashboard-section-card">
+
+
+        <!-- ================================================== -->
+        <!-- Card Header -->
+        <!-- ================================================== -->
+
+        <div class="card-header bg-white p-4">
+
+            <div class="d-flex
+                        justify-content-between
+                        align-items-center
+                        gap-3">
+
+                <div>
+
+                    <h4 class="fw-bold mb-1">
+
+                        📋 รายการเคลื่อนไหว
+
+                    </h4>
+
+                    <small class="text-muted">
+
+                        ประวัติการเปลี่ยนแปลงจำนวนสินค้าทั้งหมด
+
+                    </small>
+
+                </div>
+
+
+                <span class="badge text-bg-primary px-3 py-2">
+
+                    Stock History
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- Card Body -->
+        <!-- ================================================== -->
+
+        <div class="card-body p-4">
+
+
+            <!-- ================================================== -->
+            <!-- Information -->
+            <!-- ================================================== -->
+
+            <div class="history-info p-3 mb-4">
+
+                <div class="row g-3">
+
+
+                    <div class="col-md-4">
+
+                        <div class="d-flex align-items-center gap-2">
+
+                            <span class="badge text-bg-success">
+
+                                📥 IN
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                รับสินค้าเข้าสต๊อก
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="d-flex align-items-center gap-2">
+
+                            <span class="badge text-bg-danger">
+
+                                📤 OUT
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                สินค้าออก / ขายสินค้า
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="d-flex align-items-center gap-2">
+
+                            <span class="badge text-bg-warning text-dark">
+
+                                🔧 ADJUST
+
+                            </span>
+
+                            <small class="text-muted">
+
+                                ปรับยอดจากการตรวจนับ
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================== -->
+            <!-- Table -->
+            <!-- ================================================== -->
+
+            <div class="d-flex flex-wrap align-items-center gap-2 p-3 border-bottom bg-white" id="stockHistoryFilterBar">
+                <input type="search" class="form-control form-control-sm" style="max-width:300px" id="stockHistorySearch" placeholder="ค้นหารหัส ชื่อสินค้า หรือหมายเหตุ">
+                <select class="form-select form-select-sm" style="max-width:190px" id="stockHistoryType">
+                    <option value="">ทุกประเภท</option><option value="IN">รับเข้า</option><option value="OUT">สินค้าออก</option><option value="ADJUST">ปรับยอด</option>
+                </select>
+                <input type="date" class="form-control form-control-sm" style="max-width:165px" id="stockHistoryFrom" aria-label="วันที่เริ่มต้น">
+                <input type="date" class="form-control form-control-sm" style="max-width:165px" id="stockHistoryTo" aria-label="วันที่สิ้นสุด">
+                <span class="small text-muted" id="stockHistoryCount" aria-live="polite"></span>
+            </div>
+
+            <div class="history-wrapper table-responsive">
+
+                <table
+                        class="table table-hover align-middle history-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th class="text-center">
+
+                            #
+
+                        </th>
+
+                        <th>
+
+                            วันที่ / เวลา
+
+                        </th>
+
+                        <th>
+
+                            รหัสสินค้า
+
+                        </th>
+
+                        <th>
+
+                            ชื่อสินค้า
+
+                        </th>
+
+                        <th class="text-center">
+
+                            ประเภท
+
+                        </th>
+
+                        <th class="text-center">
+
+                            จำนวน
+
+                        </th>
+
+                        <th class="text-center">
+
+                            คงเหลือ
+
+                        </th>
+
+                        <th>
+
+                            หมายเหตุ
+
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    <!-- ================================================== -->
+                    <!-- ไม่มีข้อมูล -->
+                    <!-- ================================================== -->
+
+                    <tr
+                            th:if="${#lists.isEmpty(transactions)}">
+
+                        <td
+                                colspan="8"
+                                class="text-center text-muted">
+
+                            <div class="empty-history
+                                        d-flex
+                                        flex-column
+                                        justify-content-center
+                                        align-items-center">
+
+                                <div class="fs-1 mb-3">
+
+                                    📋
+
+                                </div>
+
+                                <div class="fw-semibold mb-1">
+
+                                    ยังไม่มีประวัติการเคลื่อนไหว
+
+                                </div>
+
+                                <small>
+
+                                    เมื่อมีการรับสินค้า ขายสินค้า หรือปรับยอด
+                                    ประวัติจะแสดงที่นี่
+
+                                </small>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ================================================== -->
+                    <!-- รายการ -->
+                    <!-- ================================================== -->
+
+                    <tr
+                            th:each="transaction, stat : ${transactions}">
+
+
+                        <!-- ลำดับ -->
+
+                        <td
+                                class="text-center fw-bold"
+                                th:text="${stat.count}">
+
+                        </td>
+
+
+                        <!-- วันที่ -->
+
+                        <td
+                                class="text-nowrap"
+                                th:text="${#temporals.format(transaction.createdAt, 'dd/MM/yyyy HH:mm')}">
+
+                        </td>
+
+
+                        <!-- รหัส -->
+
+                        <td>
+
+                            <span
+                                    class="product-code"
+                                    th:text="${transaction.productCode}">
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ชื่อ -->
+
+                        <td
+                                class="fw-semibold"
+                                th:text="${transaction.productName}">
+
+                        </td>
+
+
+                        <!-- ประเภท -->
+
+                        <td class="text-center">
+
+
+                            <!-- รับเข้า -->
+
+                            <span
+                                    th:if="${transaction.type == 'IN'}"
+                                    class="movement-badge bg-success-subtle text-success">
+
+                                📥 รับเข้า
+
+                            </span>
+
+
+                            <!-- สินค้าออก -->
+
+                            <span
+                                    th:if="${transaction.type == 'OUT'}"
+                                    class="movement-badge bg-danger-subtle text-danger">
+
+                                📤 สินค้าออก
+
+                            </span>
+
+
+                            <!-- ปรับยอด -->
+
+                            <span
+                                    th:if="${transaction.type == 'ADJUST'}"
+                                    class="movement-badge bg-warning-subtle text-warning-emphasis">
+
+                                🔧 ปรับยอด
+
+                            </span>
+
+
+                        </td>
+
+
+                        <!-- จำนวน -->
+
+                        <td class="text-center">
+
+
+                            <!-- IN -->
+
+                            <span
+                                    th:if="${transaction.type == 'IN'}"
+                                    class="quantity-positive">
+
+                                +
+
+                                <span
+                                        th:text="${transaction.quantity}">
+
+                                </span>
+
+                            </span>
+
+
+                            <!-- OUT -->
+
+                            <span
+                                    th:if="${transaction.type == 'OUT'}"
+                                    class="quantity-negative">
+
+                                -
+
+                                <span
+                                        th:text="${transaction.quantity}">
+
+                                </span>
+
+                            </span>
+
+
+                            <!-- ADJUST -->
+
+                            <span
+                                    th:if="${transaction.type == 'ADJUST'}"
+                                    class="quantity-adjust"
+                                    th:text="${transaction.quantity > 0 ? '+' + transaction.quantity : transaction.quantity}">
+
+                            </span>
+
+
+                        </td>
+
+
+                        <!-- คงเหลือ -->
+
+                        <td class="text-center">
+
+                            <span
+                                    class="balance-badge"
+                                    th:text="${transaction.balance}">
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- หมายเหตุ -->
+
+                        <td
+                                class="note-cell"
+                                th:text="${transaction.note != null && !transaction.note.isEmpty() ? transaction.note : '-'}">
+
+                        </td>
+
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const table=document.querySelector('.history-table'); if(!table) return;
+  const tbody=table.querySelector('tbody');
+  const search=document.getElementById('stockHistorySearch'), type=document.getElementById('stockHistoryType');
+  const from=document.getElementById('stockHistoryFrom'), to=document.getElementById('stockHistoryTo');
+  const count=document.getElementById('stockHistoryCount'); let transactions=[];
+  const safe=v=>v==null||v===''?'-':String(v);
+  const dateValue=v=>{
+    if(Array.isArray(v)){const [y,m,d]=v;return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+    if(typeof v==='string') return v.slice(0,10);
+    return '';
+  };
+  const dateLabel=v=>{
+    const d=dateValue(v); if(!d) return '-'; const [y,m,day]=d.split('-');
+    const year=Number(y)>2400?Number(y):Number(y)+543;
+    let time=''; if(Array.isArray(v)) time=` ${String(v[3]||0).padStart(2,'0')}:${String(v[4]||0).padStart(2,'0')}`;
+    else if(typeof v==='string' && v.length>=16) time=' '+v.slice(11,16);
+    return `${day}/${m}/${year}${time}`;
+  };
+  const cell=(tr,cls,content)=>{const td=document.createElement('td'); if(cls)td.className=cls; if(content instanceof Node)td.append(content); else td.textContent=safe(content); tr.append(td); return td;};
+  const makeBadge=(label,cls)=>{const e=document.createElement('span');e.className=cls;e.textContent=label;return e;};
+  const render=()=>{
+    const q=(search?.value||'').trim().toLocaleLowerCase('th');
+    const visible=transactions.filter(t=>{
+      const text=[t.productCode,t.productName,t.note,t.type].map(safe).join(' ').toLocaleLowerCase('th');
+      const d=dateValue(t.createdAt); const typeOk=!type?.value||t.type===type.value;
+      return (!q||text.includes(q))&&typeOk&&(!from?.value||!d||d>=from.value)&&(!to?.value||!d||d<=to.value);
+    });
+    tbody.replaceChildren();
+    if(!visible.length){const tr=document.createElement('tr');const td=cell(tr,'text-center text-muted py-5',transactions.length?'ไม่พบประวัติที่ตรงกับเงื่อนไข':'ยังไม่มีประวัติการเคลื่อนไหว');td.colSpan=8;tbody.append(tr);}
+    visible.forEach((t,i)=>{
+      const tr=document.createElement('tr'); cell(tr,'text-center fw-bold',i+1); cell(tr,'text-nowrap',dateLabel(t.createdAt));
+      cell(tr,'',makeBadge(safe(t.productCode),'product-code')); cell(tr,'fw-semibold',t.productName);
+      const typeCell=cell(tr,'text-center','');
+      const info=t.type==='IN'?['📥 รับเข้า','movement-badge bg-success-subtle text-success']:t.type==='OUT'?['📤 สินค้าออก','movement-badge bg-danger-subtle text-danger']:['🔧 ปรับยอด','movement-badge bg-warning-subtle text-warning-emphasis'];
+      typeCell.append(makeBadge(info[0],info[1]));
+      const qty=Number(t.quantity||0); const qLabel=t.type==='IN'?`+${qty}`:t.type==='OUT'?`-${qty}`:(qty>0?`+${qty}`:String(qty));
+      cell(tr,'text-center',makeBadge(qLabel,t.type==='IN'?'quantity-positive':t.type==='OUT'?'quantity-negative':'quantity-adjust'));
+      cell(tr,'text-center',makeBadge(safe(t.balance),'balance-badge')); cell(tr,'note-cell',t.note||'-'); tbody.append(tr);
+    });
+    if(count) count.textContent=`แสดง ${visible.length} จาก ${transactions.length} รายการ`;
+  };
+  [search,type,from,to].filter(Boolean).forEach(el=>{el.addEventListener('input',render);el.addEventListener('change',render);});
+  fetch('/api/stock/history',{headers:{'Accept':'application/json'},credentials:'same-origin'})
+    .then(async r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
+    .then(data=>{if(!Array.isArray(data))throw new Error('รูปแบบข้อมูลไม่ถูกต้อง');transactions=data;render();})
+    .catch(error=>{console.error('โหลดประวัติสต็อกไม่สำเร็จ:',error);if(count)count.textContent='โหลดประวัติล่าสุดไม่สำเร็จ กำลังแสดงข้อมูลเดิม';});
+});
+</script>
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - รายการสินค้า</title>
+
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=4)}">
+
+
+    <style>
+
+        /* ==================================================
+           Page
+        ================================================== */
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main-container {
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            letter-spacing: -0.3px;
+        }
+
+
+        /* ==================================================
+           Main Card
+        ================================================== */
+
+        .dashboard-section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+
+        /* ==================================================
+           Category Section
+        ================================================== */
+
+        .category-section {
+            margin: 22px;
+            border: 1px solid #e4e8ed;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .category-header {
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e4e8ed;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .category-count {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+
+        /* ==================================================
+           Category Colors
+        ================================================== */
+
+        .category-header.drink {
+            background: #eef5ff;
+            border-left: 5px solid #0d6efd;
+        }
+
+        .category-header.food {
+            background: #eefaf3;
+            border-left: 5px solid #198754;
+        }
+
+        .category-header.seasoning {
+            background: #fff9e6;
+            border-left: 5px solid #ffc107;
+        }
+
+        .category-header.snack {
+            background: #eefaff;
+            border-left: 5px solid #0dcaf0;
+        }
+
+        .category-header.fresh {
+            background: #fff0f1;
+            border-left: 5px solid #dc3545;
+        }
+
+        .category-header.frozen {
+            background: #f1f1f1;
+            border-left: 5px solid #343a40;
+        }
+
+        .category-header.household {
+            background: #f3f3f3;
+            border-left: 5px solid #6c757d;
+        }
+
+        .category-header.other {
+            background: #f8f9fa;
+            border-left: 5px solid #adb5bd;
+        }
+
+
+        /* ==================================================
+           Product Table
+        ================================================== */
+
+        .product-table-wrapper {
+            width: 100%;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-bottom: 0;
+            table-layout: fixed;
+        }
+
+
+        /* Column Width */
+
+        .product-table col.col-no {
+            width: 7%;
+        }
+
+        .product-table col.col-code {
+            width: 13%;
+        }
+
+        .product-table col.col-name {
+            width: 30%;
+        }
+
+        .product-table col.col-quantity {
+            width: 15%;
+        }
+
+        .product-table col.col-unit {
+            width: 12%;
+        }
+
+        .product-table col.col-price {
+            width: 13%;
+        }
+
+        .product-table col.col-action {
+            width: 15%;
+        }
+
+
+        /* ==================================================
+           Table Header
+        ================================================== */
+
+        .product-table thead th {
+            background: #ffffff;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding: 13px 12px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .product-table thead th:nth-child(1) {
+            text-align: center;
+        }
+
+        .product-table thead th:nth-child(2) {
+            text-align: left;
+        }
+
+        .product-table thead th:nth-child(3) {
+            text-align: left;
+        }
+
+        .product-table thead th:nth-child(4) {
+            text-align: center;
+        }
+
+        .product-table thead th:nth-child(5) {
+            text-align: left;
+        }
+
+        .product-table thead th:nth-child(6) {
+            text-align: right;
+        }
+
+        .product-table thead th:nth-child(7) {
+            text-align: center;
+        }
+
+
+        /* ==================================================
+           Table Body
+        ================================================== */
+
+        .product-table tbody td {
+            padding: 14px 12px;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+
+        .product-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .product-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .product-table tbody td:nth-child(1) {
+            text-align: center;
+        }
+
+        .product-table tbody td:nth-child(2) {
+            text-align: left;
+        }
+
+        .product-table tbody td:nth-child(3) {
+            text-align: left;
+        }
+
+        .product-table tbody td:nth-child(4) {
+            text-align: center;
+        }
+
+        .product-table tbody td:nth-child(5) {
+            text-align: left;
+        }
+
+        .product-table tbody td:nth-child(6) {
+            text-align: right;
+        }
+
+        .product-table tbody td:nth-child(7) {
+            text-align: center;
+        }
+
+
+        /* ==================================================
+           Product Code
+        ================================================== */
+
+        .product-code {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 700;
+            background: #f1f3f5;
+            padding: 5px 8px;
+            border-radius: 6px;
+        }
+
+
+        /* ==================================================
+           Stock
+        ================================================== */
+
+        .stock-badge {
+            min-width: 48px;
+            padding: 7px 11px !important;
+            font-size: 12px;
+        }
+
+
+        /* ==================================================
+           Price
+        ================================================== */
+
+        .price {
+            white-space: nowrap;
+            font-weight: 700;
+            color: #198754;
+        }
+
+
+        /* ==================================================
+           Action Buttons
+        ================================================== */
+
+        .action-btn {
+            width: 38px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+
+        /* ==================================================
+           Count
+        ================================================== */
+
+        .count-badge {
+            font-size: 13px;
+            padding: 7px 12px;
+        }
+
+
+        /* ==================================================
+           Empty
+        ================================================== */
+
+        .empty-products {
+            min-height: 280px;
+        }
+
+        .empty-products-icon {
+            font-size: 54px;
+        }
+
+
+        /* ==================================================
+           Navbar
+        ================================================== */
+
+        .navbar .btn {
+            white-space: nowrap;
+        }
+
+
+        /* ==================================================
+           Mobile / Tablet
+        ================================================== */
+
+        @media (max-width: 1199.98px) {
+
+            .navbar .container-xl {
+                overflow-x: auto;
+            }
+
+            .product-table {
+                min-width: 850px;
+            }
+
+        }
+
+
+        @media (max-width: 767.98px) {
+
+            .main-container {
+                padding-top: 22px;
+            }
+
+            .page-header {
+                margin-bottom: 20px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .category-section {
+                margin: 14px;
+            }
+
+            .category-header {
+                padding: 14px 16px;
+            }
+
+            .category-title {
+                font-size: 16px;
+            }
+
+        }
+
+
+        @media (max-width: 575.98px) {
+
+            .main-container {
+                padding-top: 18px;
+                padding-bottom: 30px;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ==================================================
+     Navbar
+================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-primary btn-sm active">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-light btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ==================================================
+     Main
+================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ==================================================
+         Page Header
+    ================================================== -->
+
+    <div class="page-header">
+
+        <h2 class="fw-bold mb-1">
+
+            📦 รายการสินค้า
+
+        </h2>
+
+        <p class="text-muted mb-0">
+
+            จัดการข้อมูลสินค้าในระบบคงคลัง
+
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         Main Product Card
+    ================================================== -->
+
+    <div class="card dashboard-section-card">
+
+
+        <!-- ==================================================
+             Card Header
+        ================================================== -->
+
+        <div class="card-header bg-white p-4">
+
+            <div class="d-flex
+                        justify-content-between
+                        align-items-center
+                        gap-3
+                        flex-wrap">
+
+
+                <div>
+
+                    <h4 class="mb-1 fw-bold">
+
+                        📦 สินค้าในคลัง
+
+                    </h4>
+
+                    <small class="text-muted">
+
+                        แยกสินค้าออกตามหมวดหมู่เพื่อให้ง่ายต่อการจัดการ
+
+                    </small>
+
+                </div>
+
+
+                <div class="d-flex
+                            align-items-center
+                            gap-2">
+
+
+                    <!-- จำนวนสินค้าทั้งหมด -->
+
+                    <span
+                            class="badge text-bg-primary count-badge"
+                            th:text="${#lists.size(products)} + ' รายการ'">
+
+                        0 รายการ
+
+                    </span>
+
+
+                    <!-- เพิ่มสินค้า -->
+
+                    <a
+                            href="/products/new"
+                            class="btn btn-warning">
+
+                        ➕ เพิ่มสินค้า
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             Empty
+        ================================================== -->
+
+        <div
+                th:if="${#lists.isEmpty(products)}"
+                class="card-body">
+
+            <div class="empty-products
+                        d-flex
+                        flex-column
+                        justify-content-center
+                        align-items-center">
+
+
+                <div class="empty-products-icon mb-2">
+
+                    📦
+
+                </div>
+
+
+                <h5 class="fw-bold">
+
+                    ยังไม่มีข้อมูลสินค้า
+
+                </h5>
+
+
+                <p class="text-muted mb-3">
+
+                    เริ่มต้นด้วยการเพิ่มสินค้าเข้าสู่ระบบ
+
+                </p>
+
+
+                <a
+                        href="/products/new"
+                        class="btn btn-warning">
+
+                    ➕ เพิ่มสินค้า
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             Category Tables
+        ================================================== -->
+
+        <div
+                th:if="${!#lists.isEmpty(products)}"
+                class="card-body p-0">
+
+            <div class="p-3 border-bottom bg-light d-flex flex-wrap gap-2 align-items-center">
+                <input id="productLiveSearch" type="search" class="form-control flex-grow-1" style="min-width:220px;max-width:420px" placeholder="ค้นหาชื่อสินค้า รหัสสินค้า หรือบาร์โค้ด...">
+                <select id="productCategoryFilter" class="form-select" style="max-width:220px">
+                    <option value="">ทุกหมวดหมู่</option>
+                    <option th:each="categoryEntry : ${productsByCategory}" th:value="${categoryEntry.key}" th:text="${categoryEntry.key}"></option>
+                </select>
+                <span id="productFilterCount" class="small text-muted" th:text="${#lists.size(products)} + ' รายการ'"></span>
+            </div>
+
+            <!-- ==================================================
+                 วนแต่ละหมวดหมู่
+            ================================================== -->
+
+            <div
+                    th:each="categoryEntry : ${productsByCategory}"
+                    class="category-section"
+                    th:attr="data-category=${categoryEntry.key}">
+
+
+                <!-- ==================================================
+                     Category Header
+                ================================================== -->
+
+                <div
+                        class="category-header d-flex
+                               justify-content-between
+                               align-items-center"
+                        th:classappend="${
+                            categoryEntry.key == 'เครื่องดื่ม'
+                                ? ' drink'
+                                : categoryEntry.key == 'อาหารแห้ง'
+                                    ? ' food'
+                                    : categoryEntry.key == 'เครื่องปรุง'
+                                        ? ' seasoning'
+                                        : categoryEntry.key == 'ขนม'
+                                            ? ' snack'
+                                            : categoryEntry.key == 'ของสด'
+                                                ? ' fresh'
+                                                : categoryEntry.key == 'แช่แข็ง'
+                                                    ? ' frozen'
+                                                    : categoryEntry.key == 'ของใช้ในบ้าน'
+                                                        ? ' household'
+                                                        : ' other'
+                        }">
+
+
+                    <div class="d-flex align-items-center gap-2">
+
+
+                        <!-- Icon -->
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'เครื่องดื่ม'}">
+
+                            🥤
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'อาหารแห้ง'}">
+
+                            🍜
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'เครื่องปรุง'}">
+
+                            🧂
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'ขนม'}">
+
+                            🍪
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'ของสด'}">
+
+                            🥬
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'แช่แข็ง'}">
+
+                            🧊
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'ของใช้ในบ้าน'}">
+
+                            🏠
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'อื่นๆ'}">
+
+                            📦
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key == 'ไม่ระบุ'}">
+
+                            ❓
+
+                        </span>
+
+                        <span
+                                style="font-size: 22px;"
+                                th:if="${categoryEntry.key != 'เครื่องดื่ม'
+                                    && categoryEntry.key != 'อาหารแห้ง'
+                                    && categoryEntry.key != 'เครื่องปรุง'
+                                    && categoryEntry.key != 'ขนม'
+                                    && categoryEntry.key != 'ของสด'
+                                    && categoryEntry.key != 'แช่แข็ง'
+                                    && categoryEntry.key != 'ของใช้ในบ้าน'
+                                    && categoryEntry.key != 'อื่นๆ'
+                                    && categoryEntry.key != 'ไม่ระบุ'}">
+
+                            📦
+
+                        </span>
+
+
+                        <!-- Category Name -->
+
+                        <h5
+                                class="category-title"
+                                th:text="${categoryEntry.key}">
+
+                            เครื่องดื่ม
+
+                        </h5>
+
+                    </div>
+
+
+                    <!-- จำนวน -->
+
+                    <span
+                            class="badge bg-white text-dark border category-count"
+                            th:text="${#lists.size(categoryEntry.value)} + ' รายการ'">
+
+                        0 รายการ
+
+                    </span>
+
+                </div>
+
+
+                <!-- ==================================================
+                     Table
+                ================================================== -->
+
+                <div class="product-table-wrapper table-responsive">
+
+
+                    <table
+                            class="table table-hover align-middle product-table">
+
+
+                        <!-- Column Width -->
+
+                        <colgroup>
+
+                            <col class="col-no">
+
+                            <col class="col-code">
+
+                            <col class="col-name">
+
+                            <col class="col-quantity">
+
+                            <col class="col-unit">
+
+                            <col class="col-price">
+
+                            <col class="col-action">
+
+                        </colgroup>
+
+
+                        <!-- ==================================================
+                             Table Header
+                        ================================================== -->
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+
+                                #
+
+                            </th>
+
+                            <th>
+
+                                รหัส
+
+                            </th>
+
+                            <th>
+
+                                ชื่อสินค้า
+
+                            </th>
+
+                            <th>
+
+                                จำนวน
+
+                            </th>
+
+                            <th>
+
+                                หน่วย
+
+                            </th>
+
+                            <th>
+
+                                ราคา
+
+                            </th>
+
+                            <th>
+
+                                จัดการ
+
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+
+                        <!-- ==================================================
+                             Table Body
+                        ================================================== -->
+
+                        <tbody>
+
+
+                        <tr
+                                th:each="product, productStat : ${categoryEntry.value}"
+                                class="product-filter-row"
+                                th:attr="data-search=${product.code + ' ' + product.name + ' ' + (product.barcode == null ? '' : product.barcode)},data-category=${categoryEntry.key},data-product-id=${product.id}">
+
+
+                            <!-- ลำดับ -->
+
+                            <td
+                                    class="fw-bold"
+                                    th:text="${productStat.count}">
+
+                                1
+
+                            </td>
+
+
+                            <!-- รหัส -->
+
+                            <td>
+
+                                <span
+                                        class="product-code"
+                                        th:text="${product.code}">
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- ชื่อสินค้า -->
+
+                            <td class="fw-semibold"><img class="kk-photo" loading="lazy" th:src="@{/products/{id}/image(id=${product.id})}" alt="">
+                                <a th:href="@{/products/{id}/details(id=${product.id})}"
+                                   th:text="${product.name}"
+                                   class="text-decoration-none"
+                                   title="ดูรายละเอียดสินค้าและล็อต">
+                                    โค้ก
+                                </a>
+                            </td>
+
+
+                            <!-- จำนวน -->
+
+                            <td>
+
+
+                                <!-- 20 ขึ้นไป -->
+
+                                <span
+                                        class="badge rounded-pill bg-success stock-badge"
+                                        th:if="${product.quantity != null
+                                            && product.quantity >= 20}"
+                                        th:text="${product.quantity}">
+
+                                    20
+
+                                </span>
+
+
+                                <!-- 10-19 -->
+
+                                <span
+                                        class="badge rounded-pill bg-warning text-dark stock-badge"
+                                        th:if="${product.quantity != null
+                                            && product.quantity >= 10
+                                            && product.quantity < 20}"
+                                        th:text="${product.quantity}">
+
+                                    10
+
+                                </span>
+
+
+                                <!-- ต่ำกว่า 10 -->
+
+                                <span
+                                        class="badge rounded-pill bg-danger stock-badge"
+                                        th:if="${product.quantity != null
+                                            && product.quantity > 0
+                                            && product.quantity < 10}"
+                                        th:text="${product.quantity}">
+
+                                    5
+
+                                </span>
+
+
+                                <!-- หมด -->
+
+                                <span
+                                        class="badge rounded-pill bg-danger stock-badge"
+                                        th:if="${product.quantity != null
+                                            && product.quantity == 0}">
+
+                                    0
+
+                                </span>
+
+
+                                <!-- ไม่มีจำนวน -->
+
+                                <span
+                                        class="badge rounded-pill bg-secondary stock-badge"
+                                        th:if="${product.quantity == null}">
+
+                                    0
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- หน่วย -->
+
+                            <td
+                                    th:text="${product.unit != null
+                                        ? product.unit
+                                        : '-'}">
+
+                                ขวด
+
+                            </td>
+
+
+                            <!-- ราคา -->
+
+                            <td>
+
+                                <span class="price">
+
+                                    ฿<span
+                                        th:text="${product.price != null
+                                            ? #numbers.formatDecimal(product.price,1,2)
+                                            : '0.00'}">
+
+                                        0.00
+
+                                    </span>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- จัดการ -->
+
+                            <td>
+
+
+                                <!-- แก้ไข -->
+
+                                <a
+                                        th:href="@{/products/edit/{id}(id=${product.id})}"
+                                        class="btn btn-outline-warning btn-sm action-btn me-1"
+                                        title="แก้ไขสินค้า">
+
+                                    ✏️
+
+                                </a>
+
+
+                                <!-- ลบ -->
+
+                                <a
+                                        href="#"
+                                        class="btn btn-outline-danger btn-sm action-btn"
+                                        title="ลบสินค้า"
+                                        data-ajax-delete="true">
+
+                                    🗑️
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+
+<script>
+(() => {
+ const search=document.getElementById('productLiveSearch');
+ const category=document.getElementById('productCategoryFilter');
+ if(!search||!category)return;
+ const rows=[...document.querySelectorAll('.product-filter-row')];
+ const sections=[...document.querySelectorAll('.category-section')];
+ const count=document.getElementById('productFilterCount');
+ const norm=v=>(v||'').toLocaleLowerCase('th-TH').trim();
+ function filter(){let shown=0;const q=norm(search.value),c=category.value;rows.forEach(r=>{const ok=norm(r.dataset.search).includes(q)&&(!c||r.dataset.category===c);r.hidden=!ok;if(ok)shown++;});sections.forEach(s=>{s.hidden=!s.querySelector('.product-filter-row:not([hidden])');});if(count)count.textContent=shown+' รายการ';}
+ search.addEventListener('input',filter);category.addEventListener('change',filter);
+
+ // ลบสินค้าผ่าน API โดยไม่ reload หน้า
+ document.addEventListener('click', async event => {
+   const link = event.target.closest('a[data-ajax-delete="true"]');
+   if (!link) return;
+   event.preventDefault();
+
+   const row = link.closest('.product-filter-row');
+   const productId = row?.dataset.productId;
+   if (!productId) {
+     alert('ไม่พบรหัสสินค้า กรุณารีเฟรชหน้าแล้วลองอีกครั้ง');
+     return;
+   }
+   if (!confirm('ต้องการลบสินค้านี้ใช่หรือไม่?')) return;
+
+   link.classList.add('disabled');
+   link.setAttribute('aria-disabled', 'true');
+   try {
+     const response = await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+       method: 'DELETE',
+       headers: { 'Accept': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content }
+     });
+     if (!response.ok) {
+       let message = 'ไม่สามารถลบสินค้าได้';
+       if (response.status === 404) message = 'ไม่พบสินค้านี้หรือไม่มีสิทธิ์เข้าถึง';
+       else if (response.status === 409 || response.status === 500) message = 'ลบไม่ได้ อาจมีข้อมูลการขายหรือประวัติสต็อกอ้างอิงสินค้านี้อยู่';
+       throw new Error(message + ` (HTTP ${response.status})`);
+     }
+     row.remove();
+     filter();
+   } catch (error) {
+     alert(error.message || 'เกิดข้อผิดพลาดระหว่างลบสินค้า');
+     link.classList.remove('disabled');
+     link.removeAttribute('aria-disabled');
+   }
+ });
+})();
+</script>
+
+</body>
+
+</html>

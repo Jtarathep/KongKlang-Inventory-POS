@@ -1,0 +1,1608 @@
+/* ==========================================================
+   KONGKLANG - GLOBAL STYLE
+========================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    background: #f4f6f9;
+
+    color: #212529;
+
+    font-family:
+            "Segoe UI",
+            Tahoma,
+            Arial,
+            sans-serif;
+
+}
+
+
+/* ==========================================================
+   NAVBAR เดิม
+========================================================== */
+
+.navbar {
+
+    background: #ffffff !important;
+
+    box-shadow:
+            0 2px 10px
+            rgba(0, 0, 0, 0.08);
+
+    padding: 10px 0;
+
+}
+
+
+.navbar-brand {
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+}
+
+
+.navbar .btn {
+
+    border-radius: 8px;
+
+    border: none;
+
+    font-weight: 500;
+
+}
+
+
+.navbar .btn-light {
+
+    background: #f8f9fa;
+
+}
+
+
+.navbar .btn-light:hover {
+
+    background: #e9ecef;
+
+}
+
+
+.navbar .btn-primary {
+
+    background: #0d6efd;
+
+}
+
+
+/* ==========================================================
+   MAIN CONTAINER
+========================================================== */
+
+.container,
+.container-xl {
+
+    max-width: 1400px;
+
+}
+
+
+/* ==========================================================
+   PAGE HEADER
+========================================================== */
+
+.page-header {
+
+    margin-bottom: 24px;
+
+}
+
+
+.page-header h1,
+.page-header h2 {
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+
+}
+
+
+.page-header p {
+
+    color: #6c757d;
+
+    margin-bottom: 0;
+
+}
+
+
+/* ==========================================================
+   CARDS
+========================================================== */
+
+.card {
+
+    border: none;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 3px 12px
+            rgba(0, 0, 0, 0.07);
+
+}
+
+
+.card-header {
+
+    background: #ffffff;
+
+    border-bottom:
+            1px solid #eeeeee;
+
+    border-radius:
+            16px 16px 0 0 !important;
+
+}
+
+
+.card-body {
+
+    background: #ffffff;
+
+}
+
+
+/* ==========================================================
+   DASHBOARD CARDS
+========================================================== */
+
+.dashboard-card {
+
+    transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+
+}
+
+
+.dashboard-card:hover {
+
+    transform:
+            translateY(-3px);
+
+    box-shadow:
+            0 8px 20px
+            rgba(0, 0, 0, .10);
+
+}
+
+
+.dashboard-card .card-body {
+
+    padding: 22px;
+
+}
+
+
+.dashboard-card .label {
+
+    color: #6c757d;
+
+    font-size: 15px;
+
+}
+
+
+.dashboard-card .value {
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    margin-top: 6px;
+
+}
+
+
+.dashboard-section {
+
+    margin-bottom: 28px;
+
+}
+
+
+/* ==========================================================
+   REVENUE
+========================================================== */
+
+.amount {
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+}
+
+
+.text-success {
+
+    color: #198754 !important;
+
+}
+
+
+.text-primary {
+
+    color: #0d6efd !important;
+
+}
+
+
+.text-warning {
+
+    color: #f0ad00 !important;
+
+}
+
+
+.text-danger {
+
+    color: #dc3545 !important;
+
+}
+
+
+/* ==========================================================
+   TABLE
+========================================================== */
+
+.table {
+
+    margin-bottom: 0;
+
+}
+
+
+.table th {
+
+    white-space: nowrap;
+
+    font-weight: 600;
+
+    background: #f8f9fa;
+
+}
+
+
+.table td {
+
+    vertical-align: middle;
+
+}
+
+
+.table-hover tbody tr:hover {
+
+    background: #f8f9fa;
+
+}
+
+
+/* ==========================================================
+   BUTTON
+========================================================== */
+
+.btn {
+
+    border-radius: 8px;
+
+}
+
+
+.btn-sm {
+
+    border-radius: 7px;
+
+}
+
+
+/* ==========================================================
+   REPORT CARD
+========================================================== */
+
+.report-card {
+
+    transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+
+}
+
+
+.report-card:hover {
+
+    transform:
+            translateY(-3px);
+
+    box-shadow:
+            0 8px 20px
+            rgba(0, 0, 0, .10);
+
+}
+
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+.form-control,
+.form-select {
+
+    border-radius: 8px;
+
+}
+
+
+.form-control:focus,
+.form-select:focus {
+
+    box-shadow:
+            0 0 0 .2rem
+            rgba(13, 110, 253, .12);
+
+}
+
+
+/* ==========================================================
+   BADGE
+========================================================== */
+
+.badge {
+
+    border-radius: 8px;
+
+    padding:
+            6px 9px;
+
+}
+
+
+/* ==========================================================
+   KONGKLANG ADMIN LAYOUT
+========================================================== */
+
+.kk-layout {
+
+    min-height: 100vh;
+
+    padding-left: 250px;
+
+    padding-top: 64px;
+
+    transition:
+            padding-left .22s ease;
+
+}
+
+
+/* ==========================================================
+   HIDE OLD NAVBAR
+========================================================== */
+
+.kk-layout > .navbar:not(.kk-topbar) {
+
+    display: none !important;
+
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE CONTENT WIDTH WITH SIDEBAR
+   Keep all application pages using the full available width.
+========================================================== */
+
+.kk-layout > .container,
+.kk-layout > .container-sm,
+.kk-layout > .container-md,
+.kk-layout > .container-lg,
+.kk-layout > .container-xl,
+.kk-layout > .container-xxl,
+.kk-layout > .main-container,
+.kk-layout .main-container {
+    width: 100%;
+    max-width: none !important;
+}
+
+.kk-layout .container-xl,
+.kk-layout .container {
+    max-width: none !important;
+}
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+.kk-sidebar {
+
+    position: fixed;
+
+    z-index: 1045;
+
+    left: 0;
+
+    top: 0;
+
+    bottom: 0;
+
+    width: 250px;
+
+    padding:
+            14px 14px 16px;
+
+    background: #ffffff;
+
+    border-right:
+            1px solid #e9ecef;
+
+    box-shadow:
+            3px 0 18px
+            rgba(0, 0, 0, .05);
+
+    overflow-y: auto;
+
+    transition:
+            width .22s ease,
+            transform .22s ease,
+            padding .22s ease;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR HEADER
+========================================================== */
+
+.kk-sidebar-header {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    padding:
+            2px 2px 12px;
+
+}
+
+
+/* ==========================================================
+   BRAND
+========================================================== */
+
+.kk-brand-link {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    color: #172033;
+
+    text-decoration: none;
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    min-width: 0;
+
+}
+
+
+.kk-brand-icon {
+
+    font-size: 25px;
+
+    flex: 0 0 auto;
+
+}
+
+
+.kk-brand-text {
+
+    white-space: nowrap;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR TOGGLE
+========================================================== */
+
+.kk-sidebar-toggle {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #f3f5f8;
+
+    color: #273142;
+
+    font-size: 21px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+            background .18s ease,
+            color .18s ease,
+            transform .18s ease;
+
+}
+
+
+.kk-sidebar-toggle:hover {
+
+    background: #e9ecef;
+
+    color: #0d6efd;
+
+}
+
+
+/* ==========================================================
+   STORE BOX
+========================================================== */
+
+.kk-store-box {
+
+    margin:
+            0 2px 20px;
+
+    padding:
+            13px 14px;
+
+    border-radius: 12px;
+
+    background: #f6f8fb;
+
+    border:
+            1px solid #edf0f4;
+
+}
+
+
+.kk-store-label {
+
+    color: #8a94a6;
+
+    font-size: 11px;
+
+    margin-bottom: 2px;
+
+}
+
+
+.kk-store-name {
+
+    color: #273142;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.kk-store-code {
+
+    color: #8a94a6;
+
+    font-size: 11px;
+
+    margin-top: 2px;
+
+}
+
+
+/* ==========================================================
+   MENU TITLE
+========================================================== */
+
+.kk-menu-title {
+
+    padding:
+            0 11px 8px;
+
+    color: #9aa3b2;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+}
+
+
+/* ==========================================================
+   MENU
+========================================================== */
+
+.kk-menu {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+}
+
+
+.kk-menu-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    min-height: 44px;
+
+    padding:
+            10px 12px;
+
+    color: #4c5667;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition:
+            .16s ease;
+
+}
+
+
+.kk-menu-item:hover {
+
+    color: #0d6efd;
+
+    background: #f1f6ff;
+
+}
+
+
+.kk-menu-item.active {
+
+    color: #ffffff;
+
+    background: #0d6efd;
+
+    box-shadow:
+            0 5px 12px
+            rgba(13,110,253,.18);
+
+}
+
+
+.kk-menu-icon {
+
+    width: 22px;
+
+    flex:
+            0 0 22px;
+
+    text-align: center;
+
+    font-size: 17px;
+
+}
+
+
+/* ==========================================================
+   DIVIDER
+========================================================== */
+
+.kk-menu-divider {
+
+    height: 1px;
+
+    margin:
+            20px 8px 15px;
+
+    background: #edf0f4;
+
+}
+
+
+/* ==========================================================
+   USER
+========================================================== */
+
+.kk-user-box {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin:
+            0 5px 12px;
+
+    padding: 10px;
+
+    border-radius: 11px;
+
+    background: #fafbfc;
+
+}
+
+
+.kk-user-avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex:
+            0 0 38px;
+
+    border-radius: 50%;
+
+    background: #eef4ff;
+
+    font-size: 18px;
+
+}
+
+
+.kk-user-name {
+
+    color: #273142;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+.kk-user-role {
+
+    color: #8a94a6;
+
+    font-size: 10px;
+
+}
+
+
+/* ==========================================================
+   LOGOUT
+========================================================== */
+
+.kk-logout {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin:
+            0 5px;
+
+    padding:
+            10px 12px;
+
+    color: #dc3545;
+
+    border-radius: 9px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.kk-logout:hover {
+
+    color: #b02a37;
+
+    background: #fff1f2;
+
+}
+
+
+/* ==========================================================
+   TOPBAR
+========================================================== */
+
+.kk-topbar {
+
+    position: fixed;
+
+    z-index: 1035;
+
+    left: 250px;
+
+    right: 0;
+
+    top: 0;
+
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding:
+            0 24px;
+
+    background:
+            rgba(255,255,255,.96);
+
+    border-bottom:
+            1px solid #e9ecef;
+
+    box-shadow:
+            0 2px 12px
+            rgba(0,0,0,.045);
+
+    backdrop-filter: blur(8px);
+
+    transition:
+            left .22s ease;
+
+}
+
+
+.kk-topbar-left,
+.kk-topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+/* ==========================================================
+   DASHBOARD BUTTON
+========================================================== */
+
+.kk-dashboard-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    min-height: 38px;
+
+    padding:
+            8px 14px;
+
+    border-radius: 9px;
+
+    color: #ffffff;
+
+    background: #0d6efd;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    box-shadow:
+            0 4px 10px
+            rgba(13,110,253,.16);
+
+}
+
+
+.kk-dashboard-button:hover {
+
+    color: #ffffff;
+
+    background: #0b5ed7;
+
+}
+
+
+/* ==========================================================
+   TOPBAR TITLE
+========================================================== */
+
+.kk-topbar-title {
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* ==========================================================
+   TOPBAR STORE
+========================================================== */
+
+.kk-topbar-store {
+
+    color: #495057;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+/* ==========================================================
+   TOPBAR LOGOUT
+========================================================== */
+
+.kk-topbar-logout {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 36px;
+
+    height: 36px;
+
+    border-radius: 8px;
+
+    color: #dc3545;
+
+    text-decoration: none;
+
+}
+
+
+.kk-topbar-logout:hover {
+
+    background: #fff1f2;
+
+}
+
+
+/* ==========================================================
+   SIDEBAR COLLAPSED
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-layout {
+
+    padding-left: 78px;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-sidebar {
+
+    width: 78px;
+
+    padding:
+            14px 10px 16px;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-topbar {
+
+    left: 78px;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED HEADER
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-sidebar-header {
+
+    justify-content: center;
+
+    padding:
+            2px 0 12px;
+
+}
+
+
+/*
+ * ซ่อน Logo ทั้งหมด
+ */
+
+body.kk-sidebar-collapsed
+.kk-brand-link {
+
+    display: none;
+
+}
+
+
+/*
+ * Toggle อยู่ตรงกลาง
+ */
+
+body.kk-sidebar-collapsed
+.kk-sidebar-toggle {
+
+    margin: 0 auto;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED STORE
+========================================================== */
+
+/*
+ * ซ่อนร้านคงคลังทั้งหมด
+ */
+
+body.kk-sidebar-collapsed
+.kk-store-box {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED MENU TITLE
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-menu-title {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED MENU
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-menu-item {
+
+    justify-content: center;
+
+    padding:
+            10px 0;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-menu-icon {
+
+    margin: 0;
+
+    font-size: 19px;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-menu-text {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED DIVIDER
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-menu-divider {
+
+    margin-left: 4px;
+
+    margin-right: 4px;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED USER
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-user-box {
+
+    justify-content: center;
+
+    padding:
+            10px 0;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-user-info {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   COLLAPSED LOGOUT
+========================================================== */
+
+body.kk-sidebar-collapsed
+.kk-logout {
+
+    justify-content: center;
+
+    padding:
+            10px 0;
+
+}
+
+
+body.kk-sidebar-collapsed
+.kk-logout-text {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   CHART
+========================================================== */
+
+.kk-chart-card {
+
+    border: 0;
+
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 4px 18px
+            rgba(0,0,0,.06);
+
+}
+
+
+.kk-chart-wrap {
+
+    position: relative;
+
+    height: 300px;
+
+}
+
+
+/* ==========================================================
+   TABLET / MOBILE
+========================================================== */
+
+@media (max-width: 991.98px) {
+
+
+    /* ======================================================
+       MAIN
+    ======================================================= */
+
+    .kk-layout {
+
+        padding-left: 0;
+
+    }
+
+
+    /* ======================================================
+       SIDEBAR
+    ======================================================= */
+
+    .kk-sidebar {
+
+        width: 250px;
+
+        transform:
+                translateX(-102%);
+
+        transition:
+                transform .22s ease;
+
+        box-shadow:
+                8px 0 25px
+                rgba(0,0,0,.12);
+
+    }
+
+
+    body.kk-sidebar-open
+    .kk-sidebar {
+
+        transform:
+                translateX(0);
+
+    }
+
+
+    /* ======================================================
+       TOPBAR
+    ======================================================= */
+
+    .kk-topbar {
+
+        left: 0;
+
+    }
+
+
+    .kk-topbar-title {
+
+        display: none;
+
+    }
+
+
+    /* ======================================================
+       MOBILE
+       ยกเลิก collapsed state
+    ======================================================= */
+
+    body.kk-sidebar-collapsed
+    .kk-layout {
+
+        padding-left: 0;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-sidebar {
+
+        width: 250px;
+
+        padding:
+                14px 14px 16px;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-topbar {
+
+        left: 0;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-sidebar-header {
+
+        justify-content: space-between;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-brand-link {
+
+        display: flex;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-store-box {
+
+        display: block;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-menu-title {
+
+        display: block;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-menu-item {
+
+        justify-content: flex-start;
+
+        padding:
+                10px 12px;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-menu-text {
+
+        display: inline;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-user-box {
+
+        justify-content: flex-start;
+
+        padding:
+                10px;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-user-info {
+
+        display: block;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-logout {
+
+        justify-content: flex-start;
+
+        padding:
+                10px 12px;
+
+    }
+
+
+    body.kk-sidebar-collapsed
+    .kk-logout-text {
+
+        display: inline;
+
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE SMALL
+========================================================== */
+
+@media (max-width: 575.98px) {
+
+
+    .kk-topbar {
+
+        padding:
+                0 12px;
+
+    }
+
+
+    .kk-topbar-store {
+
+        display: none;
+
+    }
+
+
+    .kk-dashboard-button span:last-child {
+
+        display: none;
+
+    }
+
+
+    .kk-dashboard-button {
+
+        width: 38px;
+
+        justify-content: center;
+
+        padding: 8px;
+
+    }
+
+
+    .kk-chart-wrap {
+
+        height: 250px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   GENERAL RESPONSIVE
+========================================================== */
+
+@media (max-width: 768px) {
+
+
+    .navbar .container {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+    .navbar .d-flex {
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+
+    }
+
+
+    .container,
+    .container-xl {
+
+        width: 95%;
+
+    }
+
+
+    .dashboard-card .value {
+
+        font-size: 24px;
+
+    }
+
+
+    .amount {
+
+        font-size: 24px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   PRINT
+========================================================== */
+
+@media print {
+
+
+    .kk-sidebar,
+    .kk-topbar {
+
+        display: none !important;
+
+    }
+
+
+    .kk-layout {
+
+        padding: 0 !important;
+
+    }
+
+}
+/* ==========================================================
+   FIX: BODY MUST REFLOW WHEN DESKTOP SIDEBAR COLLAPSES
+   Keep content inside the remaining body content box. Some pages
+   define .container-xl width:95% in their own inline styles; this
+   final, higher-priority rule prevents a blank strip from remaining.
+========================================================== */
+@media (min-width: 992px) {
+    body.kk-layout > .container,
+    body.kk-layout > .container-sm,
+    body.kk-layout > .container-md,
+    body.kk-layout > .container-lg,
+    body.kk-layout > .container-xl,
+    body.kk-layout > .container-xxl,
+    body.kk-layout > .container-fluid,
+    body.kk-layout > .main-container,
+    body.kk-layout .main-container {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    body.kk-layout.kk-sidebar-collapsed {
+        padding-left: 78px !important;
+    }
+
+    body.kk-layout:not(.kk-sidebar-collapsed) {
+        padding-left: 250px !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    body.kk-layout,
+    body.kk-layout.kk-sidebar-collapsed {
+        padding-left: 0 !important;
+    }
+}
+
+.kk-mobile-toggle {display:none;min-height:44px;padding:8px 12px;border:1px solid #b8c8c1;border-radius:6px;background:#fff;color:#16613f;font:inherit;}
+.kk-logout,.kk-topbar-logout {font:inherit;cursor:pointer;}
+@media(max-width:991px){.kk-mobile-toggle{display:inline-block;}.kk-topbar-left{display:flex;gap:8px;}.kk-topbar-title{display:none;}}
+.business-tabs {display:flex;flex-wrap:wrap;gap:12px 24px;margin:12px 0 24px;}

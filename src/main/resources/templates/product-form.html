@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - เพิ่มสินค้า</title>
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=3)}">
+
+    <style>
+
+        body {
+            background: #f5f7fb;
+        }
+
+        .main-container {
+            padding-top: 30px;
+            padding-bottom: 50px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            letter-spacing: -0.3px;
+        }
+
+        .dashboard-section-card {
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #edf0f2;
+        }
+
+        .form-section-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .form-label {
+            margin-bottom: 7px;
+        }
+
+        .form-control,
+        .form-select,
+        .input-group-text {
+            min-height: 44px;
+            border-radius: 9px;
+        }
+
+        .input-group .input-group-text {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            font-weight: 700;
+        }
+
+        .input-group .form-control {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+        }
+
+        .selector-card {
+            border-left: 4px solid #0d6efd;
+        }
+
+        .selector-help {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .stock-box {
+            border: 1px solid #b7dfc8;
+            border-radius: 12px;
+            background: #f0fff5;
+        }
+
+        .stock-icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #d1e7dd;
+            font-size: 23px;
+        }
+
+        .stock-number {
+            font-size: 22px;
+            font-weight: 800;
+            color: #198754;
+        }
+
+        .required-mark {
+            color: #dc3545;
+        }
+
+        .form-note {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .action-area {
+            border-top: 1px solid #edf0f2;
+        }
+
+        .btn-save {
+            min-width: 150px;
+        }
+
+        .navbar .btn {
+            white-space: nowrap;
+        }
+
+        @media (max-width: 1199.98px) {
+
+            .navbar .container-xl {
+                overflow-x: auto;
+            }
+
+        }
+
+        @media (max-width: 767.98px) {
+
+            .main-container {
+                padding-top: 22px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .dashboard-section-card .card-body {
+                padding: 20px !important;
+            }
+
+            .action-area {
+                flex-direction: column-reverse;
+                align-items: stretch !important;
+            }
+
+            .action-area .btn {
+                width: 100%;
+            }
+
+        }
+
+        @media (max-width: 575.98px) {
+
+            .main-container {
+                padding-top: 18px;
+                padding-bottom: 30px;
+            }
+
+            .page-header {
+                margin-bottom: 20px;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ====================================================== -->
+<!-- Navbar -->
+<!-- ====================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container-xl">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-primary btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-light btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ====================================================== -->
+<!-- Main -->
+<!-- ====================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ================================================== -->
+    <!-- Page Header -->
+    <!-- ================================================== -->
+
+    <div class="page-header">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-start
+                    gap-3">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+
+                    <span th:if="${product.id == null}">
+
+                        ➕ เพิ่มสินค้า
+
+                    </span>
+
+
+                    <span th:if="${product.id != null}">
+
+                        ✏️ แก้ไขสินค้า
+
+                    </span>
+
+                </h2>
+
+
+                <p class="text-muted mb-0">
+
+                    <span th:if="${product.id == null}">
+
+                        เพิ่มข้อมูลสินค้าเข้าสู่ระบบคงคลัง
+
+                    </span>
+
+
+                    <span th:if="${product.id != null}">
+
+                        แก้ไขข้อมูลสินค้าในระบบคงคลัง
+
+                    </span>
+
+                </p>
+
+            </div>
+
+
+            <a
+                    href="/products"
+                    class="btn btn-light border">
+
+                ← กลับรายการสินค้า
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- เลือกสินค้าเดิม -->
+    <!-- ================================================== -->
+
+    <div
+            class="card dashboard-section-card selector-card mb-4"
+            th:if="${product.id == null}">
+
+
+        <div class="card-header bg-white p-4">
+
+            <div>
+
+                <h5 class="form-section-title mb-1">
+
+                    📦 เลือกสินค้า
+
+                </h5>
+
+                <small class="text-muted">
+
+                    เพิ่มสินค้าใหม่ หรือเลือกสินค้าเดิมเพื่อเปิดหน้าแก้ไข
+
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-4">
+
+            <label
+                    for="productSelector"
+                    class="form-label fw-semibold">
+
+                เลือกสินค้าที่มีอยู่แล้ว
+
+            </label>
+
+
+            <select
+                    id="productSelector"
+                    class="form-select">
+
+                <option value="">
+
+                    -- สินค้าใหม่ / เลือกสินค้าเดิม --
+
+                </option>
+
+
+                <option
+                        th:each="p : ${products}"
+                        th:value="${p.code}"
+                        th:text="${p.code + ' - ' + p.name}">
+
+                </option>
+
+            </select>
+
+
+            <div class="form-text selector-help mt-2">
+
+                หากต้องการเพิ่มสต็อกของสินค้าเดิม ให้ใช้เมนูรับสินค้าเข้า
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- Form Card -->
+    <!-- ================================================== -->
+
+    <div class="card dashboard-section-card">
+
+
+        <div class="card-header bg-white p-4">
+
+            <div>
+
+                <h5 class="form-section-title mb-1">
+
+                    📋 ข้อมูลสินค้า
+
+                </h5>
+
+                <small class="text-muted">
+
+                    กรอกข้อมูลพื้นฐานของสินค้าให้ครบถ้วน
+
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body p-4">
+
+
+            <p th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></p>
+<form
+                    th:action="@{/products/save}"
+                    th:object="${product}" enctype="multipart/form-data"
+                    method="post">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+
+
+
+                <!-- ================================================== -->
+                <!-- ID -->
+                <!-- ================================================== -->
+
+                <input
+                        type="hidden"
+                        th:field="*{id}">
+
+
+                <!-- ================================================== -->
+                <!-- ข้อมูลพื้นฐาน -->
+                <!-- ================================================== -->
+
+                <section class="kk-photo-editor" aria-label="รูปสินค้า">
+<img class="kk-photo-large" data-photo-preview th:if="${product.id != null}" th:src="@{/products/{id}/image(id=${product.id})}" alt="รูปสินค้าปัจจุบัน">
+<img class="kk-photo-large" data-photo-preview th:if="${product.id == null}" src="/images/product-placeholder.svg" alt="ยังไม่มีรูปสินค้า">
+<div><label for="productPhoto" class="form-label fw-semibold">รูปสินค้า</label><input id="productPhoto" name="photo" type="file" accept="image/jpeg,image/png" class="form-control"><small>ไม่บังคับ · JPG หรือ PNG ไม่เกิน 5 MB · รูปนี้ใช้เฉพาะร้านของคุณ</small><label th:if="${product.id != null}"><input type="checkbox" name="removePhoto" value="true"> ลบรูปเดิม (หากเลือกรูปใหม่จะใช้รูปใหม่แทน)</label></div></section>
+<div class="row g-4">
+
+
+                    <!-- รหัสสินค้า -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="code"
+                                class="form-label fw-semibold">
+
+                            รหัสสินค้า
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <input
+                                type="text"
+                                id="code"
+                                th:readonly="${product.id != null}"
+                                th:field="*{code}"
+                                class="form-control"
+                                placeholder="เช่น P001"
+                                required>
+
+
+                        <div class="form-text">
+
+                            ใช้รหัสที่ไม่ซ้ำกับสินค้าอื่น
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ชื่อสินค้า -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="name"
+                                class="form-label fw-semibold">
+
+                            ชื่อสินค้า
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <input
+                                type="text"
+                                id="name"
+                                th:field="*{name}"
+                                class="form-control"
+                                placeholder="ชื่อสินค้า"
+                                required>
+
+                    </div>
+
+
+                    <!-- หมวดหมู่ -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="category"
+                                class="form-label fw-semibold">
+
+                            หมวดหมู่
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <select
+                                id="category"
+                                th:field="*{category}"
+                                class="form-select"
+                                required>
+
+
+                            <option value="">
+
+                                -- เลือกหมวดหมู่ --
+
+                            </option>
+
+
+                            <option
+                                    th:each="category : ${categories}"
+                                    th:value="${category.name}"
+                                    th:text="${category.name}">
+
+                            </option>
+
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- หน่วย -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="unit"
+                                class="form-label fw-semibold">
+
+                            หน่วยนับ
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <input
+                                type="text"
+                                id="unit"
+                                th:field="*{unit}"
+                                class="form-control"
+                                placeholder="เช่น ชิ้น, ขวด, กล่อง"
+                                required>
+
+                    </div>
+
+
+                    <!-- จำนวน -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="quantity"
+                                class="form-label fw-semibold">
+
+                            จำนวนตั้งต้น / คงเหลือ
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <input
+                                type="number"
+                                id="quantity"
+                                th:readonly="${product.id != null}"
+                                th:field="*{quantity}"
+                                class="form-control"
+                                min="0"
+                                placeholder="จำนวน"
+                                required>
+
+
+                        <div class="form-text">
+
+                            ระบุจำนวนสินค้าเป็นจำนวนเต็ม
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ราคา -->
+
+                    <div class="col-md-6">
+
+                        <label
+                                for="price"
+                                class="form-label fw-semibold">
+
+                            ราคาขาย
+
+                            <span class="required-mark">*</span>
+
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+
+                                ฿
+
+                            </span>
+
+
+                            <input
+                                    type="number"
+                                    id="price"
+                                    step="0.01"
+                                    th:field="*{price}"
+                                    class="form-control"
+                                    placeholder="0.00"
+                                    min="0"
+                                    required>
+
+                        </div>
+
+
+                        <div class="form-text">
+
+                            ราคาต่อหน่วย
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ================================================== -->
+                <!-- Stock เดิม -->
+                <!-- ================================================== -->
+
+                <div class="row g-3 mt-2"><div class="col-md-6"><label for="barcode" class="form-label">บาร์โค้ด</label><input id="barcode" th:field="*{barcode}" maxlength="255" class="form-control" inputmode="numeric"><p class="form-text">สแกนหรือกรอกบาร์โค้ด ต้องไม่ซ้ำภายในร้านเดียวกัน</p></div></div>
+                <div class="row g-3 mt-2"><div class="col-md-6"><label for="costPrice" class="form-label">ต้นทุนล่าสุดต่อหน่วย (บาท)</label><input id="costPrice" type="number" min="0" step="0.0001" th:field="*{costPrice}" class="form-control"><p class="form-text">ต้นทุนขายใช้ต้นทุนของแต่ละล็อต การแก้ช่องนี้ไม่เปลี่ยนมูลค่าล็อตเดิม</p></div><div class="col-md-6"><label for="active" class="form-label">สถานะการขาย</label><select id="active" th:field="*{active}" class="form-select"><option value="true">เปิดขาย</option><option value="false">ปิดขาย</option></select></div><div class="col-12"><label for="description" class="form-label">รายละเอียดสินค้า</label><textarea id="description" th:field="*{description}" maxlength="2000" class="form-control" rows="3"></textarea></div></div>
+                <div
+                        id="stockBox"
+                        class="stock-box mt-4 p-3"
+                        style="display:none;">
+
+
+                    <div class="d-flex align-items-center">
+
+
+                        <div class="stock-icon me-3">
+
+                            📦
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="fw-semibold">
+
+                                คงเหลือปัจจุบัน
+
+                            </div>
+
+
+                            <div>
+
+                                <strong
+                                        id="currentStock"
+                                        class="stock-number">
+
+                                    0
+
+                                </strong>
+
+
+                                <span
+                                        id="currentUnit"
+                                        class="text-muted">
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================== -->
+                <!-- Note -->
+                <!-- ================================================== -->
+
+                <div class="form-note p-3 mt-4">
+
+                    <div class="fw-semibold mb-1">
+
+                        💡 หมายเหตุ
+
+                    </div>
+
+                    <div>
+
+                        สินค้าใหม่สามารถตั้งต้นเป็นศูนย์ได้ การรับสินค้าเดิมเพิ่มให้ใช้เมนูรับสินค้าเข้า เพื่อเก็บล็อตและประวัติ
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================== -->
+                <!-- Buttons -->
+                <!-- ================================================== -->
+
+                <div
+                        class="action-area
+                               d-flex
+                               justify-content-end
+                               align-items-center
+                               gap-2
+                               mt-4
+                               pt-4">
+
+
+                    <a
+                            th:href="@{/products}"
+                            class="btn btn-light border">
+
+                        ยกเลิก
+
+                    </a>
+
+
+                    <button
+                            type="submit"
+                            class="btn btn-primary btn-save">
+
+
+                        <span th:if="${product.id == null}">
+
+                            💾 เพิ่มสินค้า
+
+                        </span>
+
+
+                        <span th:if="${product.id != null}">
+
+                            💾 บันทึกการแก้ไข
+
+                        </span>
+
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- JavaScript -->
+<!-- ====================================================== -->
+
+<script>
+
+    const selector =
+        document.getElementById("productSelector");
+
+
+    const code =
+        document.getElementById("code");
+
+
+    const name =
+        document.getElementById("name");
+
+
+    const category =
+        document.getElementById("category");
+
+
+    const quantity =
+        document.getElementById("quantity");
+
+
+    const unit =
+        document.getElementById("unit");
+
+
+    const price =
+        document.getElementById("price");
+
+
+    const stockBox =
+        document.getElementById("stockBox");
+
+
+    const currentStock =
+        document.getElementById("currentStock");
+
+
+    const currentUnit =
+        document.getElementById("currentUnit");
+
+
+    // ==================================================
+    // เลือกสินค้า
+    // ==================================================
+
+    if (selector) {
+
+        selector.addEventListener(
+            "change",
+            function () {
+
+                const selectedCode =
+                    this.value;
+
+
+                // ==================================================
+                // สินค้าใหม่
+                // ==================================================
+
+                if (!selectedCode) {
+
+                    code.value = "";
+                    name.value = "";
+                    category.value = "";
+                    unit.value = "";
+                    price.value = "";
+                    quantity.value = "";
+
+
+                    stockBox.style.display =
+                        "none";
+
+
+                    code.readOnly = false;
+                    name.readOnly = false;
+                    unit.readOnly = false;
+                    price.readOnly = false;
+
+
+                    return;
+
+                }
+
+
+                // ==================================================
+                // ค้นหาสินค้า
+                // ==================================================
+
+                fetch(
+                    "/products/by-code?code="
+                    + encodeURIComponent(selectedCode)
+                )
+
+                    .then(response => {
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                "ไม่พบสินค้า"
+                            );
+
+                        }
+
+                        return response.json();
+
+                    })
+
+
+                    .then(product => {
+                        if(product && product.id){window.location.assign(`/products/edit/${product.id}`);return;} 
+
+
+                        // ==================================================
+                        // เติมข้อมูล
+                        // ==================================================
+
+                        code.value =
+                            product.code;
+
+
+                        name.value =
+                            product.name;
+
+
+                        category.value =
+                            product.category;
+
+
+                        unit.value =
+                            product.unit;
+
+
+                        price.value =
+                            product.price;
+
+
+                        // ==================================================
+                        // Stock เดิม
+                        // ==================================================
+
+                        currentStock.textContent =
+                            product.quantity ?? 0;
+
+
+                        currentUnit.textContent =
+                            " " + (product.unit ?? "ชิ้น");
+
+
+                        stockBox.style.display =
+                            "block";
+
+
+                        // ==================================================
+                        // จำนวนที่กรอก
+                        // = จำนวนที่จะเพิ่ม
+                        // ==================================================
+
+                        quantity.value = "";
+
+
+                        // ==================================================
+                        // ล็อกข้อมูลสินค้าเดิม
+                        // ==================================================
+
+                        code.readOnly = true;
+
+                        name.readOnly = true;
+
+                        unit.readOnly = true;
+
+                        price.readOnly = true;
+
+                    })
+
+
+                    .catch(error => {
+
+                        console.error(error);
+
+                        alert(
+                            "ไม่สามารถค้นหาข้อมูลสินค้าได้"
+                        );
+
+                    });
+
+            }
+        );
+
+    }
+
+</script>
+
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+
+
+
+</body>
+
+</html>

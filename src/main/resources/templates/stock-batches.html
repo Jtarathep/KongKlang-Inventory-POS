@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>รายละเอียดล็อต - KONGKLANG</title>
+
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <style>
+
+        body {
+            background: #f5f7f9;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            white-space: nowrap;
+            background: #f8f9fa;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .badge-ready {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-expired {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-empty {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .cost {
+            font-weight: 600;
+        }
+
+        .remaining {
+            font-weight: 700;
+            color: #198754;
+        }
+
+        .remaining-zero {
+            font-weight: 700;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+
+            .content-card {
+                padding: 15px;
+            }
+
+            .table {
+                font-size: 13px;
+            }
+
+        }
+
+    </style>
+
+    <!-- Shared KongKlang sidebar and layout styles -->
+    <link rel="stylesheet" th:href="@{/css/kongklang.css}">
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ========================================== -->
+<!-- NAVBAR -->
+<!-- ========================================== -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+
+    <div class="container">
+
+        <a class="navbar-brand"
+           href="/stock">
+            KONGKLANG
+        </a>
+
+
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+
+        <div
+                class="collapse navbar-collapse"
+                id="navbarNav">
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/">
+                        Dashboard
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/products">
+                        Products
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/sales">
+                        Sales
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link active"
+                       href="/stock">
+                        Stock
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/sales/history">
+                        Sales History
+                    </a>
+
+                </li>
+
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="/reports">
+                        Reports
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ========================================== -->
+<!-- CONTENT -->
+<!-- ========================================== -->
+
+<div class="container py-5">
+
+
+    <!-- Header -->
+
+    <div class="page-header">
+
+        <h2 class="page-title">
+            📦 รายละเอียดล็อตสินค้า
+        </h2>
+
+        <div class="page-subtitle">
+            ตรวจสอบจำนวน ต้นทุน วันหมดอายุ และสถานะของสินค้าแต่ละล็อต
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- TABLE -->
+    <!-- ========================================== -->
+
+    <div class="content-card">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                <tr>
+
+                    <th>
+                        Lot ID
+                    </th>
+
+                    <th>
+                        รหัสสินค้า
+                    </th>
+
+                    <th>
+                        ชื่อสินค้า
+                    </th>
+
+                    <th class="text-center">
+                        รับเข้า
+                    </th>
+
+                    <th class="text-center">
+                        คงเหลือ
+                    </th>
+
+                    <th class="text-end">
+                        ต้นทุน / หน่วย
+                    </th>
+
+                    <th>
+                        วันหมดอายุ
+                    </th>
+
+                    <th>
+                        วันที่รับเข้า
+                    </th>
+
+                    <th class="text-center">
+                        สถานะ
+                    </th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <!-- ====================================== -->
+                <!-- มีข้อมูล -->
+                <!-- ====================================== -->
+
+                <tr th:each="batch : ${batches}">
+
+                    <!-- Lot ID -->
+
+                    <td>
+
+                        <span class="fw-semibold"
+                              th:text="${batch.id}">
+                            1
+                        </span>
+
+                    </td>
+
+
+                    <!-- Product Code -->
+
+                    <td>
+
+                        <span
+                                th:text="${batch.productCode}">
+                            P001
+                        </span>
+
+                    </td>
+
+
+                    <!-- Product Name -->
+
+                    <td>
+
+                        <span
+                                th:text="${batch.productName}">
+                            Coca Cola
+                        </span>
+
+                    </td>
+
+
+                    <!-- Quantity -->
+
+                    <td class="text-center">
+
+                        <span
+                                th:text="${batch.quantity}">
+                            10
+                        </span>
+
+                    </td>
+
+
+                    <!-- Remaining -->
+
+                    <td class="text-center">
+
+                        <span
+                                th:if="${batch.remainingQuantity != null and batch.remainingQuantity > 0}"
+                                class="remaining"
+                                th:text="${batch.remainingQuantity}">
+                            10
+                        </span>
+
+                        <span
+                                th:if="${batch.remainingQuantity == null or batch.remainingQuantity == 0}"
+                                class="remaining-zero"
+                                th:text="${batch.remainingQuantity != null ? batch.remainingQuantity : 0}">
+                            0
+                        </span>
+
+                    </td>
+
+
+                    <!-- Purchase Cost -->
+
+                    <td class="text-end">
+
+                        <span class="cost">
+
+                            <span
+                                    th:text="${#numbers.formatDecimal(batch.purchaseCost, 1, 2)}">
+                                12.00
+                            </span>
+
+                            บาท
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- Expiry Date -->
+
+                    <td>
+
+                        <span
+                                th:if="${batch.expiryDate != null}"
+                                th:text="${#temporals.format(batch.expiryDate, 'dd/MM/yyyy')}">
+                            20/09/2026
+                        </span>
+
+                        <span
+                                th:if="${batch.expiryDate == null}"
+                                class="text-muted">
+                            ไม่มีวันหมดอายุ
+                        </span>
+
+                    </td>
+
+
+                    <!-- Received At -->
+
+                    <td>
+
+                        <span
+                                th:if="${batch.receivedAt != null}"
+                                th:text="${#temporals.format(batch.receivedAt, 'dd/MM/yyyy HH:mm')}">
+                            19/09/2026 14:00
+                        </span>
+
+                    </td>
+
+
+                    <!-- Status -->
+
+                    <td class="text-center">
+
+                        <!-- หมดแล้ว -->
+
+                        <span
+                                th:if="${batch.remainingQuantity == null or batch.remainingQuantity <= 0}"
+                                class="badge badge-empty rounded-pill px-3 py-2">
+
+                            หมดแล้ว
+
+                        </span>
+
+
+                        <!-- หมดอายุ -->
+
+                        <span
+                                th:if="${batch.remainingQuantity != null and batch.remainingQuantity > 0 and batch.expiryDate != null and batch.expiryDate.isBefore(T(java.time.LocalDate).now())}"
+                                class="badge badge-expired rounded-pill px-3 py-2">
+
+                            หมดอายุ
+
+                        </span>
+
+
+                        <!-- พร้อมขาย -->
+
+                        <span
+                                th:if="${batch.remainingQuantity != null and batch.remainingQuantity > 0 and (batch.expiryDate == null or !batch.expiryDate.isBefore(T(java.time.LocalDate).now()))}"
+                                class="badge badge-ready rounded-pill px-3 py-2">
+
+                            พร้อมขาย
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- ====================================== -->
+                <!-- ไม่มีข้อมูล -->
+                <!-- ====================================== -->
+
+                <tr th:if="${batches == null or #lists.isEmpty(batches)}">
+
+                    <td colspan="9">
+
+                        <div class="empty-state">
+
+                            <div style="font-size: 45px;">
+                                📦
+                            </div>
+
+                            <h5 class="mt-3">
+                                ยังไม่มีข้อมูลล็อตสินค้า
+                            </h5>
+
+                            <p class="mb-3">
+                                เมื่อมีการรับสินค้าเข้าระบบ
+                                ข้อมูลล็อตจะแสดงที่หน้านี้
+                            </p>
+
+                            <a
+                                    href="/stock/in"
+                                    class="btn btn-success">
+
+                                📥 รับสินค้าเข้า
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- FOOTER BUTTON -->
+        <!-- ========================================== -->
+
+        <div class="d-flex justify-content-between mt-4">
+
+            <a
+                    href="/stock"
+                    class="btn btn-outline-secondary">
+
+                ← กลับหน้าสต๊อก
+
+            </a>
+
+
+            <a
+                    href="/stock/in"
+                    class="btn btn-success">
+
+                📥 รับสินค้าเข้า
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+        src="/js/vendor/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

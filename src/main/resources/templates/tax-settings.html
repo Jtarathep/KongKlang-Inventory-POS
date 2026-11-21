@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตั้งค่าภาษีร้าน | KONGKLANG</title><link rel="stylesheet" href="/css/vendor/bootstrap.min.css"><link rel="stylesheet" href="/css/ui.css?v=20261113"><link rel="stylesheet" href="/css/commerce.css"><link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout">
+<div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<main class="container-xl commerce-page">
+<h1>ตั้งค่าภาษีร้าน</h1><p class="text-muted">ตั้งค่าสำหรับร้านที่กำลังใช้งาน มีผลกับบิลใหม่เท่านั้น บิลที่บันทึกแล้วเก็บราคาและภาษีเดิมไว้</p>
+<p th:if="${success}" th:text="${success}" class="alert alert-success" role="status"></p>
+<p th:if="${error}" th:text="${error}" class="alert alert-danger" role="alert"></p>
+<form method="post" action="/settings/tax" class="commerce-settings">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}"><input type="hidden" name="revision" th:value="${tax.revision}">
+<fieldset><legend>วิธีคิดราคา</legend>
+<label for="taxMode">ภาษีขาย</label>
+<select id="taxMode" name="mode" class="form-select" aria-describedby="taxModeHelp">
+<option value="NONE" th:selected="${tax.mode == 'NONE'}">ไม่คิด VAT</option>
+<option value="INCLUSIVE" th:selected="${tax.mode == 'INCLUSIVE'}">ราคาสินค้ารวม VAT แล้ว</option>
+<option value="EXCLUSIVE" th:selected="${tax.mode == 'EXCLUSIVE'}">ราคาสินค้ายังไม่รวม VAT</option>
+</select><p id="taxModeHelp" class="form-text">ราคา 100 บาทที่ VAT 7%: รวมแล้ว → จ่าย 100 บาท / ยังไม่รวม → จ่าย 107 บาท</p>
+<label for="vatRate">อัตรา VAT (%)</label><input id="vatRate" name="rate" type="number" min="0" max="100" step="0.01" required th:value="${tax.rate}" class="form-control" aria-describedby="rateHelp">
+<p id="rateHelp" class="form-text">กรอกได้ตามอัตราที่กิจการต้องใช้ ระบบไม่ตรวจสอบสิทธิทางภาษีแทนผู้ประกอบการ เมื่อเลือกไม่คิด VAT จะไม่เรียกเก็บภาษี แม้มีอัตราเก็บไว้ในช่องนี้</p>
+</fieldset>
+<fieldset><legend>ข้อมูลผู้ประกอบการ</legend>
+<label class="commerce-check"><input type="checkbox" name="registered" value="true" th:checked="${tax.registered}"> ร้านจดทะเบียน VAT แล้ว</label>
+<p class="form-text">ร้านที่ยังไม่จดทะเบียนให้เลือกไม่คิด VAT และออกใบเสร็จทั่วไป</p>
+<label for="legalName">ชื่อผู้ประกอบการตามทะเบียน</label><input id="legalName" name="legalName" maxlength="255" th:value="${tax.legalName}" class="form-control" autocomplete="organization">
+<label for="legalAddress">ที่อยู่ตามทะเบียน</label><textarea id="legalAddress" name="legalAddress" maxlength="1000" rows="3" th:text="${tax.legalAddress}" class="form-control" autocomplete="street-address"></textarea>
+<div class="commerce-grid"><div><label for="taxId">เลขประจำตัวผู้เสียภาษี</label><input id="taxId" name="taxId" inputmode="numeric" pattern="[0-9]{13}" maxlength="13" th:value="${tax.taxId}" class="form-control"><p class="form-text">13 หลัก</p></div>
+<div><label for="branchCode">เลขสาขา</label><input id="branchCode" name="branchCode" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" th:value="${tax.branchCode}" class="form-control"><p class="form-text">สำนักงานใหญ่ใช้ 00000</p></div></div>
+</fieldset>
+<div class="commerce-actions"><button class="btn btn-primary" type="submit">บันทึกการตั้งค่าภาษี</button><a href="/" class="btn btn-outline-secondary">กลับภาพรวม</a></div>
+</form></main><div th:replace="~{fragments/navigation :: navigation-script}"></div>
+</body></html>

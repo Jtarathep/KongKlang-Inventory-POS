@@ -1,0 +1,31 @@
+<!doctype html><html lang="th" xmlns:th="http://www.thymeleaf.org"><body>
+<th:block th:fragment="launcher">
+  <link rel="stylesheet" href="/css/kk-ai.css">
+  <button type="button" class="ai-launch" id="ai-launch" aria-controls="ai-mini" aria-expanded="false" aria-label="ถาม KK AI" title="ถาม KK AI"><img src="/images/kk-ai-mark.svg" alt="" width="34" height="34"></button>
+  <section class="ai-mini" id="ai-mini" aria-labelledby="ai-mini-title" hidden>
+    <header class="ai-header"><div><h2 id="ai-mini-title">KK AI</h2><span>ผู้ช่วยข้อมูลร้าน</span></div><a href="/kk-ai">เปิดแบบเต็ม</a><button type="button" id="ai-close" aria-label="ย่อแชท">ย่อ</button></header>
+    <div th:replace="~{fragments/kk-ai :: chat}"></div>
+  </section>
+  <script src="/js/kk-ai.js" defer></script>
+</th:block>
+<div th:fragment="chat" class="ai-chat" th:attr="data-csrf=${session.csrfToken},data-store=${sessionStoreId},data-user=${sessionUserId}">
+  <p class="ai-mode">ใช้ข้อมูลของร้านเป็นหลัก และแสดงคำแนะนำจากโมเดลในเครื่องเมื่อพร้อม</p>
+  <div class="ai-thread">
+    <div class="ai-welcome">
+      <img src="/images/kongklang-logo.png" alt="" width="44" height="44">
+      <h2>วันนี้อยากตรวจอะไรในร้าน?</h2>
+      <p>พิมพ์คำถามด้านล่าง หรือเลือกตัวอย่างเพื่อเริ่มคุย</p>
+      <div class="ai-shortcuts" aria-label="คำถามแนะนำ">
+        <button type="button" data-ask="ควรซื้ออะไรเพิ่ม">ควรซื้ออะไรเพิ่ม</button><button type="button" data-ask="สินค้าใกล้หมดอายุ">ใกล้หมดอายุ</button><button type="button" data-ask="ยอดขายสุทธิ 7 วัน">ยอดขาย 7 วัน</button>
+      </div>
+    </div>
+    <div class="ai-log" role="log" aria-label="บทสนทนา" tabindex="0"></div>
+  </div>
+  <form class="ai-form">
+    <div class="ai-composer"><label><span class="ai-sr">คำถาม</span><textarea name="question" rows="2" maxlength="500" required placeholder="ถาม KK AI เกี่ยวกับร้านของคุณ"></textarea></label>
+    <button type="submit" aria-label="ส่งคำถาม" title="ส่งคำถาม"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
+    <details class="ai-product"><summary>ระบุสินค้า</summary><label>รหัสสินค้า<input name="productCode" maxlength="255" autocomplete="off" placeholder="เช่น DEMO001"></label><small>ใช้เมื่อถามราคาขาย ต้นทุน หรือยอดคงเหลือของสินค้าตัวเดียว</small></details>
+    <small>Enter เพื่อส่ง · Shift + Enter เพื่อขึ้นบรรทัดใหม่</small>
+  </form>
+</div>
+</body></html>

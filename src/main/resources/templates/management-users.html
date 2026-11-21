@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KONGKLANG - จัดการผู้ใช้งาน</title>
+    <link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=4)}">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout">
+<div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<main class="container-fluid mt-4 px-4 pb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2"><div><h2 class="fw-bold">👥 จัดการผู้ใช้งาน</h2><p class="text-muted mb-0">สร้างบัญชีและกำหนดร้านที่ผู้ใช้สังกัด</p></div><a th:if="${systemAdmin}" href="/management/stores" class="btn btn-outline-primary">← จัดการร้านค้า</a></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div><div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div class="card border-0 shadow-sm rounded-4 mb-4"><div class="card-header bg-white fw-bold py-3">➕ สร้างบัญชีผู้ใช้</div><div class="card-body">
+        <form method="post" action="/management/users/create" class="row g-3">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+            <div class="col-md-3"><label class="form-label">Username *</label><input name="username" class="form-control" required maxlength="80" autocomplete="off"></div>
+            <div class="col-md-3"><label class="form-label">ชื่อผู้ใช้งาน *</label><input name="displayName" class="form-control" required></div>
+            <div class="col-md-3"><label class="form-label">Password * (อย่างน้อย 8 ตัว)</label><input name="password" type="password" class="form-control" minlength="8" required autocomplete="new-password"></div>
+            <div class="col-md-1"><label class="form-label">Role</label><select name="role" class="form-select"><option th:if="${systemAdmin or sessionRole == 'OWNER'}" value="ADMIN">ผู้ดูแลร้าน</option><option th:if="${systemAdmin}" value="OWNER">เจ้าของร้าน</option><option value="STAFF">STAFF</option><option value="SALES">พนักงานขาย</option><option value="WAREHOUSE">พนักงานคลัง</option><option value="PURCHASING">พนักงานจัดซื้อ</option><option value="ACCOUNTING">พนักงานบัญชี</option></select></div>
+            <div class="col-md-2"><label class="form-label">ร้านที่สังกัด *</label><select name="storeId" class="form-select" required><option value="">เลือกร้าน</option><option th:each="store : ${stores}" th:if="${store.active}" th:value="${store.id}" th:text="|${store.storeCode} - ${store.storeName}|"></option></select></div>
+            <div class="col-12"><button class="btn btn-primary px-4" type="submit">สร้างบัญชี</button></div>
+        </form>
+    </div></div>
+    <div class="card border-0 shadow-sm rounded-4"><div class="card-header bg-white fw-bold py-3">บัญชีผู้ใช้งานทั้งหมด</div><div class="table-responsive"><table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Username</th><th>ชื่อผู้ใช้งาน</th><th>Role</th><th>ร้าน</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+        <tbody><tr th:each="user : ${users}"><td class="fw-semibold" th:text="${user.username}"></td><td th:text="${user.displayName}"></td><td><span class="badge text-bg-info" th:text="${user.role}"></span></td><td th:text="${user.store.storeCode + ' - ' + user.store.storeName}"></td>
+            <td><span class="badge" th:classappend="${user.active} ? ' text-bg-success' : ' text-bg-secondary'" th:text="${user.active} ? 'ใช้งาน' : 'ปิดใช้งาน'"></span></td>
+            <td><form th:action="@{/management/users/{id}/toggle(id=${user.id})}" method="post">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}"><button class="btn btn-sm" th:classappend="${user.active} ? ' btn-outline-danger' : ' btn-outline-success'" th:text="${user.active} ? 'ปิดบัญชี' : 'เปิดบัญชี'"></button></form><details class="mt-2" th:if="${user.id != sessionUserId and user.role != 'SYSTEM_ADMIN' and (systemAdmin or (user.role != 'OWNER' and (sessionRole == 'OWNER' or user.role != 'ADMIN')))}"><summary>ตั้งรหัสชั่วคราว</summary><form th:action="@{/management/users/{id}/password(id=${user.id})}" method="post"><input type="hidden" name="_csrf" th:value="${session.csrfToken}"><label th:for="${'temporary-'+user.id}" class="form-label mt-2">รหัสชั่วคราว (อย่างน้อย 12 ตัวอักษร)</label><input th:id="${'temporary-'+user.id}" name="temporary" type="password" autocomplete="new-password" required minlength="12" class="form-control"><button type="submit" class="btn btn-outline-primary btn-sm mt-2">ตั้งรหัสชั่วคราว</button></form></details></td>
+        </tr><tr th:if="${#lists.isEmpty(users)}"><td colspan="6" class="text-center text-muted py-4">ยังไม่มีบัญชีผู้ใช้งาน</td></tr></tbody>
+    </table></div></div>
+</main>
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+</body></html>

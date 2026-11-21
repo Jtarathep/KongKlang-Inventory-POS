@@ -1,0 +1,2582 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - ขายสินค้า</title>
+
+    <!-- Bootstrap -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- CSS กลาง -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/kongklang.css(v=3)}">
+
+
+    <style>
+
+        /* ==================================================
+           Product Autocomplete
+        ================================================== */
+
+        .product-search-wrapper {
+            position: relative;
+        }
+
+        .product-autocomplete {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+
+            z-index: 1050;
+
+            background: #ffffff;
+
+            border: 1px solid #dee2e6;
+
+            border-radius: 14px;
+
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .14);
+
+            max-height: 390px;
+
+            overflow-y: auto;
+
+            display: none;
+        }
+
+        .product-autocomplete.show {
+            display: block;
+        }
+
+        .product-autocomplete-item {
+            padding: 13px 16px;
+
+            border-bottom: 1px solid #f0f0f0;
+
+            cursor: pointer;
+
+            transition: background .15s ease;
+        }
+
+        .product-autocomplete-item:last-child {
+            border-bottom: 0;
+        }
+
+        .product-autocomplete-item:hover,
+        .product-autocomplete-item.active {
+            background: #f4f8ff;
+        }
+
+        .product-autocomplete-code {
+            font-weight: 700;
+
+            color: #0d6efd;
+
+            font-size: 14px;
+        }
+
+        .product-autocomplete-name {
+            font-weight: 700;
+
+            color: #212529;
+        }
+
+        .product-autocomplete-meta {
+            color: #6c757d;
+
+            font-size: 13px;
+
+            margin-top: 3px;
+        }
+
+        .product-autocomplete-hint {
+            padding: 10px 16px;
+
+            background: #f8f9fa;
+
+            color: #6c757d;
+
+            font-size: 12px;
+
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-autocomplete-empty {
+            padding: 18px 16px;
+
+            color: #6c757d;
+
+            text-align: center;
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/checkout.css"><link rel="stylesheet" href="/css/commerce.css">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout checkout-page">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ==================================================
+     Navbar
+================================================== -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <div class="d-flex align-items-center gap-2">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-primary btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-light btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ==================================================
+     Main
+================================================== -->
+
+<div class="container-xl py-4">
+
+
+    <!-- ==================================================
+         Page Header
+    ================================================== -->
+
+    <div class="page-header mb-4">
+
+        <h2 class="fw-bold mb-1">
+
+            🛒 ขายสินค้า
+
+        </h2>
+
+
+        <p class="text-muted mb-0">
+
+            เพิ่มสินค้าและสร้างรายการขายภายใน 1 บิล
+
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         Main Row
+    ================================================== -->
+
+    <div class="row g-4">
+
+
+        <!-- ==================================================
+             ฝั่งซ้าย
+        ================================================== -->
+
+        <div class="col-lg-8">
+
+
+            <div class="card dashboard-section-card h-100">
+
+
+                <!-- ==================================================
+                     Header รายการขาย
+                ================================================== -->
+
+                <div class="card-header bg-white py-3 px-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+
+                                🛒 รายการขาย
+
+                            </h4>
+
+
+                            <small class="text-muted">
+
+                                เพิ่มสินค้าได้หลายรายการใน 1 บิล
+
+                            </small>
+
+                        </div>
+
+
+                        <span
+                                class="badge text-bg-primary px-3 py-2">
+
+                            POS
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     Body
+                ================================================== -->
+
+                <div class="card-body p-4">
+
+
+                    <!-- ==================================================
+                         ค้นหาสินค้า
+                    ================================================== -->
+
+                    <div class="mb-4">
+
+
+                        <label
+                                for="productCode"
+                                class="form-label fw-semibold">
+
+                            🔍 สินค้า
+
+                        </label>
+
+
+                        <div class="product-search-wrapper">
+
+
+                            <div class="input-group input-group-lg">
+
+
+                                <input
+                                        type="text"
+                                        id="productCode"
+                                        class="form-control"
+                                        placeholder="พิมพ์รหัสสินค้า ชื่อสินค้า หรือหมวดหมู่"
+                                        autocomplete="off"
+                                        aria-label="ค้นหาสินค้า">
+
+
+                                <button
+                                        type="button"
+                                        id="productSearchButton"
+                                        class="btn btn-primary px-4">
+
+                                    🔍 ค้นหา
+
+                                </button>
+
+                            </div>
+
+
+                            <!-- ==================================================
+                                 Autocomplete
+                            ================================================== -->
+
+                            <div
+                                    id="productAutocomplete"
+                                    class="product-autocomplete">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-text">
+
+                            คลิกช่องเพื่อดูสินค้าทั้งหมด
+                            หรือพิมพ์รหัสบางส่วน ชื่อสินค้า หรือหมวดหมู่เพื่อค้นหา
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         ข้อมูลสินค้า
+                    ================================================== -->
+
+                    <div
+                            id="productInfo"
+                            class="border rounded-4 p-4 bg-light mb-4"
+                            style="display:none;">
+
+
+                        <div
+                                class="d-flex
+                                       justify-content-between
+                                       align-items-center
+                                       mb-3">
+
+
+                            <h5 class="fw-bold mb-0">
+
+                                📦 ข้อมูลสินค้า
+
+                            </h5>
+
+
+                            <span
+                                    class="badge text-bg-success">
+
+                                พบสินค้า
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- ชื่อสินค้า -->
+
+                            <div class="col-md-6">
+
+                                <div class="small text-muted">
+
+                                    สินค้า
+
+                                </div>
+
+
+                                <div
+                                        id="productName"
+                                        class="fw-bold fs-5">
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ราคา -->
+
+                            <div class="col-md-3">
+
+                                <div class="small text-muted">
+
+                                    ราคา
+
+                                </div>
+
+
+                                <div
+                                        id="productPrice"
+                                        class="fw-bold fs-5 text-success">
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Stock -->
+
+                            <div class="col-md-3">
+
+                                <div class="small text-muted">
+
+                                    คงเหลือ
+
+                                </div>
+
+
+                                <div
+                                        id="productStock"
+                                        class="fw-bold fs-5">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <hr class="my-4">
+
+
+                        <div class="row g-3">
+
+
+                            <!-- จำนวน -->
+
+                            <div class="col-md-8">
+
+
+                                <label
+                                        for="productQuantity"
+                                        class="form-label fw-semibold">
+
+                                    จำนวนที่ขาย
+
+                                </label>
+
+
+                                <input
+                                        type="number"
+                                        id="productQuantity"
+                                        class="form-control form-control-lg"
+                                        min="1"
+                                        value="1">
+
+                            </div>
+
+
+                            <!-- เพิ่มรายการ -->
+
+                            <div
+                                    class="col-md-4
+                                           d-flex
+                                           align-items-end">
+
+
+                                <button
+                                        type="button"
+                                        class="btn btn-success btn-lg w-100"
+                                        onclick="addToCart()">
+
+                                    ➕ เพิ่มรายการ
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         ตะกร้า
+                    ================================================== -->
+
+                    <div>
+
+
+                        <div
+                                class="d-flex
+                                       justify-content-between
+                                       align-items-center
+                                       mb-3">
+
+
+                            <div>
+
+                                <h5 class="fw-bold mb-1">
+
+                                    🧾 รายการสินค้าในบิล
+
+                                </h5>
+
+
+                                <small class="text-muted">
+
+                                    ตรวจสอบรายการก่อนยืนยันการขาย
+
+                                </small>
+
+                            </div>
+
+
+                            <span
+                                    class="badge rounded-pill text-bg-light border">
+
+
+                                <span id="cartCountLabel">
+
+                                    0
+
+                                </span>
+
+
+                                รายการ
+
+                            </span>
+
+                        </div>
+
+
+                        <p class="commerce-scroll-hint">เลื่อนตารางซ้าย–ขวาเพื่อดูข้อมูลและตัวเลือกให้ครบ</p><div class="table-responsive" role="region" aria-label="สินค้าที่เลือกขาย จำนวน และปุ่มจัดการ" tabindex="0">
+
+
+                            <table
+                                    class="table table-hover align-middle mb-0">
+
+
+                                <thead class="table-light">
+
+                                <tr>
+
+                                    <th class="text-center">
+                                        #
+                                    </th>
+
+                                    <th>
+                                        รหัส
+                                    </th>
+
+                                    <th>
+                                        สินค้า
+                                    </th>
+
+                                    <th class="text-end">
+                                        ราคา
+                                    </th>
+
+                                    <th class="text-center">
+                                        จำนวน
+                                    </th>
+
+                                    <th class="text-end">
+                                        รวม
+                                    </th>
+
+                                    <th class="text-center">
+                                        ลบ
+                                    </th>
+
+                                </tr>
+
+                                </thead>
+
+
+                                <tbody id="cartBody">
+
+
+                                <tr id="emptyCart">
+
+                                    <td
+                                            colspan="7"
+                                            class="text-center text-muted py-5">
+
+
+                                        <div class="fs-2 mb-2">
+
+                                            🛒
+
+                                        </div>
+
+
+                                        <div class="fw-semibold">
+
+                                            ยังไม่มีสินค้าในบิล
+
+                                        </div>
+
+
+                                        <small>
+
+                                            ค้นหาสินค้าเพื่อเพิ่มรายการ
+
+                                        </small>
+
+                                    </td>
+
+                                </tr>
+
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             ฝั่งขวา
+        ================================================== -->
+
+        <div class="col-lg-4">
+
+
+            <!-- ==================================================
+                 สรุปการขาย
+            ================================================== -->
+
+            <div
+                    class="card dashboard-section-card mb-4">
+
+
+                <div class="card-body p-4">
+
+
+                    <div
+                            class="d-flex
+                                   justify-content-between
+                                   align-items-center">
+
+
+                        <h4 class="fw-bold mb-0">
+
+                            💰 สรุปการขาย
+
+                        </h4>
+
+
+                        <span
+                                class="badge text-bg-success">
+
+                            พร้อมขาย
+
+                        </span>
+
+                    </div>
+
+
+                    <hr>
+
+
+                    <div
+                            class="d-flex
+                                   justify-content-between
+                                   align-items-center">
+
+
+                        <span class="text-muted">
+
+                            จำนวนรายการ
+
+                        </span>
+
+
+                        <strong
+                                id="cartCount"
+                                class="fs-5">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         ยอดรวม
+                    ================================================== -->
+
+                    <div
+                            class="rounded-4 p-4 mt-4 border bg-light">
+
+
+                        <div class="text-muted mb-1">
+
+                            รวมราคาสินค้า
+
+                        </div>
+
+
+                        <div
+                                class="fw-bold text-success"
+                                style="font-size:36px;">
+
+                            ฿<span id="totalAmount">
+
+                                0.00
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         Form
+                    ================================================== -->
+
+                    <div id="checkout-message" class="alert alert-warning" role="alert" tabindex="-1" hidden></div>
+                    <section id="checkout-pending" class="alert alert-info" aria-labelledby="checkout-pending-title" hidden>
+                        <h3 id="checkout-pending-title" class="h6">รายการขายที่ยังไม่ได้รับผลยืนยัน</h3>
+                        <p id="checkout-pending-description"></p>
+                        <p>ระบบจะใช้ข้อมูลและรหัสเดิมในการตรวจสอบ เพื่อป้องกันการตัดสต็อกและลงบัญชีซ้ำ</p>
+                        <button id="checkout-retry" type="button" class="btn btn-primary">ตรวจสอบและส่งรายการเดิมอีกครั้ง</button>
+                    </section>
+                    <form
+                            id="saleForm"
+                            method="post"
+                            action="/sales/create"
+                            th:attr="data-store-id=${sessionStoreId},data-user-id=${sessionUserId}">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+                        <section class="checkout-payment" aria-labelledby="payment-title">
+<h3 id="payment-title">ส่วนลดและการชำระเงิน</h3>
+<label for="discountType">ส่วนลดทั้งบิล</label><select id="discountType" class="form-select"><option value="NONE">ไม่มีส่วนลด</option><option value="AMOUNT">ลดเป็นจำนวนเงิน (บาท)</option><option value="PERCENT">ลดเป็นเปอร์เซ็นต์</option></select>
+<label for="discountValue">จำนวนส่วนลด</label><input id="discountValue" class="form-control" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+<p class="form-text">กดตรวจสอบยอดเพื่อคำนวณส่วนลดและภาษีตามการตั้งค่าร้าน</p>
+<div id="payment-review" hidden>
+<dl class="checkout-totals" aria-live="polite"><dt>รวมราคาสินค้า</dt><dd id="quote-listed"></dd><dt>ส่วนลด</dt><dd id="quote-discount"></dd><dt id="quote-net-label">ยอดหลังส่วนลด</dt><dd id="quote-net"></dd><dt id="quote-tax-label">VAT</dt><dd id="quote-tax"></dd><dt>ยอดชำระสุทธิ</dt><dd id="quote-total"></dd></dl>
+<label for="paymentMethod">วิธีชำระเงิน</label><select id="paymentMethod" class="form-select"><option value="CASH">เงินสด</option><option value="TRANSFER">โอนเงิน</option><option value="CARD">บัตร</option><option value="MIXED">ชำระผสม</option></select>
+<div id="mixed-payments" hidden><label for="payCash">เงินสดที่ใช้ชำระ (บาท)</label><input id="payCash" type="number" min="0" step="0.01" value="0" class="form-control"><label for="payTransfer">ยอดโอน (บาท)</label><input id="payTransfer" type="number" min="0" step="0.01" value="0" class="form-control"><label for="payCard">ยอดบัตร (บาท)</label><input id="payCard" type="number" min="0" step="0.01" value="0" class="form-control"></div>
+<div id="cash-received"><label for="cashReceived">รับเงินสดจริง (บาท)</label><input id="cashReceived" type="number" min="0" step="0.01" class="form-control"><p class="form-text" id="cash-change">ระบบจะบันทึกเงินทอนแยกจากยอดขาย</p></div>
+<label for="paymentReference">เลขอ้างอิงการโอนหรือรายการบัตร (ถ้ามี)</label><input id="paymentReference" maxlength="100" class="form-control" autocomplete="off"><p class="form-text">กรอกเลขอ้างอิงรายการ ไม่กรอกเลขบัตรหรือรหัสความปลอดภัย</p>
+<label for="documentType">เอกสาร</label><select id="documentType" class="form-select"><option value="RECEIPT">ใบเสร็จรับเงิน</option><option value="TAX_INVOICE" id="tax-invoice-option" disabled>ใบเสร็จ / ใบกำกับภาษีเต็มรูป</option></select>
+<div id="tax-buyer" hidden><label for="buyerName">ชื่อผู้ซื้อ</label><input id="buyerName" maxlength="255" class="form-control"><label for="buyerAddress">ที่อยู่ผู้ซื้อ</label><textarea id="buyerAddress" maxlength="1000" rows="2" class="form-control"></textarea><label for="buyerTaxId">เลขผู้เสียภาษีผู้ซื้อ (13 หลัก)</label><input id="buyerTaxId" maxlength="13" inputmode="numeric" class="form-control"><label for="buyerBranch">เลขสาขาผู้ซื้อ (สำนักงานใหญ่ 00000)</label><input id="buyerBranch" maxlength="5" inputmode="numeric" value="00000" class="form-control"></div>
+<label class="commerce-check"><input id="paymentConfirmed" type="checkbox"><span>ตรวจสอบและได้รับเงินจริงครบตามยอดสุทธิแล้ว</span></label><p class="form-text">ระบบบันทึกการชำระเท่านั้น ไม่โอนเงินหรือตัดบัตรอัตโนมัติ</p>
+</div></section>
+                        <input type="hidden" id="checkoutRequestKey" name="requestKey" th:value="${checkoutRequestKey}">
+                        
+
+
+                        <div id="hiddenInputs">
+
+                        </div>
+
+
+                        <button
+                                type="button"
+                                onclick="confirmSale()"
+                                class="btn btn-success btn-lg w-100 mt-4">
+
+                            ตรวจสอบยอดชำระ
+
+                        </button>
+
+                    </form>
+
+
+                    <a
+                            href="/"
+                            class="btn btn-light border w-100 mt-2">
+
+                        ยกเลิก
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 วิธีใช้
+            ================================================== -->
+
+            <div
+                    class="card dashboard-section-card">
+
+
+                <div class="card-body p-4">
+
+
+                    <h5 class="fw-bold mb-3">
+
+                        💡 วิธีขายสินค้า
+
+                    </h5>
+
+
+                    <ol class="mb-0 ps-3">
+
+
+                        <li class="mb-2">
+
+                            คลิกช่องสินค้าเพื่อดูสินค้าทั้งหมด
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            พิมพ์รหัส ชื่อ หรือหมวดหมู่เพื่อกรองสินค้า
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            ตรวจสอบข้อมูลสินค้า
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            ใส่จำนวน
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            กดเพิ่มรายการ
+
+                        </li>
+
+
+                        <li class="mb-2">
+
+                            เพิ่มสินค้าอื่นได้เรื่อย ๆ
+
+                        </li>
+
+
+                        <li>
+
+                            กดยืนยันการขาย
+
+                        </li>
+
+                    </ol>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     JavaScript
+================================================== -->
+
+<script>
+
+
+    // =================================================
+    // ตัวแปรตะกร้า
+    // =================================================
+
+    let cart = [];
+
+    let currentProduct = null;
+
+
+    // =================================================
+    // Elements
+    // =================================================
+
+    const productCodeInput =
+        document.getElementById(
+            "productCode"
+        );
+
+
+    const productSearchButton =
+        document.getElementById(
+            "productSearchButton"
+        );
+
+
+    const productAutocomplete =
+        document.getElementById(
+            "productAutocomplete"
+        );
+
+
+    // =================================================
+    // ตัวแปร Autocomplete
+    // =================================================
+
+    let allProducts = [];
+
+    let autocompleteResults = [];
+
+    let activeAutocompleteIndex = -1;
+
+
+    // =================================================
+    // โหลดสินค้าทั้งหมด
+    // =================================================
+
+    async function loadAllProducts() {
+
+        if (
+            allProducts.length > 0
+        ) {
+
+            return allProducts;
+
+        }
+
+
+        const response =
+            await fetch(
+                "/api/products"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "ไม่สามารถโหลดรายการสินค้าได้"
+            );
+
+        }
+
+
+        allProducts =
+            await response.json();
+
+
+        return allProducts;
+
+    }
+
+
+    // =================================================
+    // Normalize
+    // =================================================
+
+    function normalizeSearchText(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .trim()
+            .toLowerCase();
+
+    }
+
+
+    // =================================================
+    // Escape HTML
+    // =================================================
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
+    }
+
+
+    // =================================================
+    // ค้นหาสินค้าหลายรูปแบบ
+    //
+    // 1. รหัสสินค้า
+    // 2. Barcode
+    // 3. ชื่อสินค้า
+    // 4. หมวดหมู่
+    // 5. หน่วย
+    // =================================================
+
+    function filterProducts(
+        query
+    ) {
+
+        const search =
+            normalizeSearchText(
+                query
+            );
+
+
+        // ---------------------------------------------
+        // ไม่กรอกอะไร
+        // แสดงทั้งหมด
+        // ---------------------------------------------
+
+        if (!search) {
+
+            return [
+                ...allProducts
+            ];
+
+        }
+
+
+        return allProducts.filter(
+            product => {
+
+
+                const code =
+                    normalizeSearchText(
+                        product.code
+                    );
+
+
+                const barcode =
+                    normalizeSearchText(
+                        product.barcode
+                    );
+
+
+                const name =
+                    normalizeSearchText(
+                        product.name
+                    );
+
+
+                const category =
+                    normalizeSearchText(
+                        product.category
+                    );
+
+
+                const unit =
+                    normalizeSearchText(
+                        product.unit
+                    );
+
+
+                return (
+
+                    code.includes(
+                        search
+                    )
+
+                    ||
+
+                    barcode.includes(
+                        search
+                    )
+
+                    ||
+
+                    name.includes(
+                        search
+                    )
+
+                    ||
+
+                    category.includes(
+                        search
+                    )
+
+                    ||
+
+                    unit.includes(
+                        search
+                    )
+
+                );
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // Render Autocomplete
+    // =================================================
+
+    function renderAutocomplete(
+        products,
+        fallbackToAll = false
+    ) {
+
+        productAutocomplete.innerHTML =
+            "";
+
+
+        activeAutocompleteIndex =
+            -1;
+
+
+        // ---------------------------------------------
+        // ไม่พบสินค้า
+        // ---------------------------------------------
+
+        if (
+            !products
+            ||
+            products.length === 0
+        ) {
+
+            productAutocomplete.innerHTML = `
+
+                <div
+                        class="product-autocomplete-empty">
+
+                    ไม่พบสินค้า
+
+                </div>
+
+            `;
+
+
+            productAutocomplete.classList.add(
+                "show"
+            );
+
+
+            return;
+
+        }
+
+
+        // ---------------------------------------------
+        // ข้อความด้านบน
+        // ---------------------------------------------
+
+        const hint =
+            document.createElement(
+                "div"
+            );
+
+
+        hint.className =
+            "product-autocomplete-hint";
+
+
+        const query =
+            normalizeSearchText(
+                productCodeInput.value
+            );
+
+
+        if (
+            fallbackToAll
+        ) {
+
+            hint.textContent =
+                "ไม่พบคำค้นหา — แสดงสินค้าทั้งหมดให้เลือก";
+
+        }
+
+        else if (
+            !query
+        ) {
+
+            hint.textContent =
+                "สินค้าทั้งหมด — คลิกเพื่อเลือกสินค้า";
+
+        }
+
+        else {
+
+            hint.textContent =
+                "พบสินค้า "
+                +
+                products.length
+                +
+                " รายการ";
+
+        }
+
+
+        productAutocomplete.appendChild(
+            hint
+        );
+
+
+        // ---------------------------------------------
+        // แสดงสูงสุด 50 รายการ
+        // ---------------------------------------------
+
+        products
+            .slice(
+                0,
+                50
+            )
+            .forEach(
+                (
+                    product,
+                    index
+                ) => {
+
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    item.className =
+                        "product-autocomplete-item";
+
+
+                    item.dataset.index =
+                        index;
+
+
+                    const stock =
+                        Number(
+                            product.quantity ?? 0
+                        );
+
+
+                    const price =
+                        Number(
+                            product.price ?? 0
+                        );
+
+
+                    const stockText =
+                        stock > 0
+
+                            ? "คงเหลือ "
+                            +
+                            stock
+                            +
+                            " "
+                            +
+                            (
+                                product.unit
+                                ||
+                                "หน่วย"
+                            )
+
+                            : "สินค้าหมด";
+
+
+                    const categoryText =
+                        product.category
+                        ||
+                        "ไม่มีหมวดหมู่";
+
+
+                    item.innerHTML = `
+
+                        <div>
+
+                            <span
+                                    class="product-autocomplete-code">
+
+                                ${escapeHtml(
+                        product.code
+                        ||
+                        "-"
+                    )}
+
+                            </span>
+
+
+                            <span
+                                    class="product-autocomplete-name">
+
+                                —
+                                ${escapeHtml(
+                        product.name
+                        ||
+                        "-"
+                    )}
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                                class="product-autocomplete-meta">
+
+                            ${escapeHtml(
+                        categoryText
+                    )}
+
+                            &nbsp;•&nbsp;
+
+                            ${escapeHtml(
+                        stockText
+                    )}
+
+                            &nbsp;•&nbsp;
+
+                            ฿${price.toFixed(2)}
+
+                        </div>
+
+                    `;
+
+
+                    // ---------------------------------
+                    // คลิกสินค้า
+                    // ---------------------------------
+
+                    item.addEventListener(
+                        "mousedown",
+                        function(event) {
+
+                            event.preventDefault();
+
+
+                            selectAutocompleteProduct(
+                                product
+                            );
+
+                        }
+                    );
+
+
+                    productAutocomplete.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+
+        // ---------------------------------------------
+        // ถ้ามีมากกว่า 50 รายการ
+        // ---------------------------------------------
+
+        if (
+            products.length > 50
+        ) {
+
+            const more =
+                document.createElement(
+                    "div"
+                );
+
+
+            more.className =
+                "product-autocomplete-hint";
+
+
+            more.textContent =
+                "แสดง 50 รายการแรกจากทั้งหมด "
+                +
+                products.length
+                +
+                " รายการ";
+
+
+            productAutocomplete.appendChild(
+                more
+            );
+
+        }
+
+
+        productAutocomplete.classList.add(
+            "show"
+        );
+
+    }
+
+
+    // =================================================
+    // เลือกสินค้า
+    // =================================================
+
+    function selectAutocompleteProduct(
+        product
+    ) {
+
+        if (!product) {
+
+            return;
+
+        }
+
+
+        currentProduct =
+            product;
+
+
+        productCodeInput.value =
+            product.code
+            +
+            " - "
+            +
+            product.name;
+
+
+        displayProductInfo(
+            product
+        );
+
+
+        productAutocomplete.classList.remove(
+            "show"
+        );
+
+
+        document.getElementById(
+            "productQuantity"
+        ).value = 1;
+
+
+        document.getElementById(
+            "productQuantity"
+        ).focus();
+
+    }
+
+
+    // =================================================
+    // แสดงข้อมูลสินค้า
+    // =================================================
+
+    function displayProductInfo(
+        product
+    ) {
+
+        document.getElementById(
+            "productName"
+        ).textContent =
+            product.name
+            ||
+            "-";
+
+
+        document.getElementById(
+            "productPrice"
+        ).textContent =
+            "฿"
+            +
+            Number(
+                product.price || 0
+            ).toFixed(2);
+
+
+        document.getElementById(
+            "productStock"
+        ).textContent =
+            product.quantity
+            ??
+            0;
+
+
+        document.getElementById(
+            "productInfo"
+        ).style.display =
+            "block";
+
+    }
+
+
+    // =================================================
+    // เปิด Autocomplete
+    // =================================================
+
+    async function showProductAutocomplete() {
+
+        try {
+
+
+            await loadAllProducts();
+
+
+            const query =
+                productCodeInput.value;
+
+
+            let results =
+                filterProducts(
+                    query
+                );
+
+
+            let fallbackToAll =
+                false;
+
+
+            // -----------------------------------------
+            // พิมพ์แล้วไม่ตรง
+            // ให้แสดงสินค้าทั้งหมด
+            // -----------------------------------------
+
+            if (
+
+                normalizeSearchText(
+                    query
+                )
+
+                &&
+
+                results.length === 0
+
+            ) {
+
+                results =
+                    [
+                        ...allProducts
+                    ];
+
+
+                fallbackToAll =
+                    true;
+
+            }
+
+
+            autocompleteResults =
+                results;
+
+
+            renderAutocomplete(
+                results,
+                fallbackToAll
+            );
+
+
+        } catch (error) {
+
+
+            console.error(
+                error
+            );
+
+
+            productAutocomplete.innerHTML = `
+
+                <div
+                        class="product-autocomplete-empty text-danger">
+
+                    ไม่สามารถโหลดรายการสินค้าได้
+
+                </div>
+
+            `;
+
+
+            productAutocomplete.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    // =================================================
+    // คลิกช่อง
+    // =================================================
+
+    productCodeInput.addEventListener(
+        "focus",
+        async function() {
+
+            await showProductAutocomplete();
+
+        }
+    );
+
+
+    // Clicking an already-focused field must reopen the suggestions.
+    productCodeInput.addEventListener("click", function () {
+        if (!productAutocomplete.classList.contains("show")) {
+            void showProductAutocomplete();
+        }
+    });
+
+    // =================================================
+    // พิมพ์ค้นหา
+    // =================================================
+
+    productCodeInput.addEventListener(
+        "input",
+        async function() {
+
+            await showProductAutocomplete();
+
+        }
+    );
+
+
+    // =================================================
+    // ปุ่มค้นหา
+    // =================================================
+
+    productSearchButton.addEventListener(
+        "click",
+        async function() {
+
+            await showProductAutocomplete();
+
+        }
+    );
+
+
+    // =================================================
+    // Keyboard
+    // Arrow Up / Down
+    // Enter
+    // Escape
+    // =================================================
+
+    productCodeInput.addEventListener(
+        "keydown",
+        async function(event) {
+
+
+            const maxIndex =
+                Math.min(
+                    autocompleteResults.length,
+                    50
+                )
+                -
+                1;
+
+
+            // -----------------------------------------
+            // Arrow Down
+            // -----------------------------------------
+
+            if (
+                event.key === "ArrowDown"
+            ) {
+
+                event.preventDefault();
+
+
+                if (
+                    !productAutocomplete.classList.contains(
+                        "show"
+                    )
+                ) {
+
+                    await showProductAutocomplete();
+
+                    return;
+
+                }
+
+
+                if (
+                    maxIndex >= 0
+                ) {
+
+                    activeAutocompleteIndex =
+                        Math.min(
+                            activeAutocompleteIndex + 1,
+                            maxIndex
+                        );
+
+
+                    updateActiveAutocompleteItem();
+
+                }
+
+            }
+
+
+                // -----------------------------------------
+                // Arrow Up
+            // -----------------------------------------
+
+            else if (
+                event.key === "ArrowUp"
+            ) {
+
+                event.preventDefault();
+
+
+                if (
+                    maxIndex >= 0
+                ) {
+
+                    activeAutocompleteIndex =
+                        Math.max(
+                            activeAutocompleteIndex - 1,
+                            0
+                        );
+
+
+                    updateActiveAutocompleteItem();
+
+                }
+
+            }
+
+
+                // -----------------------------------------
+                // Enter
+            // -----------------------------------------
+
+            else if (
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+
+                if (
+                    !productAutocomplete.classList.contains(
+                        "show"
+                    )
+                ) {
+
+                    await showProductAutocomplete();
+
+                    return;
+
+                }
+
+
+                // มีรายการที่กำลัง Highlight
+                if (
+
+                    activeAutocompleteIndex >= 0
+
+                    &&
+
+                    autocompleteResults[
+                        activeAutocompleteIndex
+                        ]
+
+                ) {
+
+                    selectAutocompleteProduct(
+                        autocompleteResults[
+                            activeAutocompleteIndex
+                            ]
+                    );
+
+
+                    return;
+
+                }
+
+
+                // มีสินค้าเดียว
+                if (
+                    autocompleteResults.length === 1
+                ) {
+
+                    selectAutocompleteProduct(
+                        autocompleteResults[0]
+                    );
+
+                }
+
+            }
+
+
+                // -----------------------------------------
+                // Escape
+            // -----------------------------------------
+
+            else if (
+                event.key === "Escape"
+            ) {
+
+                productAutocomplete.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+
+    // =================================================
+    // Highlight รายการ
+    // =================================================
+
+    function updateActiveAutocompleteItem() {
+
+
+        const items =
+            productAutocomplete.querySelectorAll(
+                ".product-autocomplete-item"
+            );
+
+
+        items.forEach(
+            (
+                item,
+                index
+            ) => {
+
+                item.classList.toggle(
+                    "active",
+                    index ===
+                    activeAutocompleteIndex
+                );
+
+            }
+        );
+
+
+        const activeItem =
+            items[
+                activeAutocompleteIndex
+                ];
+
+
+        if (
+            activeItem
+        ) {
+
+            activeItem.scrollIntoView({
+                block: "nearest"
+            });
+
+        }
+
+    }
+
+
+    // =================================================
+    // คลิกพื้นที่อื่น
+    // =================================================
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+
+            const wrapper =
+                document.querySelector(
+                    ".product-search-wrapper"
+                );
+
+
+            if (
+
+                wrapper
+
+                &&
+
+                !wrapper.contains(
+                    event.target
+                )
+
+            ) {
+
+                productAutocomplete.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+
+    // =================================================
+    // รองรับชื่อฟังก์ชันเดิม
+    // =================================================
+
+    async function searchProduct() {
+
+        await showProductAutocomplete();
+
+    }
+
+
+    // =================================================
+    // ซ่อนข้อมูลสินค้า
+    // =================================================
+
+    function hideProductInfo() {
+
+
+        document.getElementById(
+            "productInfo"
+        ).style.display =
+            "none";
+
+
+        currentProduct =
+            null;
+
+
+        productAutocomplete.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    // =================================================
+    // เพิ่มสินค้าเข้าตะกร้า
+    // =================================================
+
+    function addToCart() {
+
+
+        if (
+            !currentProduct
+        ) {
+
+            alert(
+                "กรุณาเลือกสินค้าก่อน"
+            );
+
+
+            return;
+
+        }
+
+
+        const quantity =
+            parseInt(
+                document.getElementById(
+                    "productQuantity"
+                ).value
+            );
+
+
+        if (
+
+            isNaN(
+                quantity
+            )
+
+            ||
+
+            quantity <= 0
+
+        ) {
+
+            alert(
+                "จำนวนสินค้าต้องมากกว่า 0"
+            );
+
+
+            return;
+
+        }
+
+
+        const stock =
+            Number(
+                currentProduct.quantity
+                ||
+                0
+            );
+
+
+        // =================================================
+        // ตรวจสอบสินค้าเดิมในตะกร้า
+        // =================================================
+
+        const existing =
+            cart.find(
+                item =>
+                    item.code ===
+                    currentProduct.code
+            );
+
+
+        const oldQuantity =
+            existing
+                ?
+                existing.quantity
+                :
+                0;
+
+
+        if (
+
+            oldQuantity
+            +
+            quantity
+            >
+            stock
+
+        ) {
+
+            alert(
+
+                "จำนวนสินค้าเกิน Stock"
+                +
+                "\n"
+                +
+                "คงเหลือ "
+                +
+                stock
+                +
+                " "
+                +
+                (
+                    currentProduct.unit
+                    ||
+                    "หน่วย"
+                )
+
+            );
+
+
+            return;
+
+        }
+
+
+        // =================================================
+        // มีสินค้าอยู่แล้ว
+        // =================================================
+
+        if (
+            existing
+        ) {
+
+
+            existing.quantity +=
+                quantity;
+
+
+            existing.subtotal =
+                existing.price
+                *
+                existing.quantity;
+
+        }
+
+
+            // =================================================
+            // ยังไม่มีสินค้า
+        // =================================================
+
+        else {
+
+
+            cart.push({
+
+                code:
+                currentProduct.code,
+
+                name:
+                currentProduct.name,
+
+                price:
+                    Number(
+                        currentProduct.price
+                        ||
+                        0
+                    ),
+
+                quantity:
+                quantity,
+
+                stock:
+                stock,
+
+                unit:
+                    currentProduct.unit
+                    ||
+                    "หน่วย",
+
+                subtotal:
+                    Number(
+                        currentProduct.price
+                        ||
+                        0
+                    )
+                    *
+                    quantity
+
+            });
+
+        }
+
+
+        // =================================================
+        // Render
+        // =================================================
+
+        renderCart();
+
+
+        // =================================================
+        // เคลียร์ช่องค้นหา
+        // =================================================
+
+        productCodeInput.value =
+            "";
+
+
+        hideProductInfo();
+
+
+        productCodeInput.focus();
+
+    }
+
+
+    // =================================================
+    // แสดงตะกร้า
+    // =================================================
+
+    function renderCart() {
+
+
+        const cartBody =
+            document.getElementById(
+                "cartBody"
+            );
+
+
+        const emptyCart =
+            document.getElementById(
+                "emptyCart"
+            );
+
+
+        cartBody.innerHTML =
+            "";
+
+
+        // =================================================
+        // ไม่มีสินค้า
+        // =================================================
+
+        if (
+            cart.length === 0
+        ) {
+
+
+            cartBody.appendChild(
+                emptyCart
+            );
+
+
+            updateSummary();
+
+
+            updateHiddenInputs();
+
+
+            return;
+
+        }
+
+
+        // =================================================
+        // มีสินค้า
+        // =================================================
+
+        cart.forEach(
+            (
+                item,
+                index
+            ) => {
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td class="text-center fw-bold">
+
+                        ${index + 1}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="fw-bold">
+
+                            ${escapeHtml(
+                    item.code
+                )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHtml(
+                    item.name
+                )}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                        ฿${item.price.toFixed(2)}
+
+                    </td>
+
+
+                    <td
+                            style="width:120px">
+
+
+                        <input
+                                type="number"
+                                class="form-control form-control-sm text-center"
+                                min="1"
+                                max="${item.stock}"
+                                value="${item.quantity}"
+                                onchange="changeQuantity(
+                                    ${index},
+                                    this.value
+                                )">
+
+
+                    </td>
+
+
+                    <td class="text-end fw-bold">
+
+                        ฿${item.subtotal.toFixed(2)}
+
+                    </td>
+
+
+                    <td class="text-center">
+
+
+                        <button
+                                type="button"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="removeFromCart(${index})">
+
+                            🗑️
+
+                        </button>
+
+
+                    </td>
+
+                `;
+
+
+                cartBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        updateSummary();
+
+
+        updateHiddenInputs();
+
+    }
+
+
+    // =================================================
+    // เปลี่ยนจำนวน
+    // =================================================
+
+    function changeQuantity(
+        index,
+        value
+    ) {
+
+
+        const quantity =
+            parseInt(
+                value
+            );
+
+
+        if (
+
+            isNaN(
+                quantity
+            )
+
+            ||
+
+            quantity <= 0
+
+        ) {
+
+            renderCart();
+
+            return;
+
+        }
+
+
+        const item =
+            cart[index];
+
+
+        if (
+            quantity > item.stock
+        ) {
+
+            alert(
+                "จำนวนสินค้าเกิน Stock"
+            );
+
+
+            renderCart();
+
+
+            return;
+
+        }
+
+
+        item.quantity =
+            quantity;
+
+
+        item.subtotal =
+            item.price
+            *
+            item.quantity;
+
+
+        renderCart();
+
+    }
+
+
+    // =================================================
+    // ลบสินค้า
+    // =================================================
+
+    function removeFromCart(
+        index
+    ) {
+
+
+        cart.splice(
+            index,
+            1
+        );
+
+
+        renderCart();
+
+    }
+
+
+    // =================================================
+    // สรุปยอด
+    // =================================================
+
+    function updateSummary() {
+
+
+        const totalAmount =
+            cart.reduce(
+                (
+                    total,
+                    item
+                ) =>
+                    total
+                    +
+                    item.subtotal,
+                0
+            );
+
+
+        document.getElementById(
+            "cartCount"
+        ).textContent =
+            cart.length;
+
+
+        document.getElementById(
+            "cartCountLabel"
+        ).textContent =
+            cart.length;
+
+
+        document.getElementById(
+            "totalAmount"
+        ).textContent =
+            totalAmount.toFixed(
+                2
+            );
+
+    }
+
+
+    // =================================================
+    // สร้าง Hidden Inputs
+    // =================================================
+
+    function updateHiddenInputs() {
+
+
+        const container =
+            document.getElementById(
+                "hiddenInputs"
+            );
+
+
+        container.innerHTML =
+            "";
+
+
+        cart.forEach(
+            item => {
+
+
+                const codeInput =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                codeInput.type =
+                    "hidden";
+
+
+                codeInput.name =
+                    "productCodes";
+
+
+                codeInput.value =
+                    item.code;
+
+
+                const quantityInput =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                quantityInput.type =
+                    "hidden";
+
+
+                quantityInput.name =
+                    "quantities";
+
+
+                quantityInput.value =
+                    item.quantity;
+
+
+                container.appendChild(
+                    codeInput
+                );
+
+
+                container.appendChild(
+                    quantityInput
+                );
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // ยืนยันการขาย
+    // =================================================
+
+    function confirmSale() {
+        updateHiddenInputs();
+        document.getElementById("saleForm").requestSubmit();
+    }
+
+    // =================================================
+    // เริ่มต้น
+    // =================================================
+
+    renderCart();
+
+
+</script>
+
+
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+
+<script>
+</script>
+
+<script src="/js/checkout.js" defer></script>
+</body>
+
+</html>

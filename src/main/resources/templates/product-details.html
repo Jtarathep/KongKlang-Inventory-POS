@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>รายละเอียดสินค้าและล็อต | คงคลัง</title>
+    <link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=6)}">
+    <style>
+        body { background: #f5f7fb; }
+        .detail-wrap { max-width: 1250px; margin: 28px auto; padding: 0 18px; }
+        .panel { background: #fff; border-radius: 16px; padding: 22px; box-shadow: 0 4px 18px rgba(15,23,42,.06); margin-bottom: 18px; }
+        .metric { border: 1px solid #e7ebf0; border-radius: 12px; padding: 16px; height: 100%; }
+        .metric small { color: #667085; display:block; margin-bottom: 5px; }
+        .metric strong { font-size: 1.35rem; }
+        .table th { white-space: nowrap; background: #f8fafc; }
+        .status-pill { border-radius: 99px; padding: 5px 10px; font-size: .82rem; white-space: nowrap; }
+    </style>
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout"><div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<div class="detail-wrap"><p><strong th:text="${product.active ? 'เปิดขาย' : 'ปิดขาย'}"></strong></p><p th:if="${product.description}" th:text="${product.description}"></p>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <a href="/products" class="text-decoration-none">← กลับหน้าสินค้า</a>
+            <img class="kk-photo-large" th:src="@{/products/{id}/image(id=${product.id})}" th:alt="${product.name}"><h2 class="mt-2 mb-1">รายละเอียดสินค้าและล็อตสินค้า</h2>
+            <div class="text-secondary">ตรวจสอบต้นทุน จำนวนคงเหลือ และวันหมดอายุแยกตามล็อต</div>
+        </div>
+        <a href="/stock" class="btn btn-outline-success">ไปหน้าสต็อก</a>
+    </div>
+
+    <section class="panel">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+                <div class="text-secondary small">รหัสสินค้า <span th:text="${product.code}">P001</span></div>
+                <h3 class="mb-2" th:text="${product.name}">ชื่อสินค้า</h3>
+                <div class="text-secondary" th:text="${product.category != null && !product.category.isBlank() ? product.category : 'ไม่ระบุหมวดหมู่'}">หมวดหมู่</div>
+            </div>
+            <div class="text-end">
+                <div class="text-secondary small">ราคาขายปัจจุบัน</div>
+                <h4 class="text-success mb-0"><span th:text="${product.price != null ? #numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT') : '0.00'}">0.00</span> บาท</h4>
+            </div>
+        </div>
+        <div class="row g-3 mt-2">
+            <div class="col-6 col-lg-3"><div class="metric"><small>สต็อกสินค้ารวม</small><strong th:text="${product.quantity != null ? product.quantity : 0}">0</strong> <span th:text="${product.unit != null ? product.unit : 'หน่วย'}">หน่วย</span></div></div>
+            <div class="col-6 col-lg-3"><div class="metric"><small>จำนวนล็อตทั้งหมด</small><strong th:text="${batchCount}">0</strong> ล็อต</div></div>
+            <div class="col-6 col-lg-3"><div class="metric"><small>ล็อตที่ยังมีสินค้า</small><strong th:text="${availableBatchCount}">0</strong> ล็อต</div></div>
+            <div class="col-6 col-lg-3"><div class="metric"><small>รวมจำนวนคงเหลือในล็อต</small><strong th:text="${totalBatchQuantity}">0</strong> <span th:text="${product.unit != null ? product.unit : 'หน่วย'}">หน่วย</span></div></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div><h4 class="mb-1">ล็อตสินค้าทั้งหมด</h4><div class="text-secondary small">เรียงตามวันหมดอายุก่อน เพื่อช่วยตรวจสอบล็อตที่ควรจัดการก่อน</div></div>
+            <a href="/stock/batches" class="btn btn-sm btn-outline-secondary">ดูตารางล็อตทั้งหมด</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead><tr>
+                    <th>ล็อตที่</th><th>วันที่รับเข้า</th><th class="text-end">จำนวนรับเข้า</th><th class="text-end">คงเหลือ</th><th class="text-end">ต้นทุน/หน่วย</th><th>วันหมดอายุ</th><th>สถานะ</th><th>หมายเหตุ</th>
+                </tr></thead>
+                <tbody>
+                <tr th:each="batch, iter : ${batches}">
+                    <td th:text="${iter.count}">1</td>
+                    <td th:text="${batch.receivedAt != null ? #temporals.format(batch.receivedAt, 'dd/MM/yyyy HH:mm') : '-'}">-</td>
+                    <td class="text-end" th:text="${batch.quantity != null ? batch.quantity : 0}">0</td>
+                    <td class="text-end fw-semibold" th:text="${batch.remainingQuantity != null ? batch.remainingQuantity : 0}">0</td>
+                    <td class="text-end" th:text="${batch.purchaseCost != null ? #numbers.formatDecimal(batch.purchaseCost, 1, 'COMMA', 2, 'POINT') + ' บาท' : '-'}">-</td>
+                    <td th:text="${batch.expiryDate != null ? #temporals.format(batch.expiryDate, 'dd/MM/yyyy') : 'ไม่ระบุ'}">-</td>
+                    <td>
+                        <span class="status-pill bg-danger-subtle text-danger" th:if="${batch.expiryDate != null && batch.expiryDate.isBefore(T(java.time.LocalDate).now()) && batch.remainingQuantity != null && batch.remainingQuantity > 0}">หมดอายุแล้ว</span>
+                        <span class="status-pill bg-warning-subtle text-warning-emphasis" th:if="${batch.expiryDate != null && !batch.expiryDate.isBefore(T(java.time.LocalDate).now()) && !batch.expiryDate.isAfter(T(java.time.LocalDate).now().plusDays(30)) && batch.remainingQuantity != null && batch.remainingQuantity > 0}">ใกล้หมดอายุ</span>
+                        <span class="status-pill bg-secondary-subtle text-secondary" th:if="${batch.remainingQuantity == null || batch.remainingQuantity <= 0}">หมดล็อต</span>
+                        <span class="status-pill bg-success-subtle text-success" th:if="${batch.remainingQuantity != null && batch.remainingQuantity > 0 && (batch.expiryDate == null || batch.expiryDate.isAfter(T(java.time.LocalDate).now().plusDays(30)))}">ปกติ</span>
+                    </td>
+                    <td th:text="${batch.note != null && !batch.note.isBlank() ? batch.note : '-'}">-</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(batches)}"><td colspan="8" class="text-center text-secondary py-5">ยังไม่มีข้อมูลล็อตของสินค้านี้</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info mt-3 mb-0 small">หมายเหตุ: ต้นทุนแสดงตามล็อตที่รับเข้า ไม่ใช่ต้นทุนล่าสุดของสินค้าโดยรวม หากไม่มีข้อมูลล็อต ระบบจะแสดงข้อความว่าไม่มีข้อมูลล็อต</div>
+    </section>
+</div>
+<div th:replace="~{fragments/navigation :: navigation-script}"></div></body>
+</html>

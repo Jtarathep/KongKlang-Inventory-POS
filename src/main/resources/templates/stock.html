@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>คงคลัง - ระบบจัดการสต๊อก</title>
+
+    <!-- Bootstrap 5.3.7 -->
+    <link
+            href="/css/vendor/bootstrap.min.css"
+            rel="stylesheet">
+
+    <!-- Shared KongKlang sidebar/topbar layout -->
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=5)}">
+
+    <style>
+
+        /* ==================================================
+           Global
+        ================================================== */
+
+        body {
+            background: #f4f6f9;
+            color: #212529;
+            min-height: 100vh;
+        }
+
+
+        /* ==================================================
+           Navbar
+        ================================================== */
+
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+            padding: 12px 0;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            letter-spacing: .2px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .nav-menu .btn {
+            border-radius: 9px;
+            font-weight: 500;
+        }
+
+
+        /* ==================================================
+           Main
+        ================================================== */
+
+        .main-container {
+            padding-top: 34px;
+            padding-bottom: 60px;
+        }
+
+
+        /* ==================================================
+           Page Header
+        ================================================== */
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+
+        .page-header p {
+            color: #6c757d;
+        }
+
+
+        /* ==================================================
+           Section Title
+        ================================================== */
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+
+        /* ==================================================
+           Stock Menu Cards
+        ================================================== */
+
+        .stock-menu-row {
+            row-gap: 20px;
+        }
+
+        .stock-card {
+            border: 0;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .055);
+            transition:
+                    transform .2s ease,
+                    box-shadow .2s ease;
+            overflow: hidden;
+        }
+
+        .stock-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .09);
+        }
+
+        .stock-card .card-body {
+            padding: 25px;
+        }
+
+        .icon-box {
+            width: 58px;
+            height: 58px;
+            border-radius: 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 27px;
+        }
+
+        .stock-card h5 {
+            font-weight: 700;
+        }
+
+        .stock-card p {
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        .stock-card .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 9px 14px;
+        }
+
+
+        /* ==================================================
+           Product Card
+        ================================================== */
+
+        .product-card {
+            margin-top: 30px;
+            border: 0;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, .055);
+            overflow: hidden;
+        }
+
+        .product-card-header {
+            background: #ffffff;
+            border-bottom: 1px solid #edf0f2;
+            padding: 22px 24px;
+        }
+
+        .product-card-header h4 {
+            font-weight: 700;
+        }
+
+        .product-card-header .btn {
+            border-radius: 9px;
+        }
+
+
+        /* ==================================================
+           Table
+        ================================================== */
+
+        .stock-table {
+            margin-bottom: 0;
+        }
+
+        .stock-table thead th {
+            background: #f8f9fa;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 14px;
+        }
+
+        .stock-table tbody td {
+            vertical-align: middle;
+            padding: 15px 14px;
+            border-color: #f0f1f2;
+        }
+
+        .stock-table tbody tr {
+            transition: background .15s ease;
+        }
+
+        .stock-table tbody tr:hover {
+            background: #fafbfc;
+        }
+
+
+        /* ==================================================
+           Product Code
+        ================================================== */
+
+        .product-code {
+            font-family: monospace;
+            font-weight: 700;
+            color: #495057;
+            background: #f5f6f7;
+            padding: 5px 9px;
+            border-radius: 7px;
+            display: inline-block;
+        }
+
+
+        /* ==================================================
+           Product Name
+        ================================================== */
+
+        .product-name {
+            font-weight: 600;
+            color: #212529;
+        }
+
+
+        /* ==================================================
+           Stock Badge
+        ================================================== */
+
+        .stock-badge {
+            min-width: 58px;
+            display: inline-block;
+            text-align: center;
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           Empty State
+        ================================================== */
+
+        .empty-state {
+            padding: 55px 20px !important;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            opacity: .65;
+        }
+
+
+        /* ==================================================
+           Footer Spacing
+        ================================================== */
+
+        .page-bottom-space {
+            height: 20px;
+        }
+
+
+        /* ==================================================
+           Responsive
+        ================================================== */
+
+        @media (max-width: 991.98px) {
+
+            .navbar .container {
+                gap: 12px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .main-container {
+                padding-top: 28px;
+            }
+
+        }
+
+
+        @media (max-width: 575.98px) {
+
+            .navbar {
+                padding: 10px 0;
+            }
+
+            .navbar-brand {
+                font-size: 18px;
+            }
+
+            .nav-menu {
+                gap: 5px;
+            }
+
+            .nav-menu .btn {
+                font-size: 12px;
+                padding: 6px 9px;
+            }
+
+            .page-header {
+                margin-bottom: 24px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+
+            .stock-card .card-body {
+                padding: 22px;
+            }
+
+            .product-card-header {
+                padding: 20px;
+            }
+
+            .product-card-header .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+        }
+
+    </style>
+
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+
+
+<body class="kk-layout">
+
+<!-- Shared KongKlang navigation -->
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+
+
+
+<!-- ==================================================
+     Navbar
+================================================== -->
+
+<nav class="navbar">
+
+    <div class="container-fluid">
+
+        <!-- Logo -->
+
+        <a class="navbar-brand fw-bold text-decoration-none"
+           href="/">
+
+            📦 คงคลัง
+
+        </a>
+
+
+        <!-- Menu -->
+
+        <div class="nav-menu">
+
+            <a href="/"
+               class="btn btn-light btn-sm">
+
+                📊 Dashboard
+
+            </a>
+
+
+            <a href="/products"
+               class="btn btn-light btn-sm">
+
+                📦 สินค้า
+
+            </a>
+
+
+            <a href="/sales"
+               class="btn btn-light btn-sm">
+
+                🛒 ขายสินค้า
+
+            </a>
+
+
+            <a href="/stock"
+               class="btn btn-primary btn-sm">
+
+                📊 สต๊อก
+
+            </a>
+
+
+            <a href="/sales/history"
+               class="btn btn-light btn-sm">
+
+                🧾 ประวัติการขาย
+
+            </a>
+
+
+            <a href="/reports"
+               class="btn btn-light btn-sm">
+
+                📑 รายงาน
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ==================================================
+     Main
+================================================== -->
+
+<div class="container-xl main-container">
+
+
+    <!-- ==================================================
+         Page Header
+    ================================================== -->
+
+    <div class="page-header">
+
+        <h2 class="mb-2">
+
+            📊 ระบบจัดการสต๊อก
+
+        </h2>
+
+        <p class="mb-0">
+
+            จัดการสินค้าเข้า สินค้าออก
+            และตรวจสอบประวัติการเคลื่อนไหวของสินค้า
+
+        </p>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         Stock Menu
+    ================================================== -->
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4
+                g-4 stock-menu-row">
+
+
+        <!-- ==================================================
+             รับสินค้า
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card stock-card h-100">
+
+                <div class="card-body">
+
+                    <div class="icon-box
+                                bg-success-subtle
+                                text-success
+                                mb-4">
+
+                        📥
+
+                    </div>
+
+
+                    <h5 class="mb-2">
+
+                        รับสินค้า
+
+                    </h5>
+
+
+                    <p class="text-muted small mb-4">
+
+                        เพิ่มจำนวนสินค้า
+                        เข้าสู่คลังสินค้า
+
+                    </p>
+
+
+                    <a href="/stock/in"
+                       class="btn btn-success w-100">
+
+                        📥 รับสินค้า
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             สินค้าออก
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card stock-card h-100">
+
+                <div class="card-body">
+
+                    <div class="icon-box
+                                bg-danger-subtle
+                                text-danger
+                                mb-4">
+
+                        📤
+
+                    </div>
+
+
+                    <h5 class="mb-2">
+
+                        สินค้าออก
+
+                    </h5>
+
+
+                    <p class="text-muted small mb-4">
+
+                        ลดจำนวนสินค้า
+                        เมื่อขายหรือเบิกออก
+
+                    </p>
+
+
+                    <a href="/stock/out"
+                       class="btn btn-danger w-100">
+
+                        📤 สินค้าออก
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             ประวัติ
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card stock-card h-100">
+
+                <div class="card-body">
+
+                    <div class="icon-box
+                                bg-primary-subtle
+                                text-primary
+                                mb-4">
+
+                        📋
+
+                    </div>
+
+
+                    <h5 class="mb-2">
+
+                        ประวัติสต๊อก
+
+                    </h5>
+
+
+                    <p class="text-muted small mb-4">
+
+                        ดูรายการรับเข้า
+                        สินค้าออก และปรับยอด
+
+                    </p>
+
+
+                    <a href="/stock/history"
+                       class="btn btn-primary w-100">
+
+                        📋 ดูประวัติ
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             ปรับยอด
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card stock-card h-100">
+
+                <div class="card-body">
+
+                    <div class="icon-box
+                                bg-warning-subtle
+                                text-warning
+                                mb-4">
+
+                        🔧
+
+                    </div>
+
+
+                    <h5 class="mb-2">
+
+                        ปรับยอดสินค้า
+
+                    </h5>
+
+
+                    <p class="text-muted small mb-4">
+
+                        ปรับจำนวนสินค้า
+                        ให้ตรงกับสินค้าจริง
+
+                    </p>
+
+
+                    <a href="/stock/adjust"
+                       class="btn btn-warning w-100">
+
+                        🔧 ปรับยอด
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             รายละเอียดล็อต
+        ================================================== -->
+
+        <div class="col">
+
+            <div class="card stock-card h-100">
+
+                <div class="card-body">
+
+                    <div class="icon-box
+                                bg-info-subtle
+                                text-info
+                                mb-4">
+
+                        📦
+
+                    </div>
+
+
+                    <h5 class="mb-2">
+
+                        รายละเอียดล็อต
+
+                    </h5>
+
+
+                    <p class="text-muted small mb-4">
+
+                        ตรวจสอบล็อตสินค้า
+                        ต้นทุน จำนวนคงเหลือ
+                        และวันหมดอายุ
+
+                    </p>
+
+
+                    <a href="/stock/batches"
+                       class="btn btn-info text-white w-100">
+
+                        📦 ดูรายละเอียดล็อต
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ==================================================
+         Product Stock
+    ================================================== -->
+
+    <div class="card product-card">
+
+
+        <!-- ==================================================
+             Card Header
+        ================================================== -->
+
+        <div class="product-card-header">
+
+            <div class="d-flex
+                        justify-content-between
+                        align-items-center
+                        flex-wrap
+                        gap-2">
+
+                <div>
+
+                    <h4 class="mb-1">
+
+                        📦 สินค้าในคลัง
+
+                    </h4>
+
+                    <small class="text-muted">
+
+                        ตรวจสอบจำนวนสินค้าคงเหลือในปัจจุบัน
+
+                    </small>
+
+                </div>
+
+
+                <a href="/products"
+                   class="btn btn-outline-primary btn-sm">
+
+                    ดูสินค้าทั้งหมด
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==================================================
+             Card Body
+        ================================================== -->
+
+        <div class="card-body p-0">
+
+            <div class="d-flex flex-wrap align-items-center gap-2 p-3 border-bottom bg-white" id="stockFilterBar">
+                <input type="search" class="form-control form-control-sm" style="max-width:320px" id="stockSearch" placeholder="ค้นหารหัสสินค้า ชื่อสินค้า หรือหมวดหมู่">
+                <span class="small text-muted" id="stockFilterCount" aria-live="polite"></span>
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table
+                              table-hover
+                              align-middle
+                              stock-table">
+
+
+                    <!-- ==================================================
+                         Table Header
+                    ================================================== -->
+
+                    <thead>
+
+                    <tr>
+
+                        <th class="px-4">
+
+                            รหัสสินค้า
+
+                        </th>
+
+
+                        <th>
+
+                            สินค้า
+
+                        </th>
+
+
+                        <th>
+
+                            หมวดหมู่
+
+                        </th>
+
+
+                        <th class="text-center">
+
+                            คงเหลือ
+
+                        </th>
+
+
+                        <th>
+
+                            หน่วย
+
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+
+                    <!-- ==================================================
+                         Table Body
+                    ================================================== -->
+
+                    <tbody>
+
+
+                    <!-- ==================================================
+                         ไม่มีสินค้า
+                    ================================================== -->
+
+                    <tr th:if="${#lists.isEmpty(products)}">
+
+                        <td colspan="5"
+                            class="text-center empty-state">
+
+
+                            <div class="empty-state-icon mb-3">
+
+                                📦
+
+                            </div>
+
+
+                            <div class="fw-semibold mb-1">
+
+                                ยังไม่มีสินค้าในคลัง
+
+                            </div>
+
+
+                            <small class="text-muted">
+
+                                เพิ่มสินค้าก่อนเพื่อดูข้อมูลสต๊อก
+
+                            </small>
+
+
+                            <div class="mt-4">
+
+                                <a href="/products/new"
+                                   class="btn btn-primary btn-sm">
+
+                                    ➕ เพิ่มสินค้า
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <!-- ==================================================
+                         รายการสินค้า
+                    ================================================== -->
+
+                    <tr th:each="product : ${products}">
+
+
+                        <!-- รหัสสินค้า -->
+
+                        <td class="px-4">
+
+                            <span class="product-code"
+                                  th:text="${product.code}">
+
+                                P001
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ชื่อสินค้า -->
+
+                        <td>
+
+                            <a class="product-name text-decoration-none"
+                               th:href="@{/products/{id}/details(id=${product.id})}"
+                               th:text="${product.name}"
+                               title="ดูรายละเอียดสินค้าและล็อต">
+                                สินค้าตัวอย่าง
+                            </a>
+
+                        </td>
+
+
+
+                        <!-- หมวดหมู่ -->
+
+                        <td>
+
+                            <span class="text-muted"
+                                  th:text="${product.category}">
+
+                                ทั่วไป
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ==================================================
+                             จำนวนคงเหลือ
+                        ================================================== -->
+
+                        <td class="text-center">
+
+
+                            <!-- ปกติ -->
+
+                            <span class="badge
+                                         rounded-pill
+                                         bg-success
+                                         px-3
+                                         py-2
+                                         stock-badge"
+                                  th:if="${product.quantity != null
+                                          && product.quantity >= 20}"
+                                  th:text="${product.quantity}">
+
+                                20
+
+                            </span>
+
+
+
+                            <!-- ใกล้หมด -->
+
+                            <span class="badge
+                                         rounded-pill
+                                         bg-warning
+                                         text-dark
+                                         px-3
+                                         py-2
+                                         stock-badge"
+                                  th:if="${product.quantity != null
+                                          && product.quantity >= 10
+                                          && product.quantity < 20}"
+                                  th:text="${product.quantity}">
+
+                                10
+
+                            </span>
+
+
+
+                            <!-- เหลือน้อย -->
+
+                            <span class="badge
+                                         rounded-pill
+                                         bg-danger
+                                         px-3
+                                         py-2
+                                         stock-badge"
+                                  th:if="${product.quantity != null
+                                          && product.quantity < 10}"
+                                  th:text="${product.quantity}">
+
+                                5
+
+                            </span>
+
+
+
+                            <!-- ไม่มีค่า -->
+
+                            <span class="badge
+                                         rounded-pill
+                                         bg-secondary
+                                         px-3
+                                         py-2
+                                         stock-badge"
+                                  th:if="${product.quantity == null}">
+
+                                0
+
+                            </span>
+
+
+                        </td>
+
+
+
+                        <!-- หน่วย -->
+
+                        <td>
+
+                            <span class="text-muted"
+                                  th:text="${product.unit}">
+
+                                ชิ้น
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Bottom spacing -->
+
+    <div class="page-bottom-space"></div>
+
+
+</div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('stockSearch');
+  const table = document.querySelector('.stock-table');
+  const count = document.getElementById('stockFilterCount');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  let products = [];
+  const escText = value => value == null || value === '' ? '-' : String(value);
+  const render = () => {
+    const query = (input?.value || '').trim().toLocaleLowerCase('th');
+    const filtered = products.filter(p => [p.code,p.name,p.category].some(v => escText(v).toLocaleLowerCase('th').includes(query)));
+    tbody.replaceChildren();
+    if (!filtered.length) {
+      const tr = document.createElement('tr'); const td = document.createElement('td');
+      td.colSpan = 5; td.className = 'text-center text-muted py-5';
+      td.textContent = products.length ? 'ไม่พบสินค้าที่ตรงกับคำค้นหา' : 'ยังไม่มีสินค้าในคลัง';
+      tr.append(td); tbody.append(tr);
+    } else filtered.forEach(p => {
+      const tr = document.createElement('tr');
+      const code = document.createElement('td'); code.className = 'px-4';
+      const codeSpan = document.createElement('span'); codeSpan.className = 'product-code'; codeSpan.textContent = escText(p.code); code.append(codeSpan);
+      const nameTd = document.createElement('td'); const photo=document.createElement('img');photo.className='kk-photo';photo.alt='';photo.loading='lazy';photo.src='/products/'+encodeURIComponent(p.id)+'/image';nameTd.append(photo); const link = document.createElement('a');
+      link.className = 'product-name text-decoration-none'; link.href = `/products/${encodeURIComponent(p.id)}/details`; link.textContent = escText(p.name); link.title = 'ดูรายละเอียดสินค้าและล็อต'; nameTd.append(link);
+      const cat = document.createElement('td'); const catSpan = document.createElement('span'); catSpan.className='text-muted'; catSpan.textContent=escText(p.category); cat.append(catSpan);
+      const qtyTd = document.createElement('td'); qtyTd.className='text-center'; const badge=document.createElement('span');
+      const q = Number(p.quantity ?? 0); badge.className='badge rounded-pill px-3 py-2 stock-badge ' + (p.quantity == null ? 'bg-secondary' : q >= 20 ? 'bg-success' : q >= 10 ? 'bg-warning text-dark' : 'bg-danger'); badge.textContent=String(q); qtyTd.append(badge);
+      const unitTd=document.createElement('td'); const unit=document.createElement('span'); unit.className='text-muted'; unit.textContent=escText(p.unit); unitTd.append(unit);
+      tr.append(code,nameTd,cat,qtyTd,unitTd); tbody.append(tr);
+    });
+    if (count) count.textContent = `แสดง ${filtered.length} จาก ${products.length} รายการ`;
+  };
+  input?.addEventListener('input', render);
+  fetch('/api/stock', { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+    .then(async response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+    .then(data => { if (!Array.isArray(data)) throw new Error('รูปแบบข้อมูลไม่ถูกต้อง'); products=data; render(); })
+    .catch(error => { console.error('โหลดข้อมูลสต็อกไม่สำเร็จ:', error); if (count) count.textContent='โหลดข้อมูลล่าสุดไม่สำเร็จ กำลังแสดงข้อมูลเดิม'; });
+});
+</script>
+
+<!-- Shared sidebar interactions and active menu -->
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+
+</body>
+
+</html>

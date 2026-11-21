@@ -1,0 +1,29 @@
+.commerce-page{padding-top:28px;padding-bottom:48px;max-width:1040px;color:var(--kk-ink,#17243b)}
+.commerce-page h1{font-size:1.65rem;font-weight:650;margin:0 0 10px}
+.commerce-page>p{max-width:72ch}
+.commerce-settings{background:#fff;padding:24px;border-radius:12px;margin-top:24px}
+.commerce-settings fieldset{min-width:0;margin:0;padding:0 0 24px;border:0}
+.commerce-settings fieldset+fieldset{padding-top:24px;border-top:1px solid #dfe6ef}
+.commerce-settings legend{font-size:1.1rem;font-weight:650;margin-bottom:16px;float:none;width:auto}
+.commerce-settings label{display:block;font-weight:550;margin:16px 0 7px}
+.commerce-settings .form-text{color:#58677d;margin:7px 0 16px;max-width:72ch}
+.commerce-settings select,.commerce-settings input,.commerce-settings textarea{font:inherit;max-width:100%;caret-color:#2563eb}
+.commerce-settings .commerce-check{display:flex;align-items:center;gap:10px;margin-top:0}
+.commerce-check input{width:18px;height:18px;accent-color:#2563eb;flex-shrink:0}
+.commerce-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.commerce-actions{display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid #dfe6ef;padding-top:22px}
+.commerce-page :focus-visible,.checkout-payment :focus-visible{outline:3px solid #946000;outline-offset:3px}
+.checkout-payment{margin-top:20px;padding-top:20px;border-top:1px solid #dfe6ef}
+.checkout-payment label{display:block;margin:12px 0 5px;font-weight:550}
+.checkout-payment h3{font-size:1rem;font-weight:650;margin:0 0 12px}
+.checkout-totals{display:grid;grid-template-columns:1fr auto;gap:8px;margin:16px 0;font-variant-numeric:tabular-nums}
+.checkout-totals dd{text-align:right;margin:0;font-weight:600}
+.checkout-payment [hidden]{display:none!important}
+.checkout-payment .commerce-check{display:flex;gap:10px;align-items:flex-start;line-height:1.6}
+.checkout-payment .commerce-check input{margin-top:4px}
+.checkout-payment input,.checkout-payment select,.checkout-payment textarea{min-width:0;width:100%}
+.checkout-payment input[type=checkbox]{width:18px;min-width:18px}
+@media(max-width:600px){.commerce-page{padding-top:20px}.commerce-settings{padding:18px}.commerce-grid{grid-template-columns:1fr;gap:0}.commerce-actions .btn{width:100%}}
+@media(prefers-reduced-motion:no-preference){.commerce-settings .btn,.checkout-payment .btn{transition:background-color .18s ease-out,color .18s ease-out}}
+
+.commerce-scroll-hint{display:none;color:#58677d;font-size:12px;margin:12px 0 8px}@media(max-width:700px){.commerce-scroll-hint{display:block}}@media print{.commerce-scroll-hint{display:none}}

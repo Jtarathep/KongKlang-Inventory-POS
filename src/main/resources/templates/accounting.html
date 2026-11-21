@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>เจ้าหนี้และบัญชี · คงคลัง</title><link rel="stylesheet" th:href="@{/css/kongklang.css}"><link rel="stylesheet" th:href="@{/css/business.css}"><link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout" data-business="accounting" th:attr="data-csrf=${session.csrfToken},data-role=${sessionRole},data-user-id=${sessionUserId},data-store-id=${sessionStoreId}">
+<a class="skip-link" href="#business-main">ข้ามไปเนื้อหา</a>
+<div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<main id="business-main" class="business-main">
+<header class="business-heading"><button id="business-mobile-menu" class="secondary mobile-menu" type="button" aria-controls="kkSidebar" aria-expanded="false">เมนู</button><div><h1>เจ้าหนี้และบัญชี</h1><p>ติดตามหนี้ผู้จำหน่าย บันทึกชำระ และตรวจสอบรายการบัญชี</p></div><button id="refresh" type="button" class="secondary">โหลดข้อมูลใหม่</button></header>
+<nav class="business-nav" aria-label="ส่วนงาน"><a href="/purchasing" >จัดซื้อและรับสินค้า</a><a href="/accounting" aria-current="page">เจ้าหนี้และบัญชี</a><a href="/accounting/advanced">รายงานบัญชีและปิดงวด</a></nav>
+<div id="message" class="business-message" role="alert" tabindex="-1" hidden></div>
+<button id="retry-pending" type="button" class="secondary" hidden>ตรวจสอบรายการเดิมที่ยังไม่ได้รับผลยืนยัน</button><div id="loading" role="status">กำลังโหลดข้อมูล…</div>
+<noscript>หน้านี้ต้องเปิด JavaScript เพื่อโหลดข้อมูลและทำรายการ</noscript>
+
+<section class="business-section" aria-labelledby="invoice-new-title"><h2 id="invoice-new-title">บันทึกใบแจ้งหนี้ผู้จำหน่าย</h2>
+<p>เวอร์ชันนี้บันทึกหนึ่งใบแจ้งหนี้ต่อหนึ่งเอกสารรับสินค้า ยอดมาจากสินค้าที่รับจริง ไม่รวมภาษีและค่าใช้จ่ายเพิ่มเติม</p>
+<form id="invoice-form" class="business-form">
+<label>เอกสารรับสินค้า<select id="invoice-receipt" name="receiptId" required><option value="">เลือกเอกสารรับสินค้า</option></select></label>
+<label>เลขใบแจ้งหนี้ผู้จำหน่าย<input name="vendorNumber" required maxlength="100"></label>
+<label>วันที่ใบแจ้งหนี้<input name="invoiceDate" type="date" required></label><label>วันครบกำหนด<input name="dueDate" type="date" required></label>
+<div class="form-actions wide"><button type="submit">บันทึกใบแจ้งหนี้</button></div></form></section>
+<section class="business-section"><h2>ตั้งเจ้าหนี้จากการรับเข้านอกใบสั่งซื้อ</h2><p>ใช้ยอดจากเอกสารรับเข้าที่บันทึกแล้ว การตั้งเจ้าหนี้ไม่เพิ่มสต็อกซ้ำ</p>
+<p id="manual-load" role="status">กำลังโหลดเอกสาร…</p><p id="manual-message" role="alert" hidden></p>
+<form id="manual-invoice-form" class="business-form"><label>เอกสารรับเข้า<select name="operationId" required></select></label><label>ผู้จำหน่าย<select name="supplierId" required></select></label><label>เลขใบแจ้งหนี้<input name="vendorNumber" maxlength="100" required></label><label>วันที่ใบแจ้งหนี้<input name="invoiceDate" type="date" required></label><label>ครบกำหนด<input name="dueDate" type="date" required></label><div class="form-actions"><button type="submit">ตั้งเจ้าหนี้จากเอกสารรับเข้า</button></div></form></section>
+<section class="business-section" aria-labelledby="invoices-title"><h2 id="invoices-title">รายการเจ้าหนี้</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>ใบแจ้งหนี้ / ผู้จำหน่าย</th><th>ครบกำหนด</th><th class="numeric">ยอดหนี้</th><th class="numeric">ชำระแล้ว</th><th class="numeric">คงค้าง</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="invoice-rows"></tbody></table></div></section>
+<section class="business-section" id="payment-section" aria-labelledby="payment-title" hidden>
+<h2 id="payment-title" tabindex="-1">ชำระเงินผู้จำหน่าย</h2><p id="payment-reference"></p>
+<form id="payment-form" class="business-form"><label>จำนวนเงิน (บาท)<input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal"></label>
+<label>วันที่ชำระ<input name="paymentDate" type="date" required></label><label class="wide">หมายเหตุ<input name="note" maxlength="1000"></label>
+<div class="form-actions wide"><button type="submit">ยืนยันบันทึกชำระเงิน</button><span class="form-help">เป็นการบันทึกการชำระที่ทำแล้ว ไม่ใช่คำสั่งโอนเงิน</span></div></form></section>
+<section class="business-section" aria-labelledby="balance-title"><h2 id="balance-title">งบทดลองจากรายการที่ระบบบันทึก</h2>
+<p>แสดงยอดคงเหลือสุทธิแต่ละบัญชีจากรายการใหม่ที่ลงบัญชีแล้ว ข้อมูลเก่ายังไม่ถูกนำมาลงบัญชีย้อนหลัง</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>รหัสบัญชี</th><th>ชื่อบัญชี</th><th class="numeric">เดบิต (บาท)</th><th class="numeric">เครดิต (บาท)</th></tr></thead><tbody id="balance-rows"></tbody><tfoot><tr><th colspan="2">รวม</th><td id="total-debit" class="numeric">0.00</td><td id="total-credit" class="numeric">0.00</td></tr></tfoot></table></div></section>
+<section class="business-section" aria-labelledby="journals-title"><h2 id="journals-title">สมุดรายวัน</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>เอกสารอ้างอิง / วันที่</th><th>บัญชี</th><th class="numeric">เดบิต</th><th class="numeric">เครดิต</th></tr></thead><tbody id="journal-rows"></tbody></table></div></section>
+
+</main><div th:replace="~{fragments/navigation :: navigation-script}"></div><script src="/js/business.js" defer></script><script src="/js/manual-invoice.js" defer></script></body></html>

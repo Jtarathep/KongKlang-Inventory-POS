@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KONGKLANG - จัดการร้านค้า</title>
+    <link href="/css/vendor/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/kongklang.css(v=4)}">
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout">
+<div th:replace="~{fragments/navigation :: sidebar}"></div>
+<div th:replace="~{fragments/navigation :: topbar}"></div>
+<main class="container-fluid mt-4 px-4 pb-5">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div><h2 class="fw-bold">🏪 จัดการร้านค้า</h2><p class="text-muted mb-0">เพิ่มและจัดการร้านค้าภายในระบบ KONGKLANG</p></div>
+        <a href="/management/users" class="btn btn-outline-primary">จัดการผู้ใช้งาน →</a>
+    </div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white fw-bold py-3">➕ เพิ่มร้านค้าใหม่</div>
+        <div class="card-body">
+            <form method="post" action="/management/stores/create" class="row g-3">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}">
+                <div class="col-md-3"><label class="form-label">รหัสร้าน *</label><input name="storeCode" class="form-control" placeholder="STORE002" maxlength="30" required></div>
+                <div class="col-md-4"><label class="form-label">ชื่อร้าน *</label><input name="storeName" class="form-control" placeholder="ร้านคงคลัง สาขา 2" required></div>
+                <div class="col-md-3"><label class="form-label">ที่อยู่</label><input name="address" class="form-control"></div>
+                <div class="col-md-2"><label class="form-label">เบอร์โทร</label><input name="phone" class="form-control"></div>
+                <div class="col-12"><button class="btn btn-primary px-4" type="submit">บันทึกร้านค้า</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white fw-bold py-3">รายการร้านค้า</div>
+        <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>รหัสร้าน</th><th>ชื่อร้าน</th><th>ที่อยู่</th><th>เบอร์โทร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
+            <tbody><tr th:each="store : ${stores}">
+                <td class="fw-semibold" th:text="${store.storeCode}"></td><td th:text="${store.storeName}"></td><td th:text="${store.address != null && !store.address.isEmpty() ? store.address : '-'}"></td><td th:text="${store.phone != null && !store.phone.isEmpty() ? store.phone : '-'}"></td>
+                <td><span class="badge" th:classappend="${store.active} ? ' text-bg-success' : ' text-bg-secondary'" th:text="${store.active} ? 'เปิดใช้งาน' : 'ปิดใช้งาน'"></span></td>
+                <td><form th:action="@{/management/stores/{id}/toggle(id=${store.id})}" method="post">
+<input type="hidden" name="_csrf" th:value="${session.csrfToken}"><button class="btn btn-sm" th:classappend="${store.active} ? ' btn-outline-danger' : ' btn-outline-success'" th:text="${store.active} ? 'ปิดร้าน' : 'เปิดร้าน'"></button></form></td>
+            </tr><tr th:if="${#lists.isEmpty(stores)}"><td colspan="6" class="text-center text-muted py-4">ยังไม่มีข้อมูลร้านค้า</td></tr></tbody>
+        </table></div>
+    </div>
+</main>
+<div th:replace="~{fragments/navigation :: navigation-script}"></div>
+</body></html>

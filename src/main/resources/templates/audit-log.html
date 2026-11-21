@@ -1,0 +1,7 @@
+<!doctype html><html lang="th" xmlns:th="http://www.thymeleaf.org"><head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ประวัติการดำเนินการ · คงคลัง</title><link rel="stylesheet" href="/css/vendor/bootstrap.min.css"><link rel="stylesheet" href="/css/kongklang.css"><link rel="stylesheet" href="/css/business.css"><link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout"><div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<main class="business-main"><h1>ประวัติการดำเนินการ</h1><p>200 รายการล่าสุดของร้าน บันทึกพร้อมธุรกรรมสำเร็จ ไม่เก็บรหัสผ่าน</p><div class="table-scroll" tabindex="0" role="region" aria-label="ประวัติการดำเนินการ"><table><thead><tr><th>วันเวลา</th><th>รหัสผู้ใช้</th><th>การดำเนินการ</th><th>เอกสารอ้างอิง</th></tr></thead><tbody><tr th:each="e : ${events}"><td th:text="${#temporals.format(e.createdAt,'dd/MM/yyyy HH:mm:ss')}"></td><td th:text="${e.userId}"></td><td th:text="${e.action}"></td><td th:text="${e.reference}"></td></tr><tr th:if="${#lists.isEmpty(events)}"><td colspan="4">ยังไม่มีประวัติการดำเนินการ</td></tr></tbody></table></div></main><div th:replace="~{fragments/navigation :: navigation-script}"></div></body></html>

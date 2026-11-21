@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>จัดซื้อและรับสินค้า · คงคลัง</title><link rel="stylesheet" th:href="@{/css/kongklang.css}"><link rel="stylesheet" th:href="@{/css/business.css}"><link rel="stylesheet" href="/css/ui.css?v=20261112">
+<link rel="stylesheet" href="/css/web-refresh.css?v=20261120"><script src="/js/web-refresh.js?v=20261118" defer></script></head>
+<body class="kk-layout" data-business="purchasing" th:attr="data-csrf=${session.csrfToken},data-role=${sessionRole},data-user-id=${sessionUserId},data-store-id=${sessionStoreId}">
+<a class="skip-link" href="#business-main">ข้ามไปเนื้อหา</a>
+<div th:replace="~{fragments/navigation :: sidebar}"></div><div th:replace="~{fragments/navigation :: topbar}"></div>
+<main id="business-main" class="business-main">
+<header class="business-heading"><button id="business-mobile-menu" class="secondary mobile-menu" type="button" aria-controls="kkSidebar" aria-expanded="false">เมนู</button><div><h1>จัดซื้อและรับสินค้า</h1><p>สั่งซื้อสินค้า ติดตามยอดค้างรับ และรับเข้าคลังเป็นล็อต</p></div><button id="refresh" type="button" class="secondary">โหลดข้อมูลใหม่</button></header>
+<nav class="business-nav" aria-label="ส่วนงาน"><a href="/purchasing" aria-current="page">จัดซื้อและรับสินค้า</a><a href="/accounting" >เจ้าหนี้และบัญชี</a></nav>
+<div id="message" class="business-message" role="alert" tabindex="-1" hidden></div>
+<button id="retry-pending" type="button" class="secondary" hidden>ตรวจสอบรายการเดิมที่ยังไม่ได้รับผลยืนยัน</button><div id="loading" role="status">กำลังโหลดข้อมูล…</div>
+<noscript>หน้านี้ต้องเปิด JavaScript เพื่อโหลดข้อมูลและทำรายการ</noscript>
+
+<section class="business-section" aria-labelledby="suppliers-title">
+<h2 id="suppliers-title">ผู้จำหน่าย</h2>
+<details data-capability="buy"><summary>เพิ่มหรือแก้ไขผู้จำหน่าย</summary>
+<form id="supplier-form" class="business-form"><input name="id" type="hidden">
+<label>รหัสผู้จำหน่าย<input name="code" required maxlength="50" autocomplete="off"></label>
+<label>ชื่อผู้จำหน่าย<input name="name" required maxlength="150" autocomplete="organization"></label>
+<label>ชื่อผู้ติดต่อ<input name="contactName" maxlength="150" autocomplete="name"></label>
+<label>เบอร์โทร<input name="phone" maxlength="50" type="tel" autocomplete="tel"></label>
+<label>อีเมล<input name="email" maxlength="150" type="email" autocomplete="email"></label>
+<label>สถานะ<select name="active"><option value="true">เปิดใช้งาน</option><option value="false">ปิดใช้งาน</option></select></label>
+<label class="wide">ที่อยู่<textarea name="address" rows="2" maxlength="1000" autocomplete="street-address"></textarea></label>
+<div class="form-actions wide"><button type="submit">บันทึกผู้จำหน่าย</button><button type="reset" class="secondary">ล้างแบบฟอร์ม</button></div>
+</form></details>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><caption class="sr-only">ผู้จำหน่ายของร้านปัจจุบัน</caption><thead><tr><th>รหัส</th><th>ชื่อผู้จำหน่าย</th><th>ผู้ติดต่อ / โทร</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="supplier-rows"></tbody></table></div>
+</section>
+<section class="business-section" data-capability="buy" aria-labelledby="order-new-title">
+<h2 id="order-new-title">สร้างใบสั่งซื้อ</h2><p>บันทึกใบสั่งซื้อจะยังไม่เพิ่มสต็อก ต้องรับสินค้าจริงในขั้นตอนถัดไป</p>
+<form id="order-form"><div class="business-form"><label>ผู้จำหน่าย<select name="supplierId" id="order-supplier" required><option value="">เลือกผู้จำหน่าย</option></select></label><label>หมายเหตุ<input name="note" maxlength="1000"></label></div>
+<datalist id="product-options"></datalist>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>รหัสสินค้า</th><th>จำนวนสั่ง</th><th>ต้นทุน / หน่วย (บาท)</th><th>จัดการ</th></tr></thead><tbody id="order-lines"></tbody></table></div>
+<div class="form-actions"><button id="add-order-line" type="button" class="secondary">เพิ่มรายการสินค้า</button><button type="submit">บันทึกใบสั่งซื้อ</button></div></form>
+</section>
+<section class="business-section" aria-labelledby="orders-title"><h2 id="orders-title">ใบสั่งซื้อและยอดค้างรับ</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>เลขที่ใบสั่งซื้อ</th><th>ผู้จำหน่าย</th><th>สถานะ</th><th class="numeric">ยอดรวม (บาท)</th><th>จัดการ</th></tr></thead><tbody id="order-rows"></tbody></table></div></section>
+<section class="business-section" id="receive-section" aria-labelledby="receive-title" hidden>
+<h2 id="receive-title" tabindex="-1">รายละเอียดใบสั่งซื้อ</h2><p id="receive-reference" class="document-number"></p>
+<form id="receive-form"><div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>สินค้า</th><th class="numeric">สั่ง</th><th class="numeric">รับแล้ว</th><th class="numeric">ค้างรับ</th><th>รับครั้งนี้</th><th>วันหมดอายุ (ถ้ามี)</th></tr></thead><tbody id="receive-lines"></tbody></table></div>
+<p class="form-help">ใส่ 0 สำหรับสินค้าที่ยังไม่รับ แต่ละรายการที่รับจะสร้างล็อตแยกและบันทึกต้นทุนตามใบสั่งซื้อ</p>
+<div class="form-actions" data-capability="receive"><button id="receive-submit" type="submit">ยืนยันรับสินค้าเข้าคลัง</button></div></form></section>
+<section class="business-section" aria-labelledby="receipts-title"><h2 id="receipts-title">ประวัติรับสินค้าจากใบสั่งซื้อ</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="ตารางเลื่อนแนวนอน"><table><thead><tr><th>เอกสารรับสินค้า</th><th>อ้างอิงใบสั่งซื้อ</th><th>วันที่รับ</th><th class="numeric">มูลค่า (บาท)</th></tr></thead><tbody id="receipt-rows"></tbody></table></div></section>
+
+</main><div th:replace="~{fragments/navigation :: navigation-script}"></div><script src="/js/business.js" defer></script></body></html>

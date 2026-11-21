@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="csrf-token" th:content="${session.csrfToken}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${reportTitle}">รายงาน</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #e9ecef;
+            color: #222;
+            font-family: Arial, "Tahoma", sans-serif;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 12mm auto;
+            padding: 14mm;
+            background: #fff;
+            box-shadow: 0 2px 14px rgba(0,0,0,.12);
+        }
+
+        .toolbar {
+            width: 210mm;
+            margin: 14px auto 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button, a {
+            border: 0;
+            border-radius: 7px;
+            padding: 9px 14px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .print {
+            background: #198754;
+            color: white;
+        }
+
+        .back {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #222;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .brand-sub {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .title {
+            text-align: right;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 30px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .summary-label {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .summary-value {
+            font-size: 19px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            border: 1px solid #d8d8d8;
+            padding: 7px 8px;
+        }
+
+        th {
+            background: #f2f2f2;
+            text-align: center;
+        }
+
+        td.num {
+            text-align: right;
+        }
+
+        td.center {
+            text-align: center;
+        }
+
+        .profit {
+            font-weight: 700;
+        }
+
+        .footer {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 24px;
+            color: #777;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+            }
+
+            .toolbar {
+                display: none;
+            }
+
+            .page {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 14mm;
+                box-shadow: none;
+            }
+        }
+    </style>
+<link rel="stylesheet" href="/css/ui.css?v=20261112">
+</head>
+
+<body>
+
+<div class="toolbar">
+    <a class="back" href="/reports">← กลับรายงาน</a>
+    <button class="print" onclick="window.print()">🖨️ พิมพ์ A4</button>
+</div>
+
+<main class="page">
+
+    <!-- ส่วนหัวรายงาน -->
+    <header class="header">
+        <div>
+            <div class="brand">📦 คงคลัง</div>
+            <div class="brand-sub">
+                KONGKLANG GROCERY MANAGEMENT SYSTEM
+            </div>
+        </div>
+
+        <div class="title">
+            <h1 th:text="${reportTitle}">รายงานยอดขาย</h1>
+            <div>รายงานต้นทุนและกำไร</div>
+        </div>
+    </header>
+
+    <!-- ข้อมูลรายงาน -->
+    <section class="meta">
+
+        <!-- รายงานรายวัน -->
+        <div th:if="${reportType == 'daily'}">
+            <strong>วันที่:</strong>
+            <span th:text="${reportPeriod}">01/01/2026</span>
+        </div>
+
+        <!-- รายงานรายเดือน -->
+        <div th:if="${reportType == 'monthly'}">
+            <strong>เดือน:</strong>
+            <span th:text="${reportPeriod}">2026-01</span>
+        </div>
+
+        <!-- รายงานรายปี -->
+        <div th:if="${reportType == 'yearly'}">
+            <strong>ปี:</strong>
+            <span th:text="${reportYear}">2026</span>
+        </div>
+
+        <div>
+            <strong>ระบบ:</strong> KONGKLANG
+        </div>
+
+    </section>
+
+    <!-- สรุปยอดรวม -->
+    <section class="summary">
+
+        <div class="summary-card">
+            <div class="summary-label">ยอดขาย</div>
+            <div class="summary-value">
+                ฿<span th:text="${#numbers.formatDecimal(summary.revenue,1,2)}">0.00</span>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">ต้นทุน</div>
+            <div class="summary-value">
+                ฿<span th:text="${#numbers.formatDecimal(summary.cost,1,2)}">0.00</span>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-label">กำไร</div>
+            <div class="summary-value">
+                ฿<span th:text="${#numbers.formatDecimal(summary.profit,1,2)}">0.00</span>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ================================================== -->
+    <!-- ตารางรายงานรายวัน -->
+    <!-- ================================================== -->
+
+    <section th:if="${reportType == 'daily'}">
+
+        <table>
+            <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>ยอดขาย</th>
+                <th>ต้นทุน</th>
+                <th>กำไร</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="row : ${reportRows}">
+
+                <td class="center"
+                    th:text="${#temporals.format(row[0], 'dd/MM/yyyy')}">
+                    01/01/2026
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[1],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[2],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num profit"
+                    th:text="${#numbers.formatDecimal(row[3],1,2)}">
+                    0.00
+                </td>
+
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(reportRows)}">
+                <td colspan="4" class="empty">
+                    ไม่มีข้อมูลรายงานในช่วงวันที่เลือก
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    </section>
+
+    <!-- ================================================== -->
+    <!-- ตารางรายงานรายเดือน -->
+    <!-- ================================================== -->
+
+    <section th:if="${reportType == 'monthly'}">
+
+        <table>
+            <thead>
+            <tr>
+                <th>วันที่</th>
+                <th>ยอดขาย</th>
+                <th>ต้นทุน</th>
+                <th>กำไร</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="row : ${reportRows}">
+
+                <td th:text="${#temporals.format(row[0], 'dd/MM/yyyy')}">
+                    01/01/2026
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[1],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[2],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num profit"
+                    th:text="${#numbers.formatDecimal(row[3],1,2)}">
+                    0.00
+                </td>
+
+            </tr>
+
+            </tbody>
+        </table>
+
+    </section>
+
+    <!-- ================================================== -->
+    <!-- ตารางรายงานรายปี -->
+    <!-- ================================================== -->
+
+    <section th:if="${reportType == 'yearly'}">
+
+        <table>
+            <thead>
+            <tr>
+                <th>เดือน</th>
+                <th>ยอดขาย</th>
+                <th>ต้นทุน</th>
+                <th>กำไร</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="row : ${reportRows}">
+
+                <td th:text="${row[0]}">
+                    2026-01
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[1],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num"
+                    th:text="${#numbers.formatDecimal(row[2],1,2)}">
+                    0.00
+                </td>
+
+                <td class="num profit"
+                    th:text="${#numbers.formatDecimal(row[3],1,2)}">
+                    0.00
+                </td>
+
+            </tr>
+
+            </tbody>
+        </table>
+
+    </section>
+
+    <!-- ส่วนท้าย -->
+    <div class="footer">
+        <span>คงคลัง — รายงานยอดขาย ต้นทุน และกำไร</span>
+        <span>เอกสารสำหรับพิมพ์ A4</span>
+    </div>
+
+</main>
+
+</body>
+</html>

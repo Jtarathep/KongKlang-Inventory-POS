@@ -1,0 +1,14 @@
+.inventory-recovery{margin:0 0 24px;padding:16px;box-sizing:border-box;max-width:75ch;line-height:1.6;overflow-wrap:anywhere;color:#203e68;font-family:inherit;}
+.inventory-recovery .inventory-accounting-note{margin:0 0 16px;color:#30465e;}
+.inventory-recovery #inventory-message,.inventory-recovery #inventory-pending{padding:16px;margin:16px 0;border:1px solid #87a6cf;border-radius:8px;background:#eef5ff;}
+.inventory-recovery #inventory-message{border-color:#a58027;background:#fff8e5;color:#5b430e;}
+.inventory-recovery h3{font-size:1rem;margin:0 0 10px;}
+.inventory-recovery p{margin:0 0 12px;}
+.inventory-recovery button{min-height:44px;padding:10px 16px;background:#1456b8;border:1px solid #1456b8;border-radius:6px;color:white;font:inherit;cursor:pointer;}
+.inventory-recovery button:hover:not(:disabled){background:#0e4190;}
+.inventory-recovery button:disabled{opacity:.65;cursor:wait;}
+.inventory-recovery :focus-visible{outline:3px solid #d68100;outline-offset:3px;}
+.inventory-recovery [hidden]{display:none!important;}
+#inventory-description{font-variant-numeric:tabular-nums;}
+.inventory-recovery summary{min-height:44px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.inventory-recovery #inventory-details{white-space:pre-wrap;}
