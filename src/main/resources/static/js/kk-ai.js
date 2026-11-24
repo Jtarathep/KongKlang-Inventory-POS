@@ -73,12 +73,13 @@
     busy = true;
     submit.disabled = true;
     chat.querySelectorAll('[data-ask]').forEach(button => { button.disabled = true; });
+    const previousQuestion = history.filter(entry => entry.kind === 'user').at(-1)?.answer?.text;
     remember('user', { title: 'คุณ', text });
     const waiting = append('assistant', { title: 'KK AI', text: 'กำลังอ่านข้อมูลร้าน…' });
     try {
       const response = await fetch('/api/kk-ai/ask', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': chat.dataset.csrf },
-        body: JSON.stringify({ question: text, productCode: product.value.trim() }),
+        body: JSON.stringify({ question: text, productCode: product.value.trim(), previousQuestion }),
         signal: AbortSignal.timeout(80000)
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

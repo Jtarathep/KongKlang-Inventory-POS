@@ -27,7 +27,7 @@ public class KkAiController {
         return "kk-ai";
     }
 
-    public record Question(String question, String productCode) {}
+    public record Question(String question, String productCode, String previousQuestion) {}
     public record Reply(String title, String text, List<String> facts, String sourcePath, String suggestion) {}
 
     @PostMapping("/api/kk-ai/ask")
@@ -35,10 +35,11 @@ public class KkAiController {
     public ResponseEntity<?> ask(@RequestBody Question input, HttpSession session) {
         var actor = access.require(session, "OWNER", "ADMIN", "ACCOUNTING");
         if (input == null || input.question() == null || input.question().isBlank() || input.question().length() > 500
-                || input.productCode() != null && input.productCode().length() > 255) {
+                || input.productCode() != null && input.productCode().length() > 255
+                || input.previousQuestion() != null && input.previousQuestion().length() > 500) {
             return ResponseEntity.badRequest().body(java.util.Map.of("message", "กรุณากรอกคำถามไม่เกิน 500 ตัวอักษร"));
         }
-        var answer = assistant.answer(actor.storeId(), input.question(), input.productCode());
+        var answer = assistant.answer(actor.storeId(), input.question(), input.productCode(), input.previousQuestion());
         var suggestion = localModel.suggest(input.question(), answer).orElse(null);
         return ResponseEntity.ok(new Reply(answer.title(), answer.text(), answer.facts(), answer.sourcePath(), suggestion));
     }

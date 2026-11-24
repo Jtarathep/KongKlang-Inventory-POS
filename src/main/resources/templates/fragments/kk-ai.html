@@ -9,14 +9,14 @@
   <script src="/js/kk-ai.js" defer></script>
 </th:block>
 <div th:fragment="chat" class="ai-chat" th:attr="data-csrf=${session.csrfToken},data-store=${sessionStoreId},data-user=${sessionUserId}">
-  <p class="ai-mode">ใช้ข้อมูลของร้านเป็นหลัก และแสดงคำแนะนำจากโมเดลในเครื่องเมื่อพร้อม</p>
+  <p class="ai-mode">ค้นข้อมูลร้านด้วยภาษาพูด · รองรับคำพิมพ์ผิดบางแบบ · ไม่มีค่า API</p>
   <div class="ai-thread">
     <div class="ai-welcome">
       <img src="/images/kongklang-logo.png" alt="" width="44" height="44">
       <h2>วันนี้อยากตรวจอะไรในร้าน?</h2>
       <p>พิมพ์คำถามด้านล่าง หรือเลือกตัวอย่างเพื่อเริ่มคุย</p>
       <div class="ai-shortcuts" aria-label="คำถามแนะนำ">
-        <button type="button" data-ask="ควรซื้ออะไรเพิ่ม">ควรซื้ออะไรเพิ่ม</button><button type="button" data-ask="สินค้าใกล้หมดอายุ">ใกล้หมดอายุ</button><button type="button" data-ask="ยอดขายสุทธิ 7 วัน">ยอดขาย 7 วัน</button>
+        <button type="button" data-ask="สินค้าในสต็อกมีอะไรบ้าง">สินค้าในสต็อก</button><button type="button" data-ask="ควรซื้ออะไรเพิ่ม">ควรซื้ออะไรเพิ่ม</button><button type="button" data-ask="สินค้าใกล้หมดอายุ">ใกล้หมดอายุ</button><button type="button" data-ask="ยอดขายสุทธิ 7 วัน">ยอดขาย 7 วัน</button>
       </div>
     </div>
     <div class="ai-log" role="log" aria-label="บทสนทนา" tabindex="0"></div>

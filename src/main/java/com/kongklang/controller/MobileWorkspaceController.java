@@ -19,7 +19,7 @@ public class MobileWorkspaceController {
     private final SaleService saleService;
     private final AccessService access;private final ProductRepository products;private final SaleRepository sales;private final StoreAnalysisService analysis;private final InventoryOperationService inventory;
     public MobileWorkspaceController(AccessService access,ProductRepository products,SaleRepository sales,StoreAnalysisService analysis,InventoryOperationService inventory,SaleService saleService, StockBatchRepository batches, StockTransactionRepository movements){this.batches=batches;this.movements=movements;this.saleService=saleService;this.access=access;this.products=products;this.sales=sales;this.analysis=analysis;this.inventory=inventory;}
-    @GetMapping("/mobile") public String open(){return "redirect:/mobile/index.html";}
+    @GetMapping({"/mobile", "/mobile/"}) public String open(){return "redirect:/mobile/index.html";}
     @GetMapping("/api/mobile/session") @ResponseBody public Object session(HttpSession session){
         var a=access.require(session);return Map.of("store",Objects.toString(session.getAttribute("storeName"),""),"role",a.role(),"displayName",Objects.toString(session.getAttribute("displayName"),""),"csrf",session.getAttribute("csrfToken"),"canReceive",Set.of("OWNER","ADMIN","WAREHOUSE").contains(a.role()),"canSeeSales",SALES_ROLES.contains(a.role()),"canAnalyze",Set.of("OWNER","ADMIN","ACCOUNTING").contains(a.role()));
     }
