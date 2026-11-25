@@ -23,14 +23,15 @@ public class MobileWorkspaceController {
     @GetMapping("/api/mobile/session") @ResponseBody public Object session(HttpSession session){
         var a=access.require(session);return Map.of("store",Objects.toString(session.getAttribute("storeName"),""),"role",a.role(),"displayName",Objects.toString(session.getAttribute("displayName"),""),"csrf",session.getAttribute("csrfToken"),"canReceive",Set.of("OWNER","ADMIN","WAREHOUSE").contains(a.role()),"canSeeSales",SALES_ROLES.contains(a.role()),"canAnalyze",Set.of("OWNER","ADMIN","ACCOUNTING").contains(a.role()));
     }
-    public record ProductRow(String code,String name,String barcode,String category,Integer quantity,BigDecimal price){}
+    // Additive id field lets the mobile UI use the existing store-scoped photo route.
+    public record ProductRow(Long id,String code,String name,String barcode,String category,Integer quantity,BigDecimal price){}
     @GetMapping("/api/mobile/barcode") @ResponseBody
     public ResponseEntity<ProductRow> barcode(@RequestParam String value, HttpSession session) {
         var actor = access.require(session);
         String barcode = value.trim();
         if (barcode.isEmpty() || barcode.length() > 120) return ResponseEntity.badRequest().build();
         return ResponseEntity.of(products.findByStoreIdAndBarcode(actor.storeId(), barcode)
-            .map(p -> new ProductRow(p.getCode(), p.getName(), p.getBarcode(), p.getCategory(), p.getQuantity(), p.getPriceValue())));
+            .map(p -> new ProductRow(p.getId(), p.getCode(), p.getName(), p.getBarcode(), p.getCategory(), p.getQuantity(), p.getPriceValue())));
     }
     @GetMapping("/api/mobile/products")
     @ResponseBody
@@ -42,7 +43,7 @@ public class MobileWorkspaceController {
             return ResponseEntity.badRequest().body(Map.of("message", "คำค้นหาหรือตัวกรองไม่ถูกต้อง"));
         }
         return products.mobileSearch(actor.storeId(), term, stock, PageRequest.of(0, 100)).stream()
-                .map(product -> new ProductRow(product.getCode(), product.getName(), product.getBarcode(),
+                .map(product -> new ProductRow(product.getId(), product.getCode(), product.getName(), product.getBarcode(),
                         product.getCategory(), product.getQuantity(), product.getPriceValue()))
                 .toList();
     }
