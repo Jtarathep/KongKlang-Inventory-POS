@@ -1,0 +1,78 @@
+.barcode-camera {
+  box-sizing: border-box;
+  width: min(480px, 100%);
+  height: 100dvh;
+  max-height: 100dvh;
+  max-width: 100%;
+  border: 0;
+  margin: auto;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  background: linear-gradient(155deg, #faf8f3, #e9f1ff);
+  color: #17243b;
+  font: 16px/1.55 'Segoe UI', Tahoma, sans-serif;
+}
+.barcode-camera[open] { display: flex; flex-direction: column; gap: 18px; }
+.barcode-camera::backdrop { background: #17243bd9; }
+.barcode-camera h2 { font-size: 23px; text-align: center; margin: 0; }
+.barcode-camera p {
+  color: #415572;
+  text-align: center;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: #ffffffad;
+}
+.barcode-preview {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 1;
+  min-height: 160px;
+  max-height: 55dvh;
+  margin-block: auto;
+  background: #17243b;
+  border-radius: 26px;
+  overflow: hidden;
+}
+.barcode-preview video { position: absolute; width: 100%; height: 100%; object-fit: contain; }
+.barcode-preview span {
+  position: absolute;
+  inset: 24% 10%;
+  pointer-events: none;
+  background:
+    linear-gradient(#fff, #fff) left top / 32px 2px,
+    linear-gradient(#fff, #fff) left top / 2px 32px,
+    linear-gradient(#fff, #fff) right top / 32px 2px,
+    linear-gradient(#fff, #fff) right top / 2px 32px,
+    linear-gradient(#fff, #fff) left bottom / 32px 2px,
+    linear-gradient(#fff, #fff) left bottom / 2px 32px,
+    linear-gradient(#fff, #fff) right bottom / 32px 2px,
+    linear-gradient(#fff, #fff) right bottom / 2px 32px;
+  background-repeat: no-repeat;
+}
+.barcode-preview span::after {
+  content: '';
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #52daff 14%, #52daff 86%, transparent);
+  box-shadow: 0 0 12px #52daff99;
+}
+.barcode-camera form { margin-top: auto; }
+.barcode-camera button {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.barcode-camera button:focus-visible { outline: 2px solid #17243b; outline-offset: 3px; }
+.barcode-found .barcode-preview span { outline: 3px solid #66e2a1; outline-offset: 4px; }
+.barcode-found .barcode-preview span::after { background: #66e2a1; box-shadow: none; }
+@media (min-width: 600px) {
+  .barcode-camera { height: min(690px, calc(100dvh - 32px)); border-radius: 26px; }
+}
